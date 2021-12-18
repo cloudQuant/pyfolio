@@ -6,7 +6,7 @@ setuptools.setup(
     author="quantopian",
     author_email="yunjinqi@qq.com",
     description="pyfolio packages",
-    long_description=long_description,
+    long_description="pyfolio packages modified by yunjinqi",
     long_description_content_type = "text/markdown",
     url="https://gitee.com/yunjinqi/pyfolio",
     packages=setuptools.find_packages(),
