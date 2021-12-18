@@ -890,8 +890,23 @@ def get_max_drawdown_underwater(underwater):
         The maximum drawdown's recovery.
     """
     
-    valley = np.argmin(underwater)  # end of the period
-    # print(valley)
+    # valley = np.argmin(underwater)  # end of the period
+    # # print(valley)
+    # # Find first 0
+    # peak = underwater[:valley][underwater[:valley] == 0].index[-1]
+    # # Find last 0
+    # try:
+    #     recovery = underwater[valley:][underwater[valley:] == 0].index[0]
+    # except IndexError:
+    #     recovery = np.nan  # drawdown not recovered
+    # # print("get_max_drawdown_underwater",underwater)
+    # # print("get_max_drawdown_underwater",underwater[:valley][underwater[:valley] == 0])
+    # # print("get_max_drawdown_underwater",peak, valley, recovery)
+    # # add a code,change index to datetime
+    # valley = list(underwater.index)[valley]
+    # return peak, valley, recovery
+    # 原版
+    valley = underwater.idxmin()  # end of the period
     # Find first 0
     peak = underwater[:valley][underwater[:valley] == 0].index[-1]
     # Find last 0
@@ -899,11 +914,6 @@ def get_max_drawdown_underwater(underwater):
         recovery = underwater[valley:][underwater[valley:] == 0].index[0]
     except IndexError:
         recovery = np.nan  # drawdown not recovered
-    # print("get_max_drawdown_underwater",underwater)
-    # print("get_max_drawdown_underwater",underwater[:valley][underwater[:valley] == 0])
-    # print("get_max_drawdown_underwater",peak, valley, recovery)
-    # add a code,change index to datetime
-    valley = list(underwater.index)[valley]
     return peak, valley, recovery
 
 

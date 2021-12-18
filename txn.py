@@ -15,7 +15,7 @@
 from __future__ import division
 
 import pandas as pd
-
+import numpy as np
 
 def map_transaction(txn):
     """

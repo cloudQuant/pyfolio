@@ -16,7 +16,8 @@ from __future__ import division
 
 import warnings
 from time import time
-
+import os 
+import pyfolio as pf
 import empyrical as ep
 from IPython.display import display, Markdown
 import matplotlib.gridspec as gridspec
@@ -63,6 +64,152 @@ def timer(msg_body, previous_time):
 
     return current_time
 
+def create_full_tear_sheet_by_flask(returns,
+                           positions=None,
+                           transactions=None,
+                           market_data=None,
+                           benchmark_rets=None,
+                           slippage=None,
+                           run_flask_app=True,
+                           live_start_date=None,
+                           sector_mappings=None,
+                           bayesian=False,
+                           round_trips=False,
+                           estimate_intraday='infer',
+                           hide_positions=False,
+                           cone_std=(1.0, 1.5, 2.0),
+                           bootstrap=False,
+                           unadjusted_returns=None,
+                           style_factor_panel=None,
+                           sectors=None,
+                           caps=None,
+                           shares_held=None,
+                           volumes=None,
+                           percentile=None,
+                           turnover_denom='AGB',
+                           set_context=True,
+                           factor_returns=None,
+                           factor_loadings=None,
+                           pos_in_dollars=True,
+                           header_rows=None,
+                           factor_partitions=FACTOR_PARTITIONS):
+    """
+    参考creat_full_tear_sheet，用dash画出来，并在网页中打开，并保存到本地
+    """
+    # 在pyfolio中创建templates,static,image文件夹
+    data_root = pf.__file__.replace("__init__.py","")
+    target_templates_path = data_root+"/templates"
+    if not os.path.exists(target_templates_path):
+        os.makedirs(target_templates_path)
+    target_static_path = data_root+"/static"
+    if not os.path.exists(target_static_path):
+        os.makedirs(target_static_path)
+    target_image_path = target_static_path+"/image"
+    if not os.path.exists(target_image_path):
+        os.makedirs(target_image_path)
+        
+        
+    if (unadjusted_returns is None) and (slippage is not None) and\
+       (transactions is not None):
+        unadjusted_returns = returns.copy()
+        returns = txn.adjust_returns_for_slippage(returns, positions,
+                                                  transactions, slippage)
+
+    positions = utils.check_intraday(estimate_intraday, returns,
+                                     positions, transactions)
+    # returns_tear_sheet = None
+    returns_tear_sheet = create_returns_tear_sheet(
+        returns,
+        positions=positions,
+        transactions=transactions,
+        live_start_date=live_start_date,
+        cone_std=cone_std,
+        benchmark_rets=benchmark_rets,
+        bootstrap=bootstrap,
+        turnover_denom=turnover_denom,
+        header_rows=header_rows,
+        set_context=set_context,
+        return_fig=True)
+
+    interesting_times_tear_sheet = create_interesting_times_tear_sheet(returns,
+                                        benchmark_rets=benchmark_rets,
+                                        set_context=set_context,
+                                        return_fig=True)
+    position_tear_sheet = None
+    txn_tear_sheet = None 
+    round_trip_tear_sheet = None
+    capacity_tear_sheet = None
+    risk_tear_sheet = None
+    perf_attrib_tear_sheet = None 
+    bayesian_tear_sheet = None   
+    if positions is not None:
+        position_tear_sheet = create_position_tear_sheet(returns, positions,
+                                   hide_positions=hide_positions,
+                                   set_context=set_context,
+                                   sector_mappings=sector_mappings,
+                                   estimate_intraday=False,
+                                   return_fig=True)
+
+        if transactions is not None:
+            txn_tear_sheet = create_txn_tear_sheet(returns, positions, transactions,
+                                  unadjusted_returns=unadjusted_returns,
+                                  estimate_intraday=False,
+                                  set_context=set_context,
+                                  return_fig=True)
+            if round_trips:
+                round_trip_tear_sheet = create_round_trip_tear_sheet(
+                    returns=returns,
+                    positions=positions,
+                    transactions=transactions,
+                    sector_mappings=sector_mappings,
+                    estimate_intraday=False,
+                    return_fig=True)
+
+            if market_data is not None:
+                capacity_tear_sheet = create_capacity_tear_sheet(returns, positions, transactions,
+                                           market_data,
+                                           liquidation_daily_vol_limit=0.2,
+                                           last_n_days=125,
+                                           estimate_intraday=False,
+                                            return_fig=True)
+
+        if style_factor_panel is not None:
+            risk_tear_sheet = create_risk_tear_sheet(positions, style_factor_panel, sectors,
+                                   caps, shares_held, volumes, percentile,
+                                            return_fig=True)
+
+        if factor_returns is not None and factor_loadings is not None:
+            perf_attrib_tear_sheet = create_perf_attrib_tear_sheet(returns, positions, factor_returns,
+                                          factor_loadings, transactions,
+                                          pos_in_dollars=pos_in_dollars,
+                                          factor_partitions=factor_partitions,
+                                            return_fig=True)
+
+    if bayesian:
+        bayesian_tear_sheet = create_bayesian_tear_sheet(returns,
+                                   live_start_date=live_start_date,
+                                   benchmark_rets=benchmark_rets,
+                                   set_context=set_context,
+                                            return_fig=True)
+    content = {"returns_tear_sheet":returns_tear_sheet , 
+               "interesting_times_tear_sheet":interesting_times_tear_sheet ,
+               "position_tear_sheet":position_tear_sheet,
+               "txn_tear_sheet":txn_tear_sheet,
+               "round_trip_tear_sheet":round_trip_tear_sheet,
+               "capacity_tear_sheet":capacity_tear_sheet,
+               "risk_tear_sheet":risk_tear_sheet,
+               "perf_attrib_tear_sheet":perf_attrib_tear_sheet,
+               "bayesian_tear_sheet":bayesian_tear_sheet}
+     
+    
+    for name,fig in content.items():
+        if fig is not None:
+            print(f"{name}保存在文件夹{target_image_path}")
+            fig.savefig(target_image_path+"/"+name+".png")
+        
+    if run_flask_app:
+        from .flask_app import app
+        app.run(port="2021")
 
 def create_full_tear_sheet(returns,
                            positions=None,

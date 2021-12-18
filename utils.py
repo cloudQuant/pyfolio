@@ -23,6 +23,8 @@ import numpy as np
 import pandas as pd
 from IPython.display import display, HTML
 
+import os 
+import pyfolio as pf 
 import empyrical.utils
 
 from . import pos
@@ -215,6 +217,12 @@ def print_table(table,
 
         # Inject the new HTML
         html = html.replace('<thead>', '<thead>' + rows)
+        
+    # 检查pyfolio中是否存在static文件夹,如果存在,就保存数据到static中
+    data_root = pf.__file__.replace("__init__.py","")
+    target_static_path = data_root+"/static"
+    if os.path.exists(target_static_path):
+        table.to_excel(target_static_path+"/strategy_performance__"+str(name)+".xlsx")
 
     display(HTML(html))
 
