@@ -37,13 +37,6 @@ pf.create_full_tear_sheet(df['returns'],benchmark_rets=df['benchmark_rets'],posi
 
 ```
 
-#### 一些付费文章
-
-1. [如何使用analyzer及创建新的analyzer(4)---策略绩效评价模块pyfolio的使用](https://yunjinqi.blog.csdn.net/article/details/110842730)
-2. [【答读者问37】如何使用pyfolio对比基准收益率和策略收益率？](https://yunjinqi.blog.csdn.net/article/details/122012247)
-3. [使用flask给pyfolio做一个界面,可以在spyder\pycharm\vscode中呈现策略绩效分析结果(2021-10-29更新)](https://yunjinqi.blog.csdn.net/article/details/121025639)
-
-
 
 
 #### 绩效分析结果展示
@@ -53,6 +46,8 @@ pf.create_full_tear_sheet(df['returns'],benchmark_rets=df['benchmark_rets'],posi
 ![绩效统计指标1](https://img-blog.csdnimg.cn/aa15defc2c11403f9590c5cca2ed2e83.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
 
 ![绩效统计指标2](https://img-blog.csdnimg.cn/77c50796bc704f35935e8c8703935cac.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+
+##### 收益相关的图
 
 ![累计收益率](https://img-blog.csdnimg.cn/0e09ad44096c4336a0ef750aa4d4e403.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
 ![累计收益率在对数坐标轴上](https://img-blog.csdnimg.cn/51a0010aa2cb406e8edd875ebfed753e.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
@@ -64,6 +59,9 @@ pf.create_full_tear_sheet(df['returns'],benchmark_rets=df['benchmark_rets'],posi
 ![最大回撤](https://img-blog.csdnimg.cn/b208313bfb614b46ac0a17560383b167.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
 ![5次最大回撤](https://img-blog.csdnimg.cn/b208313bfb614b46ac0a17560383b167.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
 ![收益率分析](https://img-blog.csdnimg.cn/5bf3808296c8466aaee3709573666c26.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+
+##### 持仓及杠杆相关的图
+
 ![总的持仓](https://img-blog.csdnimg.cn/c325397edef343ed93e58503afdacbe2.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
 ![持仓集中度](https://img-blog.csdnimg.cn/c325397edef343ed93e58503afdacbe2.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
 ![10个最大持仓的分布](https://img-blog.csdnimg.cn/c37248b7257942e59c66b3045a15f339.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
@@ -74,4 +72,8 @@ pf.create_full_tear_sheet(df['returns'],benchmark_rets=df['benchmark_rets'],posi
 
 
 
+#### 一些付费文章
 
+1. [如何使用analyzer及创建新的analyzer(4)---策略绩效评价模块pyfolio的使用](https://yunjinqi.blog.csdn.net/article/details/110842730)
+2. [【答读者问37】如何使用pyfolio对比基准收益率和策略收益率？](https://yunjinqi.blog.csdn.net/article/details/122012247)
+3. [使用flask给pyfolio做一个界面,可以在spyder\pycharm\vscode中呈现策略绩效分析结果(2021-10-29更新)](https://yunjinqi.blog.csdn.net/article/details/121025639)
