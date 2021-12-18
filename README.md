@@ -10,11 +10,14 @@ pyfolio原本是zipline的绩效分析模块，由大名鼎鼎的量化平台qua
 #### 安装教程
 
 
-1.  pip install git+https://gitee.com/yunjinqi/pyfolio.git
-2.  如果第一种方法失败，可以手动进入下载包的工作目录，然后git clone，或者直接下载下来文件，然后放到包的工作目录.
+安装需要进入python包的工作目录，然后git clone下载pyfolio文件
+
 ```
+
+# 如果python包在C:\ProgramData\Anaconda3\Lib\site-packages，则
 cd C:\ProgramData\Anaconda3\Lib\site-packages
 git clone https://gitee.com/yunjinqi/pyfolio.git
+
 ```
 
 
@@ -77,3 +80,8 @@ pf.create_full_tear_sheet(df['returns'],benchmark_rets=df['benchmark_rets'],posi
 1. [如何使用analyzer及创建新的analyzer(4)---策略绩效评价模块pyfolio的使用](https://yunjinqi.blog.csdn.net/article/details/110842730)
 2. [【答读者问37】如何使用pyfolio对比基准收益率和策略收益率？](https://yunjinqi.blog.csdn.net/article/details/122012247)
 3. [使用flask给pyfolio做一个界面,可以在spyder\pycharm\vscode中呈现策略绩效分析结果(2021-10-29更新)](https://yunjinqi.blog.csdn.net/article/details/121025639)
+
+#### 不足之处
+
+1. 为了一些简便，这个修改版的pyfolio并没有按照正式的python包的方式进行管理，pyfolio的文件和一些git文件混杂在了一起，看起来并不美观。
+2. 随着一些pyfolio的依赖模块的更新，pyfolio还可能有很多需要解决的bug，这个包目前只是万里长征的第一步。
