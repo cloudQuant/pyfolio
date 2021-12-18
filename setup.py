@@ -9,7 +9,7 @@ setuptools.setup(
     long_description="pyfolio packages modified by yunjinqi",
     long_description_content_type = "text/markdown",
     url="https://gitee.com/yunjinqi/pyfolio",
-    packages=['pyfolio'],
+    packages='pyfolio',
     include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3.6",
