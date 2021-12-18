@@ -9,8 +9,13 @@ pyfolio原本是zipline的绩效分析模块，有大名鼎鼎的量化平台qua
 
 #### 安装教程
 
+
 1.  pip install git+https://gitee.com/yunjinqi/pyfolio.git
-2.  手动下载，然后把pyfolio文件放到python包的文件夹中。
+2.  如果第一种方法失败，可以手动进入下载包的工作目录，然后git clone，或者直接下载下来文件，然后放到包的工作目录.
+```
+cd C:\ProgramData\Anaconda3\Lib\site-packages
+git clone https://gitee.com/yunjinqi/pyfolio.git
+```
 
 
 #### 使用说明
@@ -36,9 +41,9 @@ pf.create_full_tear_sheet(df['returns'],benchmark_rets=df['benchmark_rets'],posi
 
 ##### 绩效指标分析
 
-![绩效统计指标1]("https://gitee.com/yunjinqi/pyfolio/tree/master/img/image-20211218133956274.png")
+![绩效统计指标1](https://gitee.com/yunjinqi/pyfolio/tree/master/img/image-20211218133956274.png)
 
-![绩效统计指标2]("https://gitee.com/yunjinqi/pyfolio/tree/master/img/image-20211218134015808.png")
+![绩效统计指标2](https://gitee.com/yunjinqi/pyfolio/tree/master/img/image-20211218134015808.png)
 
 
 
