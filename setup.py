@@ -38,7 +38,7 @@ vname = '_version.py'
 __version__ = "0.9.2"
 version = "0.9.2"
 # Generate links
-gurl = "https://gitee.com/yunjinqi/pyfolio"
+gurl = "https://gitee.com/yunjinqi/pyfolio/tree/master"
 gdurl = "https://gitee.com/yunjinqi/pyfolio.git"
 
 setuptools.setup(
