@@ -36,6 +36,9 @@ pf.create_full_tear_sheet(df['returns'],benchmark_rets=df['benchmark_rets'],posi
 
 ##### 绩效指标分析
 
+![绩效统计指标]("./img/image-20211218133956274.png")
+
+
 
 
 
