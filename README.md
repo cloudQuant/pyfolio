@@ -2,7 +2,7 @@
 
 #### 介绍
 
-pyfolio原本是zipline的绩效分析模块，有大名鼎鼎的量化平台quantopian开发并开源出来。但是，quantopian倒闭之后，pyfolio慢慢缺乏维护，已经很久没有更新了，在使用过程中经常会碰到各种小bug，另一个原因是pyfolio做绩效分析的效率并不高，数据非常多的时候处理速度会比较慢，还有pyfolio对notebook支持比较好，对于其他的开发环境支持较弱，本模块尝试在pyfolio的基础上，结合其他绩效分析模块的优点，做出一个更好用的绩效分析模块，供大家使用。
+pyfolio原本是zipline的绩效分析模块，由大名鼎鼎的量化平台quantopian开发并开源出来。但是，quantopian倒闭之后，pyfolio慢慢缺乏维护，已经很久没有更新了，在使用过程中经常会碰到各种小bug，另一个原因是pyfolio做绩效分析的效率并不高，数据非常多的时候处理速度会比较慢，还有pyfolio对notebook支持比较好，对于其他的开发环境支持较弱，本模块尝试在pyfolio的基础上，结合其他绩效分析模块的优点，做出一个更好用的绩效分析模块，供大家使用。
 
 本模块主要基于python语言，使用numpy、pandas、scipy、plotly、dash、flask和pyqt6等对原来的pyfolio进行改进优化。
 
@@ -36,6 +36,15 @@ positions.index = pd.to_datetime(positions.index)
 pf.create_full_tear_sheet(df['returns'],benchmark_rets=df['benchmark_rets'],positions= positions)
 
 ```
+
+#### 一些付费文章
+
+1. [如何使用analyzer及创建新的analyzer(4)---策略绩效评价模块pyfolio的使用](https://yunjinqi.blog.csdn.net/article/details/110842730)
+2. [【答读者问37】如何使用pyfolio对比基准收益率和策略收益率？](https://yunjinqi.blog.csdn.net/article/details/122012247)
+3. [使用flask给pyfolio做一个界面,可以在spyder\pycharm\vscode中呈现策略绩效分析结果(2021-10-29更新)](https://yunjinqi.blog.csdn.net/article/details/121025639)
+
+
+
 
 #### 绩效分析结果展示
 
