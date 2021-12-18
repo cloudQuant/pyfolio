@@ -41,9 +41,9 @@ pf.create_full_tear_sheet(df['returns'],benchmark_rets=df['benchmark_rets'],posi
 
 ##### 绩效指标分析
 
-![绩效统计指标1](https://gitee.com/yunjinqi/pyfolio/tree/master/img/image-20211218133956274.png)
+![绩效统计指标1](https://gitee.com/yunjinqi/pyfolio/blob/master/img/image-20211218133956274.png)
 
-![绩效统计指标2](https://gitee.com/yunjinqi/pyfolio/tree/master/img/image-20211218134015808.png)
+![绩效统计指标2](https://img-blog.csdnimg.cn/77c50796bc704f35935e8c8703935cac.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
 
 
 
