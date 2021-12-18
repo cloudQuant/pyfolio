@@ -1,37 +1,43 @@
-# pyfolio_cn
+### pyfolio
 
 #### 介绍
-投资绩效模块pyfolio已经很久没有更新了，在使用的过程中出现了很多的小bug，并且使用的时候必须要结合notebook使用，给使用vscode，pycharm的使用者带来了不变，本模块计划使用dash、plotly对pyfolio进行一定的封装及改进，在改进pyfolio的道路上更进一步。
 
-#### 软件架构
-软件架构说明
+pyfolio原本是zipline的绩效分析模块，有大名鼎鼎的量化平台quantopian开发并开源出来。但是，quantopian倒闭之后，pyfolio慢慢缺乏维护，已经很久没有更新了，在使用过程中经常会碰到各种小bug，另一个原因是pyfolio做绩效分析的效率并不高，数据非常多的时候处理速度会比较慢，还有pyfolio对notebook支持比较好，对于其他的开发环境支持较弱，本模块尝试在pyfolio的基础上，结合其他绩效分析模块的优点，做出一个更好用的绩效分析模块，供大家使用。
+
+本模块主要基于python语言，使用numpy、pandas、scipy、plotly、dash、flask和pyqt6等对原来的pyfolio进行改进优化。
 
 
 #### 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1.  pip install git+https://gitee.com/yunjinqi/pyfolio.git
+2.  手动下载，然后把pyfolio文件放到python包的文件夹中。
+
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+```python
 
-#### 参与贡献
+import pandas as pd
+import pyfolio as pf
+import os
+import warnings
+warnings.filterwarnings("ignore")
+# 加载数据
+pf_path = os.path.dirname(pf.__file__)
+df = pd.read_csv(pf_path+"/datas/基准收益率和日收益率序列.csv",index_col = 0)
+df.index = pd.to_datetime(df.index)
+positions = pd.read_csv(pf_path+"/datas/positions.csv",index_col = 0)
+positions.index = pd.to_datetime(positions.index)
+pf.create_full_tear_sheet(df['returns'],benchmark_rets=df['benchmark_rets'],positions= positions)
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+```
+
+#### 绩效分析结果展示
+
+##### 绩效指标分析
 
 
-#### 特技
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+
+
+
