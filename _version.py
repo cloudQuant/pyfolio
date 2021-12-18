@@ -19,3 +19,6 @@ version_json = '''
 
 def get_versions():
     return json.loads(version_json)
+
+# 增加一个version版本
+__version__ = "0.9.2"
