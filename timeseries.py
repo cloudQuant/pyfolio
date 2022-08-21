@@ -914,6 +914,7 @@ def get_max_drawdown_underwater(underwater):
         recovery = underwater[valley:][underwater[valley:] == 0].index[0]
     except IndexError:
         recovery = np.nan  # drawdown not recovered
+    # print(peak, valley, recovery)
     return peak, valley, recovery
 
 
@@ -966,9 +967,12 @@ def get_top_drawdowns(returns, top=10):
     df_cum = ep.cum_returns(returns, 1.0)
     running_max = np.maximum.accumulate(df_cum)
     underwater = df_cum / running_max - 1
-
+    # print("df_cum",df_cum)
+    # print("running_max",running_max)
+    # print("underwater",underwater)
     drawdowns = []
     for t in range(top):
+        #print("len(underwater)",len(underwater))
         peak, valley, recovery = get_max_drawdown_underwater(underwater)
         # Slice out draw-down period
         if not pd.isnull(recovery):
@@ -981,7 +985,7 @@ def get_top_drawdowns(returns, top=10):
         drawdowns.append((peak, valley, recovery))
         if (len(returns) == 0) or (len(underwater) == 0):
             break
-
+    # print(drawdowns)
     return drawdowns
 
 
@@ -1037,7 +1041,7 @@ def gen_drawdown_table(returns, top=10):
         if isinstance(recovery, float):
             df_drawdowns.loc[i, 'Recovery date'] = recovery
         else:
-            df_drawdowns.loc[i, 'Recovery date'] = (pd.to_datetime(peak).strftime('%Y-%m-%d'))
+            df_drawdowns.loc[i, 'Recovery date'] = (pd.to_datetime(recovery).strftime('%Y-%m-%d'))
                                                     
         df_drawdowns.loc[i, 'Net drawdown in %'] = (
             (df_cum.loc[peak] - df_cum.loc[valley]) / df_cum.loc[peak]) * 100
@@ -1045,7 +1049,7 @@ def gen_drawdown_table(returns, top=10):
     df_drawdowns['Peak date'] = pd.to_datetime(df_drawdowns['Peak date'])
     df_drawdowns['Valley date'] = pd.to_datetime(df_drawdowns['Valley date'])
     df_drawdowns['Recovery date'] = pd.to_datetime(df_drawdowns['Recovery date'])
-    
+    # print(df_drawdowns)
     return df_drawdowns
 
 
