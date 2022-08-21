@@ -48,7 +48,7 @@ pf.create_full_tear_sheet(df['returns'],benchmark_rets=df['benchmark_rets'],posi
 
 ![绩效统计指标1](https://img-blog.csdnimg.cn/aa15defc2c11403f9590c5cca2ed2e83.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
 
-![绩效统计指标2](https://img-blog.csdnimg.cn/77c50796bc704f35935e8c8703935cac.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+![绩效统计指标2](https://img-blog.csdnimg.cn/554ea5a6007847d785d3c72a3b050274.png#pic_center)
 
 ##### 收益相关的图
 
