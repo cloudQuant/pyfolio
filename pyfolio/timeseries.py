@@ -889,7 +889,23 @@ def get_max_drawdown_underwater(underwater):
     recovery : datetime
         The maximum drawdown's recovery.
     """
-
+    
+    # valley = np.argmin(underwater)  # end of the period
+    # # print(valley)
+    # # Find first 0
+    # peak = underwater[:valley][underwater[:valley] == 0].index[-1]
+    # # Find last 0
+    # try:
+    #     recovery = underwater[valley:][underwater[valley:] == 0].index[0]
+    # except IndexError:
+    #     recovery = np.nan  # drawdown not recovered
+    # # print("get_max_drawdown_underwater",underwater)
+    # # print("get_max_drawdown_underwater",underwater[:valley][underwater[:valley] == 0])
+    # # print("get_max_drawdown_underwater",peak, valley, recovery)
+    # # add a code,change index to datetime
+    # valley = list(underwater.index)[valley]
+    # return peak, valley, recovery
+    # 原版
     valley = underwater.idxmin()  # end of the period
     # Find first 0
     peak = underwater[:valley][underwater[:valley] == 0].index[-1]
@@ -898,6 +914,7 @@ def get_max_drawdown_underwater(underwater):
         recovery = underwater[valley:][underwater[valley:] == 0].index[0]
     except IndexError:
         recovery = np.nan  # drawdown not recovered
+    # print(peak, valley, recovery)
     return peak, valley, recovery
 
 
@@ -950,9 +967,12 @@ def get_top_drawdowns(returns, top=10):
     df_cum = ep.cum_returns(returns, 1.0)
     running_max = np.maximum.accumulate(df_cum)
     underwater = df_cum / running_max - 1
-
+    # print("df_cum",df_cum)
+    # print("running_max",running_max)
+    # print("underwater",underwater)
     drawdowns = []
-    for _ in range(top):
+    for t in range(top):
+        #print("len(underwater)",len(underwater))
         peak, valley, recovery = get_max_drawdown_underwater(underwater)
         # Slice out draw-down period
         if not pd.isnull(recovery):
@@ -961,13 +981,11 @@ def get_top_drawdowns(returns, top=10):
         else:
             # drawdown has not ended yet
             underwater = underwater.loc[:peak]
-
+        # print("get_top_drawdowns",peak, valley, recovery)
         drawdowns.append((peak, valley, recovery))
-        if ((len(returns) == 0)
-                or (len(underwater) == 0)
-                or (np.min(underwater) == 0)):
+        if (len(returns) == 0) or (len(underwater) == 0):
             break
-
+    # print(drawdowns)
     return drawdowns
 
 
@@ -997,7 +1015,8 @@ def gen_drawdown_table(returns, top=10):
                                          'Valley date',
                                          'Recovery date',
                                          'Duration'])
-
+    # print(df_drawdowns)
+    # print(drawdown_periods)
     for i, (peak, valley, recovery) in enumerate(drawdown_periods):
         if pd.isnull(recovery):
             df_drawdowns.loc[i, 'Duration'] = np.nan
@@ -1005,23 +1024,32 @@ def gen_drawdown_table(returns, top=10):
             df_drawdowns.loc[i, 'Duration'] = len(pd.date_range(peak,
                                                                 recovery,
                                                                 freq='B'))
-        df_drawdowns.loc[i, 'Peak date'] = (peak.to_pydatetime()
-                                            .strftime('%Y-%m-%d'))
-        df_drawdowns.loc[i, 'Valley date'] = (valley.to_pydatetime()
-                                              .strftime('%Y-%m-%d'))
+        # to_pydatetime()疑似是老的API，使用pd.to_datetime替代
+        # df_drawdowns.loc[i, 'Peak date'] = (peak.to_pydatetime()
+        #                                     .strftime('%Y-%m-%d'))
+        # df_drawdowns.loc[i, 'Valley date'] = (valley.to_pydatetime()
+        #                                       .strftime('%Y-%m-%d'))
+        # if isinstance(recovery, float):
+        #     df_drawdowns.loc[i, 'Recovery date'] = recovery
+        # else:
+        #     df_drawdowns.loc[i, 'Recovery date'] = (recovery.to_pydatetime()
+        #                                             .strftime('%Y-%m-%d'))
+        
+        df_drawdowns.loc[i, 'Peak date'] = (pd.to_datetime(peak).strftime('%Y-%m-%d'))
+        df_drawdowns.loc[i, 'Valley date'] = (pd.to_datetime(valley).strftime('%Y-%m-%d'))
+
         if isinstance(recovery, float):
             df_drawdowns.loc[i, 'Recovery date'] = recovery
         else:
-            df_drawdowns.loc[i, 'Recovery date'] = (recovery.to_pydatetime()
-                                                    .strftime('%Y-%m-%d'))
+            df_drawdowns.loc[i, 'Recovery date'] = (pd.to_datetime(recovery).strftime('%Y-%m-%d'))
+                                                    
         df_drawdowns.loc[i, 'Net drawdown in %'] = (
             (df_cum.loc[peak] - df_cum.loc[valley]) / df_cum.loc[peak]) * 100
 
     df_drawdowns['Peak date'] = pd.to_datetime(df_drawdowns['Peak date'])
     df_drawdowns['Valley date'] = pd.to_datetime(df_drawdowns['Valley date'])
-    df_drawdowns['Recovery date'] = pd.to_datetime(
-        df_drawdowns['Recovery date'])
-
+    df_drawdowns['Recovery date'] = pd.to_datetime(df_drawdowns['Recovery date'])
+    # print(df_drawdowns)
     return df_drawdowns
 
 
@@ -1204,7 +1232,7 @@ def forecast_cone_bootstrap(is_returns, num_days, cone_std=(1., 1.5, 2.),
     return cone_bounds
 
 
-def extract_interesting_date_ranges(returns, periods=None):
+def extract_interesting_date_ranges(returns):
     """
     Extracts returns based on interesting events. See
     gen_date_range_interesting.
@@ -1220,12 +1248,11 @@ def extract_interesting_date_ranges(returns, periods=None):
     ranges : OrderedDict
         Date ranges, with returns, of all valid events.
     """
-    if periods is None:
-        periods = PERIODS
+
     returns_dupe = returns.copy()
     returns_dupe.index = returns_dupe.index.map(pd.Timestamp)
     ranges = OrderedDict()
-    for name, (start, end) in periods.items():
+    for name, (start, end) in PERIODS.items():
         try:
             period = returns_dupe.loc[start:end]
             if len(period) == 0:

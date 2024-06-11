@@ -23,6 +23,8 @@ import numpy as np
 import pandas as pd
 from IPython.display import display, HTML
 
+import os 
+import pyfolio as pf 
 import empyrical.utils
 
 from . import pos
@@ -215,6 +217,12 @@ def print_table(table,
 
         # Inject the new HTML
         html = html.replace('<thead>', '<thead>' + rows)
+        
+    # 检查pyfolio中是否存在static文件夹,如果存在,就保存数据到static中
+    data_root = pf.__file__.replace("__init__.py","")
+    target_static_path = data_root+"/static"
+    if os.path.exists(target_static_path):
+        table.to_excel(target_static_path+"/strategy_performance__"+str(name)+".xlsx")
 
     display(HTML(html))
 
@@ -348,12 +356,20 @@ def estimate_intraday(returns, positions, transactions, EOD_hour=23):
         columns='symbol').replace(np.nan, 0)
 
     # Cumulate transaction amounts each day
-    txn_val = txn_val.groupby(txn_val.index.date).cumsum()
+    # 此处应该有bug，进行修改
+    # txn_val['date'] = txn_val.index.date
+    # txn_val = txn_val.groupby('date').cumsum()
+    txn_val['day'] = txn_val.index.date
+    txn_val = txn_val.groupby('day').cumsum()
+
 
     # Calculate exposure, then take peak of exposure every day
     txn_val['exposure'] = txn_val.abs().sum(axis=1)
+    # 出现bug，疑似使用旧版本的API
+    # condition = (txn_val['exposure'] == txn_val.groupby(
+    #     pd.TimeGrouper('24H'))['exposure'].transform(max))
     condition = (txn_val['exposure'] == txn_val.groupby(
-        pd.Grouper(freq='24H'))['exposure'].transform(max))
+        pd.Grouper(freq='24h'))['exposure'].transform(max))
     txn_val = txn_val[condition].drop('exposure', axis=1)
 
     # Compute cash delta
@@ -519,7 +535,7 @@ def configure_legend(ax, autofmt_xdate=True, change_colors=False,
               framealpha=0.5,
               loc='upper left',
               bbox_to_anchor=(1.05, 1),
-              fontsize='small')
+              fontsize='large')
 
     # manually rotate xticklabels instead of using matplotlib's autofmt_xdate
     # because it disables xticklabels for all but the last plot

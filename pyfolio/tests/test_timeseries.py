@@ -60,7 +60,7 @@ class TestDrawdown(TestCase):
             first_expected_recovery, first_net_drawdown,
             second_expected_peak, second_expected_valley,
             second_expected_recovery, second_net_drawdown
-    ):
+            ):
 
         rets = px.pct_change()
 
@@ -182,7 +182,7 @@ class TestDrawdown(TestCase):
                          spy_drawdowns['Peak date'].shift(-1)))[:-1]
         self.assertGreater(len(pairs), 0)
         for recovery, peak in pairs:
-            if not pd.isnull(recovery):
+            if recovery != pd.NaT:
                 self.assertLessEqual(recovery, peak)
 
     @parameterized.expand([
@@ -264,13 +264,11 @@ class TestStats(TestCase):
     dt_2 = pd.date_range('2000-1-3', periods=8, freq='D')
 
     @parameterized.expand([
-        (simple_rets[:5], 2, [np.nan, np.inf, np.inf, 11.224972160321, np.inf])
+        (simple_rets[:5], 2, '[nan, inf, inf, 11.224972160321828, inf]')
     ])
     def test_sharpe_2(self, returns, rolling_sharpe_window, expected):
-        np.testing.assert_array_almost_equal(
-            timeseries.rolling_sharpe(returns,
-                                      rolling_sharpe_window).values,
-            np.asarray(expected))
+        self.assertEqual(str(timeseries.rolling_sharpe(
+            returns, rolling_sharpe_window).values.tolist()), expected)
 
     @parameterized.expand([
         (simple_rets[:5], simple_benchmark, 2, 0)
