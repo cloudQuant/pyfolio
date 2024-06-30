@@ -1,4 +1,3 @@
-
 # Version: 0.15
 
 """
@@ -340,6 +339,7 @@ domain.
 """
 
 from __future__ import print_function
+
 try:
     import configparser
 except ImportError:
@@ -405,6 +405,7 @@ def get_config_from_root(root):
         if parser.has_option("versioneer", name):
             return parser.get("versioneer", name)
         return None
+
     cfg = VersioneerConfig()
     cfg.VCS = VCS
     cfg.style = get(parser, "style") or ""
@@ -431,6 +432,7 @@ def register_vcs_handler(vcs, method):  # decorator
             HANDLERS[vcs] = {}
         HANDLERS[vcs][method] = f
         return f
+
     return decorate
 
 
@@ -465,6 +467,8 @@ def run_command(commands, args, cwd=None, verbose=False, hide_stderr=False):
             print("unable to run %s (error)" % dispcmd)
         return None
     return stdout
+
+
 LONG_VERSION_PY['git'] = '''
 # This file helps to compute a version number in source trees obtained from
 # git-archive tarball (such as those provided by githubs download-from-tag
@@ -936,7 +940,7 @@ def git_get_keywords(versionfile_abs):
     # _version.py.
     keywords = {}
     try:
-        f = open(versionfile_abs, "r")
+        f = open(versionfile_abs, "r", encoding="utf-8")
         for line in f.readlines():
             if line.strip().startswith("git_refnames ="):
                 mo = re.search(r'=\s*"(.*)"', line)
@@ -948,7 +952,17 @@ def git_get_keywords(versionfile_abs):
                     keywords["full"] = mo.group(1)
         f.close()
     except EnvironmentError:
-        pass
+        f = open(versionfile_abs, "r", encoding='gbk')
+        for line in f.readlines():
+            if line.strip().startswith("git_refnames ="):
+                mo = re.search(r'=\s*"(.*)"', line)
+                if mo:
+                    keywords["refnames"] = mo.group(1)
+            if line.strip().startswith("git_full ="):
+                mo = re.search(r'=\s*"(.*)"', line)
+                if mo:
+                    keywords["full"] = mo.group(1)
+        f.close()
     return keywords
 
 
@@ -976,7 +990,7 @@ def git_versions_from_keywords(keywords, tag_prefix, verbose):
         # "stabilization", as well as "HEAD" and "master".
         tags = set([r for r in refs if re.search(r'\d', r)])
         if verbose:
-            print("discarding '%s', no digits" % ",".join(refs-tags))
+            print("discarding '%s', no digits" % ",".join(refs - tags))
     if verbose:
         print("likely tags: %s" % ",".join(sorted(tags)))
     for ref in sorted(tags):
@@ -1147,10 +1161,14 @@ def get_versions():
 
 def versions_from_file(filename):
     try:
-        with open(filename) as f:
+        with open(filename, encoding="utf-8") as f:
             contents = f.read()
     except EnvironmentError:
-        raise NotThisMethod("unable to read _version.py")
+        try:
+            with open(filename, encoding="gbk") as f:
+                contents = f.read()
+        except EnvironmentError:
+            raise NotThisMethod("unable to read _version.py")
     mo = re.search(r"version_json = '''\n(.*)'''  # END VERSION_JSON",
                    contents, re.M | re.S)
     if not mo:
@@ -1446,6 +1464,7 @@ def get_cmdclass():
             print(" dirty: %s" % vers.get("dirty"))
             if vers["error"]:
                 print(" error: %s" % vers["error"])
+
     cmds["version"] = cmd_version
 
     # we override "build_py" in both distutils and setuptools
@@ -1473,6 +1492,7 @@ def get_cmdclass():
                                                   cfg.versionfile_build)
                 print("UPDATING %s" % target_versionfile)
                 write_to_version_file(target_versionfile, versions)
+
     cmds["build_py"] = cmd_build_py
 
     if "cx_Freeze" in sys.modules:  # cx_freeze enabled?
@@ -1498,6 +1518,7 @@ def get_cmdclass():
                              "PARENTDIR_PREFIX": cfg.parentdir_prefix,
                              "VERSIONFILE_SOURCE": cfg.versionfile_source,
                              })
+
         cmds["build_exe"] = cmd_build_exe
         del cmds["build_py"]
 
@@ -1527,6 +1548,7 @@ def get_cmdclass():
             print("UPDATING %s" % target_versionfile)
             write_to_version_file(target_versionfile,
                                   self._versioneer_generated_versions)
+
     cmds["sdist"] = cmd_sdist
 
     return cmds
