@@ -396,9 +396,17 @@ def get_config_from_root(root):
     # configparser.NoOptionError (if it lacks "VCS="). See the docstring at
     # the top of versioneer.py for instructions on writing your setup.cfg .
     setup_cfg = os.path.join(root, "setup.cfg")
-    parser = configparser.SafeConfigParser()
+    try:
+        parser = configparser.SafeConfigParser()
+    except Exception as e:
+        print("parser = configparser.SafeConfigParser()", e)
+        parser = configparser.RawConfigParser()
     with open(setup_cfg, "r") as f:
-        parser.readfp(f)
+        try:
+            parser.readfp(f)
+        except Exception as e:
+            print("parser.readfp(f) = ", e)
+            parser.read_file(f)
     VCS = parser.get("versioneer", "VCS")  # mandatory
 
     def get(parser, name):
@@ -469,7 +477,7 @@ def run_command(commands, args, cwd=None, verbose=False, hide_stderr=False):
     return stdout
 
 
-LONG_VERSION_PY['git'] = '''
+LONG_VERSION_PY['git'] = """
 # This file helps to compute a version number in source trees obtained from
 # git-archive tarball (such as those provided by githubs download-from-tag
 # feature). Distribution tarballs (built by setup.py sdist) and build
@@ -929,7 +937,7 @@ def get_versions():
     return {"version": "0+unknown", "full-revisionid": None,
             "dirty": None,
             "error": "unable to compute version"}
-'''
+"""
 
 
 @register_vcs_handler("git", "get_keywords")
