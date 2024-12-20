@@ -315,7 +315,8 @@ def plot_holdings(returns, positions, legend_loc='best', ax=None, **kwargs):
 
     positions = positions.copy().drop('cash', axis='columns')
     df_holdings = positions.replace(0, np.nan).count(axis=1)
-    df_holdings_by_month = df_holdings.resample('1M').mean()
+    # df_holdings_by_month = df_holdings.resample('1M').mean()
+    df_holdings_by_month = df_holdings.resample('ME').mean()
     df_holdings.plot(color='steelblue', alpha=0.6, lw=0.5, ax=ax, **kwargs)
     df_holdings_by_month.plot(
         color='orangered',
@@ -645,10 +646,13 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
         perf_stats = pd.DataFrame(perf_stats_all, columns=['Backtest'])
 
     for column in perf_stats.columns:
-        for stat, value in perf_stats[column].iteritems():
+        perf_stats[column] = perf_stats[column].astype(object)
+        for stat, value in perf_stats[column].items():
             if stat in STAT_FUNCS_PCT:
-                perf_stats.loc[stat, column] = str(np.round(value * 100,
-                                                            1)) + '%'
+                if np.isnan(value):
+                    perf_stats.loc[stat, column] = np.nan  # Assign numeric NaN
+                else:
+                    perf_stats.loc[stat, column] = str(np.round(value * 100, 1)) + '%'
     if header_rows is None:
         header_rows = date_rows
     else:
@@ -820,7 +824,7 @@ def plot_rolling_returns(returns,
                 is_returns,
                 len(oos_cum_returns),
                 cone_std=cone_std,
-                starting_value=is_cum_returns[-1])
+                starting_value=is_cum_returns.iloc[-1])
 
             cone_bounds = cone_bounds.set_index(oos_cum_returns.index)
             for std in cone_std:
@@ -1300,9 +1304,19 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, **kwargs):
         else returns.loc[returns.index < live_start_date]
     is_weekly = ep.aggregate_returns(is_returns, 'weekly')
     is_monthly = ep.aggregate_returns(is_returns, 'monthly')
-    sns.boxplot(data=[is_returns, is_weekly, is_monthly],
+    data = pd.concat([
+        pd.DataFrame({'value': is_returns, 'category': 'returns'}),
+        pd.DataFrame({'value': is_weekly, 'category': 'weekly'}),
+        pd.DataFrame({'value': is_monthly, 'category': 'monthly'})
+    ])
+    data = data.dropna()
+    # print(data.head())
+    # sns.boxplot(data=data,
+    #             palette=["#4c72B0", "#55A868", "#CCB974"],
+    #             ax=ax, **kwargs)
+    sns.boxplot(data=data, x='category', y='value',
                 palette=["#4c72B0", "#55A868", "#CCB974"],
-                ax=ax, **kwargs)
+                ax=ax, hue='category', legend=False, **kwargs)
 
     if live_start_date is not None:
         oos_returns = returns.loc[returns.index >= live_start_date]
@@ -1316,6 +1330,7 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, **kwargs):
                                            label="Out-of-sample data",
                                            linestyle='')
         ax.legend(handles=[red_dots], frameon=True, framealpha=0.5)
+    ax.set_xticks([0, 1, 2])  # Ensure the number of ticks matches the data
     ax.set_xticklabels(['Daily', 'Weekly', 'Monthly'])
     ax.set_title('Return quantiles')
 
@@ -1364,7 +1379,7 @@ def plot_turnover(returns, transactions, positions,
     ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
 
     df_turnover = txn.get_turnover(positions, transactions)
-    df_turnover_by_month = df_turnover.resample("M").mean()
+    df_turnover_by_month = df_turnover.resample("ME").mean()
     df_turnover.plot(color='steelblue', alpha=1.0, lw=0.5, ax=ax, **kwargs)
     df_turnover_by_month.plot(
         color='orangered',
@@ -1543,7 +1558,9 @@ def plot_daily_turnover_hist(transactions, positions,
     if ax is None:
         ax = plt.gca()
     turnover = txn.get_turnover(positions, transactions)
-    sns.distplot(turnover, ax=ax, **kwargs)
+    # sns.distplot(turnover, ax=ax, **kwargs)
+    # sns.displot(turnover, kde=True, **kwargs)  # Creates a new figure
+    sns.histplot(turnover, ax=ax, kde=True, **kwargs)  # Add `kde=True` if you need a density estimate
     ax.set_title('Distribution of daily turnover rates')
     ax.set_xlabel('Turnover rate')
     return ax
@@ -1725,6 +1742,56 @@ def plot_monthly_returns_timeseries(returns, ax=None, **kwargs):
     return ax
 
 
+# def plot_round_trip_lifetimes(round_trips, disp_amount=16, lsize=18, ax=None):
+#     """
+#     Plots timespans and directions of a sample of round trip trades.
+#
+#     Parameters
+#     ----------
+#     round_trips : pd.DataFrame
+#         DataFrame with one row per round trip trade.
+#         - See full explanation in round_trips.extract_round_trips
+#     ax : matplotlib.Axes, optional
+#         Axes upon which to plot.
+#
+#     Returns
+#     -------
+#     ax : matplotlib.Axes
+#         The axes that were plotted on.
+#     """
+#
+#     if ax is None:
+#         ax = plt.subplot()
+#
+#     symbols_sample = round_trips.symbol.unique()
+#     np.random.seed(1)
+#     sample = np.random.choice(round_trips.symbol.unique(), replace=False,
+#                               size=min(disp_amount, len(symbols_sample)))
+#     sample_round_trips = round_trips[round_trips.symbol.isin(sample)]
+#
+#     symbol_idx = pd.Series(np.arange(len(sample)), index=sample)
+#
+#     for symbol, sym_round_trips in sample_round_trips.groupby('symbol'):
+#         for _, row in sym_round_trips.iterrows():
+#             c = 'b' if row.long else 'r'
+#             y_ix = symbol_idx[symbol] + 0.05
+#             ax.plot([row['open_dt'], row['close_dt']],
+#                     [y_ix, y_ix], color=c,
+#                     linewidth=lsize, solid_capstyle='butt')
+#
+#     ax.set_yticks(range(disp_amount))
+#     ax.set_yticklabels([utils.format_asset(s) for s in sample])
+#
+#     ax.set_ylim((-0.5, min(len(sample), disp_amount) - 0.5))
+#     blue = patches.Rectangle([0, 0], 1, 1, color='b', label='Long')
+#     red = patches.Rectangle([0, 0], 1, 1, color='r', label='Short')
+#     leg = ax.legend(handles=[blue, red], loc='lower left',
+#                     frameon=True, framealpha=0.5)
+#     leg.get_frame().set_edgecolor('black')
+#     ax.grid(False)
+#
+#     return ax
+
 def plot_round_trip_lifetimes(round_trips, disp_amount=16, lsize=18, ax=None):
     """
     Plots timespans and directions of a sample of round trip trades.
@@ -1748,7 +1815,7 @@ def plot_round_trip_lifetimes(round_trips, disp_amount=16, lsize=18, ax=None):
 
     symbols_sample = round_trips.symbol.unique()
     np.random.seed(1)
-    sample = np.random.choice(round_trips.symbol.unique(), replace=False,
+    sample = np.random.choice(symbols_sample, replace=False,
                               size=min(disp_amount, len(symbols_sample)))
     sample_round_trips = round_trips[round_trips.symbol.isin(sample)]
 
@@ -1762,10 +1829,12 @@ def plot_round_trip_lifetimes(round_trips, disp_amount=16, lsize=18, ax=None):
                     [y_ix, y_ix], color=c,
                     linewidth=lsize, solid_capstyle='butt')
 
-    ax.set_yticks(range(disp_amount))
+    # Adjust the number of y-ticks to match the number of symbols in the sample
+    num_ticks = len(sample)
+    ax.set_yticks(range(num_ticks))
     ax.set_yticklabels([utils.format_asset(s) for s in sample])
 
-    ax.set_ylim((-0.5, min(len(sample), disp_amount) - 0.5))
+    ax.set_ylim((-0.5, num_ticks - 0.5))
     blue = patches.Rectangle([0, 0], 1, 1, color='b', label='Long')
     red = patches.Rectangle([0, 0], 1, 1, color='r', label='Short')
     leg = ax.legend(handles=[blue, red], loc='lower left',

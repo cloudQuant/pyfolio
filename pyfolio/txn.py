@@ -17,6 +17,7 @@ from __future__ import division
 import pandas as pd
 import numpy as np
 
+
 def map_transaction(txn):
     """
     Maps a single transaction row to a dictionary.
@@ -203,6 +204,7 @@ def get_turnover(positions, transactions, denominator='AGB'):
     denom.index = denom.index.normalize()
     turnover = traded_value.div(denom, axis='index')
     # 增加一行代码，处理inf的值，避免画图的时候出错
-    turnover=turnover.replace([np.inf, -np.inf], np.nan)
+    turnover = turnover.replace([np.inf, -np.inf], np.nan)
     turnover = turnover.fillna(0)
+    turnover = turnover.astype('float')
     return turnover

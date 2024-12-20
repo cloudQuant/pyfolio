@@ -21,7 +21,7 @@ from scipy import stats
 
 import matplotlib.pyplot as plt
 
-import pymc3 as pm
+import pymc as pm
 
 from . import _seaborn as sns
 from empyrical import cum_returns

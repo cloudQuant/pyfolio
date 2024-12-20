@@ -16,7 +16,7 @@ from __future__ import division
 
 import warnings
 from time import time
-import os 
+import os
 import pyfolio as pf
 import empyrical as ep
 from IPython.display import display, Markdown
@@ -39,6 +39,7 @@ from . import utils
 
 try:
     from . import bayesian
+
     have_bayesian = True
 except ImportError:
     warnings.warn(
@@ -64,53 +65,53 @@ def timer(msg_body, previous_time):
 
     return current_time
 
+
 def create_full_tear_sheet_by_flask(returns,
-                           positions=None,
-                           transactions=None,
-                           market_data=None,
-                           benchmark_rets=None,
-                           slippage=None,
-                           run_flask_app=True,
-                           live_start_date=None,
-                           sector_mappings=None,
-                           bayesian=False,
-                           round_trips=False,
-                           estimate_intraday='infer',
-                           hide_positions=False,
-                           cone_std=(1.0, 1.5, 2.0),
-                           bootstrap=False,
-                           unadjusted_returns=None,
-                           style_factor_panel=None,
-                           sectors=None,
-                           caps=None,
-                           shares_held=None,
-                           volumes=None,
-                           percentile=None,
-                           turnover_denom='AGB',
-                           set_context=True,
-                           factor_returns=None,
-                           factor_loadings=None,
-                           pos_in_dollars=True,
-                           header_rows=None,
-                           factor_partitions=FACTOR_PARTITIONS):
+                                    positions=None,
+                                    transactions=None,
+                                    market_data=None,
+                                    benchmark_rets=None,
+                                    slippage=None,
+                                    run_flask_app=True,
+                                    live_start_date=None,
+                                    sector_mappings=None,
+                                    bayesian=False,
+                                    round_trips=False,
+                                    estimate_intraday='infer',
+                                    hide_positions=False,
+                                    cone_std=(1.0, 1.5, 2.0),
+                                    bootstrap=False,
+                                    unadjusted_returns=None,
+                                    style_factor_panel=None,
+                                    sectors=None,
+                                    caps=None,
+                                    shares_held=None,
+                                    volumes=None,
+                                    percentile=None,
+                                    turnover_denom='AGB',
+                                    set_context=True,
+                                    factor_returns=None,
+                                    factor_loadings=None,
+                                    pos_in_dollars=True,
+                                    header_rows=None,
+                                    factor_partitions=FACTOR_PARTITIONS):
     """
     参考creat_full_tear_sheet，用dash画出来，并在网页中打开，并保存到本地
     """
     # 在pyfolio中创建templates,static,image文件夹
-    data_root = pf.__file__.replace("__init__.py","")
-    target_templates_path = data_root+"/templates"
+    data_root = pf.__file__.replace("__init__.py", "")
+    target_templates_path = data_root + "/templates"
     if not os.path.exists(target_templates_path):
         os.makedirs(target_templates_path)
-    target_static_path = data_root+"/static"
+    target_static_path = data_root + "/static"
     if not os.path.exists(target_static_path):
         os.makedirs(target_static_path)
-    target_image_path = target_static_path+"/image"
+    target_image_path = target_static_path + "/image"
     if not os.path.exists(target_image_path):
         os.makedirs(target_image_path)
-        
-        
-    if (unadjusted_returns is None) and (slippage is not None) and\
-       (transactions is not None):
+
+    if (unadjusted_returns is None) and (slippage is not None) and \
+            (transactions is not None):
         unadjusted_returns = returns.copy()
         returns = txn.adjust_returns_for_slippage(returns, positions,
                                                   transactions, slippage)
@@ -132,30 +133,30 @@ def create_full_tear_sheet_by_flask(returns,
         return_fig=True)
 
     interesting_times_tear_sheet = create_interesting_times_tear_sheet(returns,
-                                        benchmark_rets=benchmark_rets,
-                                        set_context=set_context,
-                                        return_fig=True)
+                                                                       benchmark_rets=benchmark_rets,
+                                                                       set_context=set_context,
+                                                                       return_fig=True)
     position_tear_sheet = None
-    txn_tear_sheet = None 
+    txn_tear_sheet = None
     round_trip_tear_sheet = None
     capacity_tear_sheet = None
     risk_tear_sheet = None
-    perf_attrib_tear_sheet = None 
-    bayesian_tear_sheet = None   
+    perf_attrib_tear_sheet = None
+    bayesian_tear_sheet = None
     if positions is not None:
         position_tear_sheet = create_position_tear_sheet(returns, positions,
-                                   hide_positions=hide_positions,
-                                   set_context=set_context,
-                                   sector_mappings=sector_mappings,
-                                   estimate_intraday=False,
-                                   return_fig=True)
+                                                         hide_positions=hide_positions,
+                                                         set_context=set_context,
+                                                         sector_mappings=sector_mappings,
+                                                         estimate_intraday=False,
+                                                         return_fig=True)
 
         if transactions is not None:
             txn_tear_sheet = create_txn_tear_sheet(returns, positions, transactions,
-                                  unadjusted_returns=unadjusted_returns,
-                                  estimate_intraday=False,
-                                  set_context=set_context,
-                                  return_fig=True)
+                                                   unadjusted_returns=unadjusted_returns,
+                                                   estimate_intraday=False,
+                                                   set_context=set_context,
+                                                   return_fig=True)
             if round_trips:
                 round_trip_tear_sheet = create_round_trip_tear_sheet(
                     returns=returns,
@@ -167,49 +168,49 @@ def create_full_tear_sheet_by_flask(returns,
 
             if market_data is not None:
                 capacity_tear_sheet = create_capacity_tear_sheet(returns, positions, transactions,
-                                           market_data,
-                                           liquidation_daily_vol_limit=0.2,
-                                           last_n_days=125,
-                                           estimate_intraday=False,
-                                            return_fig=True)
+                                                                 market_data,
+                                                                 liquidation_daily_vol_limit=0.2,
+                                                                 last_n_days=125,
+                                                                 estimate_intraday=False,
+                                                                 return_fig=True)
 
         if style_factor_panel is not None:
             risk_tear_sheet = create_risk_tear_sheet(positions, style_factor_panel, sectors,
-                                   caps, shares_held, volumes, percentile,
-                                            return_fig=True)
+                                                     caps, shares_held, volumes, percentile,
+                                                     return_fig=True)
 
         if factor_returns is not None and factor_loadings is not None:
             perf_attrib_tear_sheet = create_perf_attrib_tear_sheet(returns, positions, factor_returns,
-                                          factor_loadings, transactions,
-                                          pos_in_dollars=pos_in_dollars,
-                                          factor_partitions=factor_partitions,
-                                            return_fig=True)
+                                                                   factor_loadings, transactions,
+                                                                   pos_in_dollars=pos_in_dollars,
+                                                                   factor_partitions=factor_partitions,
+                                                                   return_fig=True)
 
     if bayesian:
         bayesian_tear_sheet = create_bayesian_tear_sheet(returns,
-                                   live_start_date=live_start_date,
-                                   benchmark_rets=benchmark_rets,
-                                   set_context=set_context,
-                                            return_fig=True)
-    content = {"returns_tear_sheet":returns_tear_sheet , 
-               "interesting_times_tear_sheet":interesting_times_tear_sheet ,
-               "position_tear_sheet":position_tear_sheet,
-               "txn_tear_sheet":txn_tear_sheet,
-               "round_trip_tear_sheet":round_trip_tear_sheet,
-               "capacity_tear_sheet":capacity_tear_sheet,
-               "risk_tear_sheet":risk_tear_sheet,
-               "perf_attrib_tear_sheet":perf_attrib_tear_sheet,
-               "bayesian_tear_sheet":bayesian_tear_sheet}
-     
-    
-    for name,fig in content.items():
+                                                         live_start_date=live_start_date,
+                                                         benchmark_rets=benchmark_rets,
+                                                         set_context=set_context,
+                                                         return_fig=True)
+    content = {"returns_tear_sheet": returns_tear_sheet,
+               "interesting_times_tear_sheet": interesting_times_tear_sheet,
+               "position_tear_sheet": position_tear_sheet,
+               "txn_tear_sheet": txn_tear_sheet,
+               "round_trip_tear_sheet": round_trip_tear_sheet,
+               "capacity_tear_sheet": capacity_tear_sheet,
+               "risk_tear_sheet": risk_tear_sheet,
+               "perf_attrib_tear_sheet": perf_attrib_tear_sheet,
+               "bayesian_tear_sheet": bayesian_tear_sheet}
+
+    for name, fig in content.items():
         if fig is not None:
             print(f"{name}保存在文件夹{target_image_path}")
-            fig.savefig(target_image_path+"/"+name+".png")
-        
+            fig.savefig(target_image_path + "/" + name + ".png")
+
     if run_flask_app:
         from .flask_app import app
         app.run(port="2021")
+
 
 def create_full_tear_sheet(returns,
                            positions=None,
@@ -334,10 +335,38 @@ def create_full_tear_sheet(returns,
         dict specifying how factors should be separated in perf attrib
         factor returns and risk exposures plots
         - See create_perf_attrib_tear_sheet().
+        :param factor_partitions:
+        :param header_rows:
+        :param pos_in_dollars:
+        :param factor_loadings:
+        :param factor_returns:
+        :param set_context:
+        :param turnover_denom:
+        :param percentile:
+        :param volumes:
+        :param shares_held:
+        :param caps:
+        :param sectors:
+        :param style_factor_panel:
+        :param unadjusted_returns:
+        :param bootstrap:
+        :param cone_std:
+        :param hide_positions:
+        :param estimate_intraday:
+        :param round_trips:
+        :param bayesian:
+        :param sector_mappings:
+        :param live_start_date:
+        :param slippage:
+        :param market_data:
+        :param transactions:
+        :param positions:
+        :param returns:
+        :param benchmark_rets:
     """
 
-    if (unadjusted_returns is None) and (slippage is not None) and\
-       (transactions is not None):
+    if (unadjusted_returns is None) and (slippage is not None) and \
+            (transactions is not None):
         unadjusted_returns = returns.copy()
         returns = txn.adjust_returns_for_slippage(returns, positions,
                                                   transactions, slippage)
@@ -1020,13 +1049,17 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
     plotting.plot_prob_profit_trade(trades, ax=ax_prob_profit_trade)
 
     trade_holding_times = [x.days for x in trades['duration']]
-    sns.distplot(trade_holding_times, kde=False, ax=ax_holding_time)
+    # sns.distplot(trade_holding_times, kde=False, ax=ax_holding_time)
+    sns.histplot(trade_holding_times, kde=False, ax=ax_holding_time)
     ax_holding_time.set(xlabel='Holding time in days')
 
-    sns.distplot(trades.pnl, kde=False, ax=ax_pnl_per_round_trip_dollars)
+    # sns.distplot(trades.pnl, kde=False, ax=ax_pnl_per_round_trip_dollars)
+    sns.histplot(trades.pnl, kde=False, ax=ax_pnl_per_round_trip_dollars)
     ax_pnl_per_round_trip_dollars.set(xlabel='PnL per round-trip trade in $')
 
-    sns.distplot(trades.returns.dropna() * 100, kde=False,
+    # sns.distplot(trades.returns.dropna() * 100, kde=False,
+    #              ax=ax_pnl_per_round_trip_pct)
+    sns.histplot(trades.returns.dropna() * 100, kde=False,
                  ax=ax_pnl_per_round_trip_pct)
     ax_pnl_per_round_trip_pct.set(
         xlabel='Round-trip returns in %')
@@ -1342,7 +1375,7 @@ def create_bayesian_tear_sheet(returns, benchmark_rets=None,
 
     # Plot Bayesian VaRs
     week_pred = (
-        np.cumprod(ppc_t[:, :5] + 1, 1) - 1)[:, -1]
+                        np.cumprod(ppc_t[:, :5] + 1, 1) - 1)[:, -1]
     p5 = scipy.stats.scoreatpercentile(week_pred, 5)
     sns.distplot(week_pred,
                  ax=ax_ret_pred_week
@@ -1370,7 +1403,7 @@ def create_bayesian_tear_sheet(returns, benchmark_rets=None,
         row += 1
         ax_alpha = plt.subplot(gs[row, 0])
         ax_beta = plt.subplot(gs[row, 1])
-        sns.distplot((1 + trace_alpha_beta['alpha'][100:])**252 - 1,
+        sns.distplot((1 + trace_alpha_beta['alpha'][100:]) ** 252 - 1,
                      ax=ax_alpha)
         sns.distplot(trace_alpha_beta['beta'][100:], ax=ax_beta)
         ax_alpha.set_xlabel('Annual Alpha')
@@ -1421,7 +1454,7 @@ def create_risk_tear_sheet(positions,
                            transactions=None,
                            estimate_intraday='infer',
                            return_fig=False):
-    '''
+    """
     Creates risk tear sheet: computes and plots style factor exposures, sector
     exposures, market cap exposures and volume exposures.
 
@@ -1491,13 +1524,13 @@ def create_risk_tear_sheet(positions,
     percentile : float
         Percentile to use when computing and plotting volume exposures.
         - Defaults to 10th percentile
-    '''
+    """
 
     positions = utils.check_intraday(estimate_intraday, returns,
                                      positions, transactions)
 
     idx = positions.index & style_factor_panel.iloc[0].index & sectors.index \
-        & caps.index & shares_held.index & volumes.index
+          & caps.index & shares_held.index & volumes.index
     positions = positions.loc[idx]
 
     vertical_sections = 0
@@ -1506,7 +1539,7 @@ def create_risk_tear_sheet(positions,
         new_style_dict = {}
         for item in style_factor_panel.items:
             new_style_dict.update({item:
-                                   style_factor_panel.loc[item].loc[idx]})
+                                       style_factor_panel.loc[item].loc[idx]})
         style_factor_panel = pd.Panel()
         style_factor_panel = style_factor_panel.from_dict(new_style_dict)
     if sectors is not None:
@@ -1516,7 +1549,7 @@ def create_risk_tear_sheet(positions,
         vertical_sections += 4
         caps = caps.loc[idx]
     if (shares_held is not None) & (volumes is not None) \
-                                 & (percentile is not None):
+            & (percentile is not None):
         vertical_sections += 3
         shares_held = shares_held.loc[idx]
         volumes = volumes.loc[idx]
@@ -1534,14 +1567,14 @@ def create_risk_tear_sheet(positions,
             style_axes.append(plt.subplot(gs[i, :], sharex=style_axes[0]))
 
         j = 0
-        for name, df in style_factor_panel.iteritems():
+        for name, df in style_factor_panel.items():
             sfe = risk.compute_style_factor_exposures(positions, df)
             risk.plot_style_factor_exposures(sfe, name, style_axes[j])
             j += 1
 
     if sectors is not None:
         i += 1
-        ax_sector_longshort = plt.subplot(gs[i:i+2, :], sharex=style_axes[0])
+        ax_sector_longshort = plt.subplot(gs[i:i + 2, :], sharex=style_axes[0])
         i += 2
         ax_sector_gross = plt.subplot(gs[i, :], sharex=style_axes[0])
         i += 1
@@ -1555,7 +1588,7 @@ def create_risk_tear_sheet(positions,
 
     if caps is not None:
         i += 1
-        ax_cap_longshort = plt.subplot(gs[i:i+2, :], sharex=style_axes[0])
+        ax_cap_longshort = plt.subplot(gs[i:i + 2, :], sharex=style_axes[0])
         i += 2
         ax_cap_gross = plt.subplot(gs[i, :], sharex=style_axes[0])
         i += 1
@@ -1569,7 +1602,7 @@ def create_risk_tear_sheet(positions,
 
     if volumes is not None:
         i += 1
-        ax_vol_longshort = plt.subplot(gs[i:i+2, :], sharex=style_axes[0])
+        ax_vol_longshort = plt.subplot(gs[i:i + 2, :], sharex=style_axes[0])
         i += 2
         ax_vol_gross = plt.subplot(gs[i, :], sharex=style_axes[0])
         longed_threshold, shorted_threshold, grossed_threshold \
@@ -1663,8 +1696,7 @@ def create_perf_attrib_tear_sheet(returns,
 
     if factor_partitions is not None:
 
-        for factor_type, partitions in factor_partitions.iteritems():
-
+        for factor_type, partitions in factor_partitions.items():
             columns_to_select = perf_attrib_data.columns.intersection(
                 partitions
             )
@@ -1678,11 +1710,10 @@ def create_perf_attrib_tear_sheet(returns,
             )
             current_section += 1
 
-        for factor_type, partitions in factor_partitions.iteritems():
-
+        for factor_type, partitions in factor_partitions.items():
             perf_attrib.plot_risk_exposures(
                 portfolio_exposures[portfolio_exposures.columns
-                                    .intersection(partitions)],
+                .intersection(partitions)],
                 ax=plt.subplot(gs[current_section]),
                 title='Daily {} factor exposures'.format(factor_type)
             )

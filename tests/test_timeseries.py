@@ -2,17 +2,16 @@ from __future__ import division
 
 import os
 from unittest import TestCase
-from nose_parameterized import parameterized
+from parameterized import parameterized
 from numpy.testing import assert_allclose, assert_almost_equal
-from pandas.util.testing import assert_series_equal
+from pandas.testing import assert_frame_equal, assert_series_equal
 
 import numpy as np
 import pandas as pd
 
-from .. import timeseries
+from pyfolio import timeseries
 from pyfolio.utils import to_utc, to_series
 import gzip
-
 
 DECIMAL_PLACES = 8
 
@@ -60,7 +59,7 @@ class TestDrawdown(TestCase):
             first_expected_recovery, first_net_drawdown,
             second_expected_peak, second_expected_valley,
             second_expected_recovery, second_net_drawdown
-            ):
+    ):
 
         rets = px.pct_change()
 
@@ -109,8 +108,8 @@ class TestDrawdown(TestCase):
         # Need to use isnull because the result can be NaN, NaT, etc.
         self.assertTrue(
             pd.isnull(peak)) if expected_peak is None else self.assertEqual(
-                peak,
-                expected_peak)
+            peak,
+            expected_peak)
         self.assertTrue(
             pd.isnull(valley)) if expected_valley is None else \
             self.assertEqual(
@@ -153,18 +152,18 @@ class TestDrawdown(TestCase):
             pd.isnull(
                 drawdowns.loc[0, 'Valley date'])) \
             if expected_valley is None else self.assertEqual(
-                drawdowns.loc[0, 'Valley date'],
-                expected_valley)
+            drawdowns.loc[0, 'Valley date'],
+            expected_valley)
         self.assertTrue(
             pd.isnull(
                 drawdowns.loc[0, 'Recovery date'])) \
             if expected_recovery is None else self.assertEqual(
-                drawdowns.loc[0, 'Recovery date'],
-                expected_recovery)
+            drawdowns.loc[0, 'Recovery date'],
+            expected_recovery)
         self.assertTrue(
             pd.isnull(drawdowns.loc[0, 'Duration'])) \
             if expected_duration is None else self.assertEqual(
-                drawdowns.loc[0, 'Duration'], expected_duration)
+            drawdowns.loc[0, 'Duration'], expected_duration)
 
     def test_drawdown_overlaps(self):
         rand = np.random.RandomState(1337)
@@ -182,7 +181,7 @@ class TestDrawdown(TestCase):
                          spy_drawdowns['Peak date'].shift(-1)))[:-1]
         self.assertGreater(len(pairs), 0)
         for recovery, peak in pairs:
-            if recovery != pd.NaT:
+            if not pd.isnull(recovery):
                 self.assertLessEqual(recovery, peak)
 
     @parameterized.expand([
@@ -206,10 +205,10 @@ class TestVariance(TestCase):
     @parameterized.expand([
         (1e7, 0.5, 1, 1, -10000000.0)
     ])
-    def test_var_cov_var_normal(self, P, c, mu, sigma, expected):
+    def test_var_cov_var_normal(self, p, c, mu, sigma, expected):
         self.assertEqual(
             timeseries.var_cov_var_normal(
-                P,
+                p,
                 c,
                 mu,
                 sigma),
@@ -248,7 +247,7 @@ class TestStats(TestCase):
         pd.date_range(
             '2000-1-31',
             periods=500,
-            freq='M'))
+            freq='ME'))
 
     simple_benchmark = pd.Series(
         [0.03] * 4 + [0] * 496,
@@ -264,11 +263,18 @@ class TestStats(TestCase):
     dt_2 = pd.date_range('2000-1-3', periods=8, freq='D')
 
     @parameterized.expand([
-        (simple_rets[:5], 2, '[nan, inf, inf, 11.224972160321828, inf]')
+        (simple_rets[:5], 2, [np.nan, np.inf, np.inf, 11.224972160321, np.nan])
     ])
     def test_sharpe_2(self, returns, rolling_sharpe_window, expected):
-        self.assertEqual(str(timeseries.rolling_sharpe(
-            returns, rolling_sharpe_window).values.tolist()), expected)
+        print("returns = ", returns)
+        result = timeseries.rolling_sharpe(returns,
+                                           rolling_sharpe_window).values
+        expected = np.asarray(expected)
+        print("result = ", result)
+        print("expected = ", expected)
+        np.testing.assert_array_almost_equal(
+            result,
+            expected)
 
     @parameterized.expand([
         (simple_rets[:5], simple_benchmark, 2, 0)
@@ -294,9 +300,10 @@ class TestCone(TestCase):
         rets = pd.Series(np.random.normal(mu, sigma, 10000))
 
         midline = np.cumprod(1 + (rets.mean() * np.ones(days_forward)))
-        stdev = rets.std() * midline * np.sqrt(np.arange(days_forward)+1)
+        stdev = rets.std() * midline * np.sqrt(np.arange(days_forward) + 1)
 
-        normal_cone = pd.DataFrame(columns=pd.Float64Index([]))
+        # normal_cone = pd.DataFrame(columns=pd.Float64Index([]))
+        normal_cone = pd.DataFrame(columns=pd.Index([], dtype="float64"))
         for s in cone_stdevs:
             normal_cone[s] = midline + s * stdev
             normal_cone[-s] = midline - s * stdev
@@ -305,7 +312,7 @@ class TestCone(TestCase):
             rets, days_forward, cone_stdevs, starting_value=1,
             random_seed=random_seed, num_samples=10000)
 
-        for col, vals in bootstrap_cone.iteritems():
+        for col, vals in bootstrap_cone.items():
             expected = normal_cone[col].values
             assert_allclose(vals.values, expected, rtol=.005)
 

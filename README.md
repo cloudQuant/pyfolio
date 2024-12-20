@@ -2,9 +2,15 @@
 
 #### 介绍
 
-pyfolio原本是zipline的绩效分析模块，由大名鼎鼎的量化平台quantopian开发并开源出来。但是，quantopian倒闭之后，pyfolio慢慢缺乏维护，已经很久没有更新了，在使用过程中经常会碰到各种小bug，另一个原因是pyfolio做绩效分析的效率并不高，数据非常多的时候处理速度会比较慢，还有pyfolio对notebook支持比较好，对于其他的开发环境支持较弱，本模块尝试在pyfolio的基础上，结合其他绩效分析模块的优点，做出一个更好用的绩效分析模块，供大家使用。
+pyfolio原本是zipline的绩效分析模块，由大名鼎鼎的量化平台quantopian开发并开源出来。
+但是，quantopian倒闭之后，pyfolio慢慢缺乏维护，已经很久没有更新了，
+在使用过程中经常会碰到各种小bug，另一个原因是pyfolio做绩效分析的效率并不高，
+数据非常多的时候处理速度会比较慢，还有pyfolio对notebook支持比较好，
+对于其他的开发环境支持较弱，本模块尝试在pyfolio的基础上，结合其他绩效分析模块的优点，
+做出一个更好用的绩效分析模块，供大家使用。
 
-本模块主要基于python语言，使用numpy、pandas、scipy、plotly、dash、flask和pyqt6等对原来的pyfolio进行改进优化。
+主要基于python语言，使用numpy、pandas、scipy、plotly、dash、flask和
+pyqt6等对原来的pyfolio进行改进优化。
 
 
 #### 安装教程
@@ -13,13 +19,15 @@ pyfolio原本是zipline的绩效分析模块，由大名鼎鼎的量化平台qua
 安装需要进入python包的工作目录，然后git clone下载pyfolio文件
 
 ```
-
-# 如果python包在C:\ProgramData\Anaconda3\Lib\site-packages，则
-cd C:\ProgramData\Anaconda3\Lib\site-packages
+# 克隆项目
 git clone https://gitee.com/yunjinqi/pyfolio.git
-
+# 安装依赖包
+pip install -r ./pyfolio/requirements.txt
+# 安装pyfolio
+pip install -U ./pyfolio
+# 运行测试
+pytest ./pyfolio/tests/ -n 4
 ```
-
 
 #### 使用说明
 

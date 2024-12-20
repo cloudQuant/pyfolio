@@ -26,6 +26,7 @@ from IPython.display import display, HTML
 import os 
 import pyfolio as pf 
 import empyrical.utils
+from pandas.testing import assert_frame_equal, assert_series_equal
 
 from . import pos
 from . import txn
@@ -54,6 +55,146 @@ COLORS = ['#e6194b', '#3cb44b', '#ffe119', '#0082c8', '#f58231',
           '#911eb4', '#46f0f0', '#f032e6', '#d2f53c', '#fabebe',
           '#008080', '#e6beff', '#aa6e28', '#800000', '#aaffc3',
           '#808000', '#ffd8b1', '#000080', '#808080']
+
+
+def analyze_dataframe_differences(daily_txn, expected):
+    """
+    Analyze the differences between two DataFrames, `daily_txn` and `expected`.
+
+    Parameters
+    ----------
+    daily_txn : pd.DataFrame
+        The first DataFrame to compare.
+    expected : pd.DataFrame
+        The second DataFrame to compare.
+
+    Returns
+    -------
+    None
+        Prints the differences between the two DataFrames.
+    """
+    print("Analyzing differences between daily_txn and expected...")
+
+    # Check if the DataFrames are equal
+    try:
+        assert_frame_equal(daily_txn, expected)
+        print("The DataFrames are identical.")
+    except AssertionError as e:
+        print("The DataFrames are not identical. Details below:")
+        print(e)
+
+    # Compare index
+    print("\nComparing Index:")
+    if not daily_txn.index.equals(expected.index):
+        print("Indices are different:")
+        print("daily_txn index:", daily_txn.index)
+        print("expected index:", expected.index)
+        print("daily_txn index freq:", daily_txn.index.freq)
+        print("expected index freq:", expected.index.freq)
+    else:
+        print("Indices are identical.")
+
+    # Compare columns
+    print("\nComparing Columns:")
+    if not daily_txn.columns.equals(expected.columns):
+        print("Columns are different:")
+        print("daily_txn columns:", daily_txn.columns)
+        print("expected columns:", expected.columns)
+    else:
+        print("Columns are identical.")
+
+    # Compare dtypes
+    print("\nComparing Dtypes:")
+    if not daily_txn.dtypes.equals(expected.dtypes):
+        print("Dtypes are different:")
+        print("daily_txn dtypes:", daily_txn.dtypes)
+        print("expected dtypes:", expected.dtypes)
+    else:
+        print("Dtypes are identical.")
+
+    # Compare values
+    print("\nComparing Values:")
+    if not daily_txn.equals(expected):
+        print("Values are different:")
+        print("Differences in daily_txn vs expected:")
+        print(pd.concat([daily_txn, expected], axis=1, keys=['daily_txn', 'expected']).swaplevel(axis=1).sort_index(axis=1))
+    else:
+        print("Values are identical.")
+
+    # Compare metadata (e.g., index frequency)
+    print("\nComparing Metadata:")
+    if daily_txn.index.freq != expected.index.freq:
+        print("Index frequencies are different:")
+        print("daily_txn index freq:", daily_txn.index.freq)
+        print("expected index freq:", expected.index.freq)
+    else:
+        print("Index frequencies are identical.")
+
+
+def analyze_series_differences(series1, series2):
+    """
+    Analyze the differences between two Series, `series1` and `series2`.
+
+    Parameters
+    ----------
+    series1 : pd.Series
+        The first Series to compare.
+    series2 : pd.Series
+        The second Series to compare.
+
+    Returns
+    -------
+    None
+        Prints the differences between the two Series.
+    """
+    print("Analyzing differences between series1 and series2...")
+
+    # Check if the Series are equal
+    try:
+        assert_series_equal(series1, series2)
+        print("The Series are identical.")
+    except AssertionError as e:
+        print("The Series are not identical. Details below:")
+        print(e)
+
+    # Compare index
+    print("\nComparing Index:")
+    if not series1.index.equals(series2.index):
+        print("Indices are different:")
+        print("series1 index:", series1.index)
+        print("series2 index:", series2.index)
+        print("series1 index freq:", series1.index.freq)
+        print("series2 index freq:", series2.index.freq)
+    else:
+        print("Indices are identical.")
+
+    # Compare dtypes
+    print("\nComparing Dtypes:")
+    if series1.dtype != series2.dtype:
+        print("Dtypes are different:")
+        print("series1 dtype:", series1.dtype)
+        print("series2 dtype:", series2.dtype)
+    else:
+        print("Dtypes are identical.")
+
+    # Compare values
+    print("\nComparing Values:")
+    if not series1.equals(series2):
+        print("Values are different:")
+        print("Differences in series1 vs series2:")
+        differences = pd.concat([series1, series2], axis=1, keys=['series1', 'series2']).swaplevel(axis=1).sort_index(axis=1)
+        print(differences[differences['series1'] != differences['series2']])
+    else:
+        print("Values are identical.")
+
+    # Compare metadata (e.g., index frequency)
+    print("\nComparing Metadata:")
+    if series1.index.freq != series2.index.freq:
+        print("Index frequencies are different:")
+        print("series1 index freq:", series1.index.freq)
+        print("series2 index freq:", series2.index.freq)
+    else:
+        print("Index frequencies are identical.")
 
 
 def one_dec_places(x, pos):
@@ -154,7 +295,7 @@ def extract_rets_pos_txn_from_zipline(backtest):
         backtest.index = backtest.index.tz_localize('UTC')
     returns = backtest.returns
     raw_positions = []
-    for dt, pos_row in backtest.positions.iteritems():
+    for dt, pos_row in backtest.positions.items():
         df = pd.DataFrame(pos_row)
         df.index = [dt] * len(df)
         raw_positions.append(df)
@@ -368,8 +509,10 @@ def estimate_intraday(returns, positions, transactions, EOD_hour=23):
     # 出现bug，疑似使用旧版本的API
     # condition = (txn_val['exposure'] == txn_val.groupby(
     #     pd.TimeGrouper('24H'))['exposure'].transform(max))
+    # condition = (txn_val['exposure'] == txn_val.groupby(
+    #     pd.Grouper(freq='24h'))['exposure'].transform(max))
     condition = (txn_val['exposure'] == txn_val.groupby(
-        pd.Grouper(freq='24h'))['exposure'].transform(max))
+        pd.Grouper(freq='24h'))['exposure'].transform('max'))
     txn_val = txn_val[condition].drop('exposure', axis=1)
 
     # Compute cash delta
@@ -377,8 +520,10 @@ def estimate_intraday(returns, positions, transactions, EOD_hour=23):
 
     # Shift EOD positions to positions at start of next trading day
     positions_shifted = positions.copy().shift(1).fillna(0)
-    starting_capital = positions.iloc[0].sum() / (1 + returns[0])
-    positions_shifted.cash[0] = starting_capital
+    # starting_capital = positions.iloc[0].sum() / (1 + returns[0])
+    starting_capital = positions.iloc[0].sum() / (1 + returns.iloc[0])
+    # positions_shifted.cash[0] = starting_capital
+    positions_shifted.iloc[0, positions_shifted.columns.get_loc('cash')] = starting_capital
 
     # Format and add start positions to intraday position changes
     txn_val.index = txn_val.index.normalize()

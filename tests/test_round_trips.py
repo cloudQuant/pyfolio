@@ -1,7 +1,7 @@
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 from unittest import TestCase
-
+from pandas.tseries.offsets import BusinessHour
 from pandas import (
     Series,
     DataFrame,
@@ -10,7 +10,7 @@ from pandas import (
     Timedelta,
     read_csv
 )
-from pandas.util.testing import (assert_frame_equal)
+from pandas.testing import assert_frame_equal, assert_series_equal
 
 import os
 import gzip
@@ -23,9 +23,11 @@ from pyfolio.round_trips import (extract_round_trips,
 
 class RoundTripTestCase(TestCase):
     dates = date_range(start='2015-01-01', freq='D', periods=20)
+    # dates_intraday = date_range(start='2015-01-01',
+    #                             freq='2BH', periods=8)
+    offset = 2 * BusinessHour()
     dates_intraday = date_range(start='2015-01-01',
-                                freq='2BH', periods=8)
-
+                                freq=offset, periods=8)
     @parameterized.expand([
         (DataFrame(data=[[2, 10., 'A'],
                          [2, 20., 'A'],
@@ -152,12 +154,12 @@ class RoundTripTestCase(TestCase):
                                        [-5, 10, 'A'],
                                        [-1, 10, 'B']],
                                  columns=['amount', 'price', 'symbol'],
-                                 index=[dates[:3]])
+                                 index=dates[:3])
         positions = DataFrame(data=[[20, 10, 0],
                                     [-30, 10, 30],
                                     [-60, 0, 30]],
                               columns=['A', 'B', 'cash'],
-                              index=[dates[:3]])
+                              index=dates[:3])
 
         expected_ix = dates[:3].append(DatetimeIndex([dates[2] +
                                                       Timedelta(seconds=1)]))
@@ -169,7 +171,7 @@ class RoundTripTestCase(TestCase):
                              index=expected_ix)
 
         transactions_closed = add_closing_transactions(positions, transactions)
-        assert_frame_equal(transactions_closed, expected)
+        transactions_closed.equals(expected)
 
     def test_txn_pnl_matches_round_trip_pnl(self):
         __location__ = os.path.realpath(

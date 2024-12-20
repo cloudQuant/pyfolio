@@ -27,12 +27,12 @@ PNL_STATS = OrderedDict(
      ('Gross profit', lambda x: x[x > 0].sum()),
      ('Gross loss', lambda x: x[x < 0].sum()),
      ('Profit factor', lambda x: x[x > 0].sum() / x[x < 0].abs().sum()
-      if x[x < 0].abs().sum() != 0 else np.nan),
+     if x[x < 0].abs().sum() != 0 else np.nan),
      ('Avg. trade net profit', 'mean'),
      ('Avg. winning trade', lambda x: x[x > 0].mean()),
      ('Avg. losing trade', lambda x: x[x < 0].mean()),
      ('Ratio Avg. Win:Avg. Loss', lambda x: x[x > 0].mean() /
-      x[x < 0].abs().mean() if x[x < 0].abs().mean() != 0 else np.nan),
+                                            x[x < 0].abs().mean() if x[x < 0].abs().mean() != 0 else np.nan),
      ('Largest winning trade', 'max'),
      ('Largest losing trade', 'min'),
      ])
@@ -73,22 +73,66 @@ DURATION_STATS = OrderedDict(
      ])
 
 
+# def agg_all_long_short(round_trips, col, stats_dict):
+#     # Aggregating for all trades
+#     print("stats_dict = ", stats_dict)
+#     stats_all = (round_trips
+#                  .assign(ones=1)
+#                  .groupby('ones')[col])
+#     stats_all = stats_all.agg(stats_dict)
+#     stats_all = stats_all.T.rename(columns={1.0: 'All trades'})
+#
+#     # Aggregating for long and short trades
+#     # Use `rename(columns=...)` instead of `rename_axis`
+#     stats_long_short = (round_trips
+#                         .groupby('long')[col])
+#     stats_long_short = stats_long_short.agg(stats_dict)
+#     stats_long_short = stats_long_short.T.rename(columns={False: 'Short trades', True: 'Long trades'})
+#
+#     # Join the two results
+#     return stats_all.join(stats_long_short)
+
 def agg_all_long_short(round_trips, col, stats_dict):
+    # Separate custom functions from built-in functions
+    custom_funcs = {k: v for k, v in stats_dict.items() if callable(v)}
+    built_in_funcs = [v for k, v in stats_dict.items() if not callable(v)]
+
+    # Aggregating for all trades
     stats_all = (round_trips
                  .assign(ones=1)
-                 .groupby('ones')[col]
-                 .agg(stats_dict)
-                 .T
-                 .rename_axis({1.0: 'All trades'},
-                              axis='columns'))
-    stats_long_short = (round_trips
-                        .groupby('long')[col]
-                        .agg(stats_dict)
-                        .T
-                        .rename_axis({False: 'Short trades',
-                                      True: 'Long trades'},
-                                     axis='columns'))
+                 .groupby('ones')[col])
 
+    # Apply custom functions manually
+    stats_all_custom = {}
+    for func_name, func in custom_funcs.items():
+        stats_all_custom[func_name] = stats_all.apply(func)
+    stats_all_custom = pd.DataFrame(stats_all_custom)
+
+    # Apply built-in functions
+    stats_all_built_in = stats_all.agg(built_in_funcs)
+
+    # Combine results
+    stats_all = pd.concat([stats_all_custom, stats_all_built_in], axis=1)
+    stats_all = stats_all.T.rename(columns={1.0: 'All trades'})
+
+    # Aggregating for long and short trades
+    stats_long_short = (round_trips
+                        .groupby('long')[col])
+
+    # Apply custom functions manually
+    stats_long_short_custom = {}
+    for func_name, func in custom_funcs.items():
+        stats_long_short_custom[func_name] = stats_long_short.apply(func)
+    stats_long_short_custom = pd.DataFrame(stats_long_short_custom)
+
+    # Apply built-in functions
+    stats_long_short_built_in = stats_long_short.agg(built_in_funcs)
+
+    # Combine results
+    stats_long_short = pd.concat([stats_long_short_custom, stats_long_short_built_in], axis=1)
+    stats_long_short = stats_long_short.T.rename(columns={False: 'Short trades', True: 'Long trades'})
+
+    # Join the two results
     return stats_all.join(stats_long_short)
 
 
@@ -112,6 +156,7 @@ def _groupby_consecutive(txn, max_delta=pd.Timedelta('8h')):
     transactions : pd.DataFrame
 
     """
+
     def vwap(transaction):
         if transaction.amount.sum() == 0:
             warnings.warn('Zero transacted shares, setting vwap to nan.')
@@ -123,18 +168,20 @@ def _groupby_consecutive(txn, max_delta=pd.Timedelta('8h')):
     for sym, t in txn.groupby('symbol'):
         t = t.sort_index()
         t.index.name = 'dt'
+        t.index = pd.to_datetime(t.index)
         t = t.reset_index()
 
         t['order_sign'] = t.amount > 0
         t['block_dir'] = (t.order_sign.shift(
             1) != t.order_sign).astype(int).cumsum()
-        t['block_time'] = ((t.dt.sub(t.dt.shift(1))) >
-                           max_delta).astype(int).cumsum()
-        grouped_price = (t.groupby(('block_dir',
-                                   'block_time'))
-                          .apply(vwap))
+        t['block_time'] = ((t.dt - t.dt.shift(1)) > max_delta).astype(int).cumsum()
+        # grouped_price = (t.groupby(('block_dir',
+        #                            'block_time'))
+        #                   .apply(vwap))
+        # grouped_price = t.groupby(['block_dir', 'block_time']).apply(vwap)
+        grouped_price = t.groupby(['block_dir', 'block_time'])[['amount', 'price']].apply(vwap)
         grouped_price.name = 'price'
-        grouped_rest = t.groupby(('block_dir', 'block_time')).agg({
+        grouped_rest = t.groupby(['block_dir', 'block_time']).agg({
             'amount': 'sum',
             'symbol': 'first',
             'dt': 'first'})
@@ -205,8 +252,7 @@ def extract_round_trips(transactions,
         trans_sym = trans_sym.sort_index()
         price_stack = deque()
         dt_stack = deque()
-        trans_sym['signed_price'] = trans_sym.price * \
-            np.sign(trans_sym.amount)
+        trans_sym['signed_price'] = trans_sym.price * np.sign(trans_sym.amount)
         trans_sym['abs_amount'] = trans_sym.amount.abs().astype(int)
         for dt, t in trans_sym.iterrows():
             if t.price < 0:
@@ -216,7 +262,7 @@ def extract_round_trips(transactions,
 
             indiv_prices = [t.signed_price] * t.abs_amount
             if (len(price_stack) == 0) or \
-               (copysign(1, price_stack[-1]) == copysign(1, t.amount)):
+                    (copysign(1, price_stack[-1]) == copysign(1, t.amount)):
                 price_stack.extend(indiv_prices)
                 dt_stack.extend([dt] * len(indiv_prices))
             else:
@@ -227,7 +273,7 @@ def extract_round_trips(transactions,
 
                 for price in indiv_prices:
                     if len(price_stack) != 0 and \
-                       (copysign(1, price_stack[-1]) != copysign(1, price)):
+                            (copysign(1, price_stack[-1]) != copysign(1, price)):
                         # Retrieve first dt, stock-price pair from
                         # stack
                         prev_price = price_stack.popleft()
@@ -257,13 +303,16 @@ def extract_round_trips(transactions,
     if portfolio_value is not None:
         # Need to normalize so that we can join
         pv = pd.DataFrame(portfolio_value,
-                          columns=['portfolio_value'])\
+                          columns=['portfolio_value']) \
             .assign(date=portfolio_value.index)
 
         roundtrips['date'] = roundtrips.close_dt.apply(lambda x:
                                                        x.replace(hour=0,
                                                                  minute=0,
                                                                  second=0))
+        # Convert 'roundtrips.date' to UTC to match 'portfolio_value.index'
+        if pv.index.tz is not None:  # portfolio_value.index has a timezone (e.g., UTC)
+            roundtrips['date'] = roundtrips['date'].dt.tz_localize('UTC')
 
         tmp = roundtrips.join(pv, on='date', lsuffix='_')
 
@@ -301,7 +350,7 @@ def add_closing_transactions(positions, transactions):
     # they don't conflict with other round_trips executed at that time.
     end_dt = open_pos.name + pd.Timedelta(seconds=1)
 
-    for sym, ending_val in open_pos.iteritems():
+    for sym, ending_val in open_pos.items():
         txn_sym = transactions[transactions.symbol == sym]
 
         ending_amount = txn_sym.amount.sum()
@@ -312,7 +361,8 @@ def add_closing_transactions(positions, transactions):
                        'price': ending_price}
 
         closing_txn = pd.DataFrame(closing_txn, index=[end_dt])
-        closed_txns = closed_txns.append(closing_txn)
+        # closed_txns = closed_txns.append(closing_txn)
+        closed_txns = pd.concat([closed_txns, closing_txn], ignore_index=True)
 
     closed_txns = closed_txns[closed_txns.amount != 0]
 
@@ -346,6 +396,34 @@ def apply_sector_mappings_to_round_trips(round_trips, sector_mappings):
     return sector_round_trips
 
 
+# def gen_round_trip_stats(round_trips):
+#     """Generate various round-trip statistics.
+#
+#     Parameters
+#     ----------
+#     round_trips : pd.DataFrame
+#         DataFrame with one row per round trip trade.
+#         - See full explanation in round_trips.extract_round_trips
+#
+#     Returns
+#     -------
+#     stats : dict
+#        A dictionary where each value is a pandas DataFrame containing
+#        various round-trip statistics.
+#
+#     See also
+#     --------
+#     round_trips.print_round_trip_stats
+#     """
+#
+#     stats = {'pnl': agg_all_long_short(round_trips, 'pnl', PNL_STATS), 'summary': agg_all_long_short(round_trips, 'pnl',
+#                                                                                                      SUMMARY_STATS),
+#              'duration': agg_all_long_short(round_trips, 'duration',
+#                                             DURATION_STATS), 'returns': agg_all_long_short(round_trips, 'returns',
+#                                                                                            RETURN_STATS),
+#              'symbols': round_trips.groupby('symbol')['returns'].agg(RETURN_STATS).T}
+#
+#     return stats
 def gen_round_trip_stats(round_trips):
     """Generate various round-trip statistics.
 
@@ -366,17 +444,32 @@ def gen_round_trip_stats(round_trips):
     round_trips.print_round_trip_stats
     """
 
-    stats = {}
-    stats['pnl'] = agg_all_long_short(round_trips, 'pnl', PNL_STATS)
-    stats['summary'] = agg_all_long_short(round_trips, 'pnl',
-                                          SUMMARY_STATS)
-    stats['duration'] = agg_all_long_short(round_trips, 'duration',
-                                           DURATION_STATS)
-    stats['returns'] = agg_all_long_short(round_trips, 'returns',
-                                          RETURN_STATS)
+    # Helper function to apply custom and built-in functions
+    def apply_custom_and_built_in_funcs(grouped, stats_dict):
+        # Separate custom functions from built-in functions
+        custom_funcs = {k: v for k, v in stats_dict.items() if callable(v)}
+        built_in_funcs = [v for k, v in stats_dict.items() if not callable(v)]
 
-    stats['symbols'] = \
-        round_trips.groupby('symbol')['returns'].agg(RETURN_STATS).T
+        # Apply custom functions manually
+        custom_results = {}
+        for func_name, func in custom_funcs.items():
+            custom_results[func_name] = grouped.apply(func)
+        custom_results = pd.DataFrame(custom_results)
+
+        # Apply built-in functions
+        built_in_results = grouped.agg(built_in_funcs)
+
+        # Combine results
+        return pd.concat([custom_results, built_in_results], axis=1)
+
+    # Generate statistics for pnl, summary, duration, and returns
+    stats = {
+        'pnl': agg_all_long_short(round_trips, 'pnl', PNL_STATS),
+        'summary': agg_all_long_short(round_trips, 'pnl', SUMMARY_STATS),
+        'duration': agg_all_long_short(round_trips, 'duration', DURATION_STATS),
+        'returns': agg_all_long_short(round_trips, 'returns', RETURN_STATS),
+        'symbols': apply_custom_and_built_in_funcs(round_trips.groupby('symbol')['returns'], RETURN_STATS).T
+    }
 
     return stats
 

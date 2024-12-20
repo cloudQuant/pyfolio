@@ -33,7 +33,7 @@ def daily_txns_with_bar_data(transactions, market_data):
     transactions.index.name = 'date'
     txn_daily = pd.DataFrame(transactions.assign(
         amount=abs(transactions.amount)).groupby(
-        ['symbol', pd.TimeGrouper('D')]).sum()['amount'])
+        ['symbol', pd.Grouper(freq='D')]).sum()['amount'])
     txn_daily['price'] = market_data['price'].unstack()
     txn_daily['volume'] = market_data['volume'].unstack()
 
@@ -63,7 +63,7 @@ def days_to_liquidate_positions(positions, market_data,
     positions: pd.DataFrame
         Contains daily position values including cash
         - See full explanation in tears.create_full_tear_sheet
-    market_data : pd.Panel
+    market_data : pd.Panel, 因为pd不再使用面板数据，尝试使用dict代替
         Panel with items axis of 'price' and 'volume' DataFrames.
         The major and minor axes should match those of the
         the passed positions DataFrame (same dates and symbols).
@@ -82,8 +82,11 @@ def days_to_liquidate_positions(positions, market_data,
         Number of days required to fully liquidate daily positions.
         Datetime index, symbols as columns.
     """
-
+    # print(market_data['volume'].info())
+    # print(market_data['price'].info())
     DV = market_data['volume'] * market_data['price']
+    # DV = (market_data[market_data.index.get_level_values(1) == 'volume'] *
+    #       market_data[market_data.index.get_level_values(1) == 'price'])
     roll_mean_dv = DV.rolling(window=mean_volume_window,
                               center=False).mean().shift()
     roll_mean_dv = roll_mean_dv.replace(0, np.nan)
@@ -148,8 +151,9 @@ def get_max_days_to_liquidate_by_ticker(positions, market_data,
     liq_desc = pd.DataFrame()
     liq_desc['days_to_liquidate'] = dtlp.unstack()
     liq_desc['pos_alloc_pct'] = pos_alloc.unstack() * 100
-    liq_desc.index.levels[0].name = 'symbol'
-    liq_desc.index.levels[1].name = 'date'
+    # liq_desc.index.levels[0].name = 'symbol'
+    # liq_desc.index.levels[1].name = 'date'
+    liq_desc.index = liq_desc.index.set_names(['symbol', 'date'])
 
     worst_liq = liq_desc.reset_index().sort_values(
         'days_to_liquidate', ascending=False).groupby('symbol').first()
@@ -231,7 +235,9 @@ def apply_slippage_penalty(returns, txn_daily, simulate_starting_capital,
         * impact * simulate_traded_dollars
 
     daily_penalty = penalties.resample('D').sum()
-    daily_penalty = daily_penalty.reindex(returns.index).fillna(0)
+    daily_penalty = daily_penalty.reindex(returns.index)
+    daily_penalty = pd.to_numeric(daily_penalty, errors='coerce').fillna(0)
+    # daily_penalty = daily_penalty.reindex(returns.index).fillna(0)
 
     # Since we are scaling the numerator of the penalties linearly
     # by capital base, it makes the most sense to scale the denominator

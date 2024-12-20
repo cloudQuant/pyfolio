@@ -35,28 +35,28 @@ DEPRECATION_WARNING = ("Risk functions in pyfolio.timeseries are deprecated "
                        "install the empyrical package instead.")
 
 
-def var_cov_var_normal(P, c, mu=0, sigma=1):
+def var_cov_var_normal(p, c, mu=0, sigma=1):
     """
     Variance-covariance calculation of daily Value-at-Risk in a
     portfolio.
 
     Parameters
     ----------
-    P : float
+    :param p : float
         Portfolio value.
-    c : float
+    :param c : float
         Confidence level.
-    mu : float, optional
+    :param mu : float, optional
         Mean.
+    :param sigma:
 
     Returns
     -------
     float
-        Variance-covariance.
     """
 
     alpha = sp.stats.norm.ppf(1 - c, mu, sigma)
-    return P - P * (alpha + 1)
+    return p - p * (alpha + 1)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -470,7 +470,7 @@ def cum_returns(returns, starting_value=0):
 
     Returns
     -------
-    pandas.Series
+    pandas.Series type
         Series of cumulative returns.
 
     Notes
@@ -574,7 +574,7 @@ def rolling_regression(returns, factor_returns,
 
     Returns
     -------
-    pandas.DataFrame
+    pandas.DataFrame type
         DataFrame containing rolling beta coefficients to SMB, HML and UMD
     """
 
@@ -800,7 +800,7 @@ def calc_bootstrap(func, returns, *args, **kwargs):
     Parameters
     ----------
     func : function
-        Function that either takes a single array (commonly returns)
+        either takes a single array (commonly returns)
         or two arrays (commonly returns and factor returns) and
         returns a single value (commonly a summary
         statistic). Additional args and kwargs are passed as well.
@@ -850,7 +850,7 @@ def calc_distribution_stats(x):
 
     Returns
     -------
-    pandas.Series
+    pandas.Series type
         Series containing mean, median, std, as well as 5, 25, 75 and
         95 percentiles of passed in values.
     """
@@ -939,7 +939,7 @@ def get_max_drawdown(returns):
     """
 
     returns = returns.copy()
-    df_cum = cum_returns(returns, 1.0)
+    df_cum = ep.cum_returns(returns, 1.0)
     running_max = np.maximum.accumulate(df_cum)
     underwater = df_cum / running_max - 1
     return get_max_drawdown_underwater(underwater)
@@ -959,7 +959,7 @@ def get_top_drawdowns(returns, top=10):
 
     Returns
     -------
-    drawdowns : list
+    drawdowns : list tye
         List of drawdown peaks, valleys, and recoveries. See get_max_drawdown.
     """
 
@@ -972,7 +972,7 @@ def get_top_drawdowns(returns, top=10):
     # print("underwater",underwater)
     drawdowns = []
     for t in range(top):
-        #print("len(underwater)",len(underwater))
+        # print("len(underwater)",len(underwater))
         peak, valley, recovery = get_max_drawdown_underwater(underwater)
         # Slice out draw-down period
         if not pd.isnull(recovery):
@@ -1096,10 +1096,9 @@ def rolling_sharpe(returns, rolling_sharpe_window):
     -----
     See https://en.wikipedia.org/wiki/Sharpe_ratio for more details.
     """
-
-    return returns.rolling(rolling_sharpe_window).mean() \
-        / returns.rolling(rolling_sharpe_window).std() \
-        * np.sqrt(APPROX_BDAYS_PER_YEAR)
+    avg_returns = returns.rolling(rolling_sharpe_window).mean()
+    std_returns = returns.rolling(rolling_sharpe_window).std()
+    return avg_returns / std_returns * np.sqrt(APPROX_BDAYS_PER_YEAR)
 
 
 def simulate_paths(is_returns, num_days,
@@ -1166,7 +1165,8 @@ def summarize_paths(samples, cone_std=(1., 1.5, 2.), starting_value=1.):
     if isinstance(cone_std, (float, int)):
         cone_std = [cone_std]
 
-    cone_bounds = pd.DataFrame(columns=pd.Float64Index([]))
+    # cone_bounds = pd.DataFrame(columns=pd.Float64Index([]))
+    cone_bounds = pd.DataFrame(columns=pd.Index([], dtype='float64'))
     for num_std in cone_std:
         cone_bounds.loc[:, float(num_std)] = cum_mean + cum_std * num_std
         cone_bounds.loc[:, float(-num_std)] = cum_mean - cum_std * num_std

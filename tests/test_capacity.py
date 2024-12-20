@@ -1,23 +1,22 @@
 from __future__ import division
 from unittest import TestCase
-from nose_parameterized import parameterized
-
+from parameterized import parameterized
+import pandas as pd
 from pandas import (
     Series,
     DataFrame,
     date_range,
-    datetime,
-    Panel
+    concat
 )
-from pandas.util.testing import (assert_frame_equal,
-                                 assert_series_equal)
+from datetime import datetime
 
+from pandas.testing import assert_frame_equal, assert_series_equal, assert_index_equal
 from pyfolio.capacity import (days_to_liquidate_positions,
                               get_max_days_to_liquidate_by_ticker,
                               get_low_liquidity_transactions,
                               daily_txns_with_bar_data,
                               apply_slippage_penalty)
-
+from pyfolio.utils import analyze_dataframe_differences
 
 class CapacityTestCase(TestCase):
     dates = date_range(start='2015-01-01', freq='D', periods=3)
@@ -35,11 +34,16 @@ class CapacityTestCase(TestCase):
                         [2.0, 2.0],
                         [3.0, 1.0]],
                        columns=['A', 'B'], index=dates)
+    volume.index.name = 'dt'
     volume = volume * 1000000
+    # volume['market_data'] = 'volume'
     price = DataFrame([[1.0, 1.0]] * len(dates),
                       columns=['A', 'B'], index=dates)
-    market_data = Panel({'volume': volume, 'price': price})
-
+    price.index.name = 'dt'
+    # price['market_data'] = 'price'
+    # market_data = concat([volume, price]).reset_index().set_index(
+    #     ['dt', 'market_data'])
+    market_data = {"price": price, "volume": volume}
     def test_days_to_liquidate_positions(self):
         dtlp = days_to_liquidate_positions(self.positions,
                                            self.market_data,
@@ -54,7 +58,6 @@ class CapacityTestCase(TestCase):
         assert_frame_equal(dtlp, expected)
 
     def test_get_max_days_to_liquidate_by_ticker(self):
-
         mdtl = get_max_days_to_liquidate_by_ticker(self.positions,
                                                    self.market_data,
                                                    max_bar_consumption=1,
@@ -97,8 +100,20 @@ class CapacityTestCase(TestCase):
                                    ['A', 100000, 1.0, 3000000.]],
                              columns=['symbol', 'amount', 'price', 'volume'],
                              index=self.dates)
-
-        assert_frame_equal(daily_txn, expected, check_less_precise=True)
+        print("daily_txn = ", daily_txn)
+        print("expected = ", expected)
+        print("daily_txn.info()  = ", daily_txn.info())
+        print("expected.info() = ", expected.info())
+        # assert_frame_equal(daily_txn, expected, check_less_precise=True)
+        # Ensure the indices match
+        assert_index_equal(daily_txn.index, expected.index)
+        # Set the frequency of the daily_txn index to match the expected index
+        daily_txn.index.freq = expected.index.freq
+        # daily_txn.index = daily_txn.index.asfreq('D')
+        # Analyze differences
+        # analyze_dataframe_differences(daily_txn, expected)
+        # assert_frame_equal(daily_txn, expected, atol=1e-4)
+        assert_frame_equal(daily_txn, expected)
 
     @parameterized.expand([(1000000, 1, [0.9995, 0.9999375, 0.99998611]),
                            (10000000, 1, [0.95, 0.99375, 0.998611]),
