@@ -40,16 +40,17 @@ def model_returns_t_alpha_beta(data, bmark, samples=2000, progressbar=True):
 
     Parameters
     ----------
-    returns : pandas.Series
+    :param data : pandas.Series:
         Series of simple returns of an algorithm or stock.
-    bmark : pandas.DataFrame
+    :param bmark : pandas.DataFrame:
         DataFrame of benchmark returns (e.g., S&P500) or risk factors (e.g.,
         Fama-French SMB, HML, and UMD).
         If bmark has more recent returns than returns_train, these dates
         will be treated as missing values and predictions will be
         generated for them taking market correlations into account.
-    samples : int (optional)
+    :param samples : int (optional)
         Number of posterior samples to draw.
+    :param progressbar : bool (optional), default True
 
     Returns
     -------
@@ -92,10 +93,11 @@ def model_returns_normal(data, samples=500, progressbar=True):
 
     Parameters
     ----------
-    returns : pandas.Series
+    :param data : pandas.Series:
         Series of simple returns of an algorithm or stock.
-    samples : int (optional)
+    :param samples : int (optional)
         Number of posterior samples to draw.
+    :param progressbar : bool (optional), default True
 
     Returns
     -------
@@ -134,10 +136,11 @@ def model_returns_t(data, samples=500, progressbar=True):
 
     Parameters
     ----------
-    returns : pandas.Series
+    :param data : pandas.Series:
         Series of simple returns of an algorithm or stock.
-    samples : int, optional
+    :param samples : int, optional
         Number of posterior samples to draw.
+    :param progressbar : bool, optional, default: True
 
     Returns
     -------
@@ -182,12 +185,13 @@ def model_best(y1, y2, samples=1000, progressbar=True):
 
     Parameters
     ----------
-    y1 : array-like
+    :param y1 : array-like
         Array of returns (e.g. in-sample)
-    y2 : array-like
+    :param y2 : array-like
         Array of returns (e.g. out-of-sample)
-    samples : int, optional
+    :param samples : int, optional
         Number of posterior samples to draw.
+    :param progressbar: bool, optional, default True
 
     Returns
     -------
@@ -294,7 +298,7 @@ def plot_best(trace=None, data_train=None, data_test=None,
         fig, axs = plt.subplots(ncols=2, nrows=3, figsize=(16, 4))
 
     def distplot_w_perc(trace, ax):
-        sns.distplot(trace, ax=ax)
+        sns.histplot(trace, ax=ax)
         ax.axvline(
             stats.scoreatpercentile(trace, 2.5),
             color='0.5', label='2.5 and 97.5 percentiles')
@@ -302,8 +306,8 @@ def plot_best(trace=None, data_train=None, data_test=None,
             stats.scoreatpercentile(trace, 97.5),
             color='0.5')
 
-    sns.distplot(trace['group1_mean'], ax=axs[0], label='Backtest')
-    sns.distplot(trace['group2_mean'], ax=axs[0], label='Forward')
+    sns.histplot(trace['group1_mean'], ax=axs[0], label='Backtest')
+    sns.histplot(trace['group2_mean'], ax=axs[0], label='Forward')
     axs[0].legend(loc=0, frameon=True, framealpha=0.5)
     axs[1].legend(loc=0, frameon=True, framealpha=0.5)
 
@@ -312,9 +316,9 @@ def plot_best(trace=None, data_train=None, data_test=None,
     axs[0].set(xlabel='Mean', ylabel='Belief', yticklabels=[])
     axs[1].set(xlabel='Difference of means', yticklabels=[])
 
-    sns.distplot(trace['group1_annual_volatility'], ax=axs[2],
+    sns.histplot(trace['group1_annual_volatility'], ax=axs[2],
                  label='Backtest')
-    sns.distplot(trace['group2_annual_volatility'], ax=axs[2],
+    sns.histplot(trace['group2_annual_volatility'], ax=axs[2],
                  label='Forward')
     distplot_w_perc(trace['group2_annual_volatility'] -
                     trace['group1_annual_volatility'], axs[3])
@@ -323,15 +327,15 @@ def plot_best(trace=None, data_train=None, data_test=None,
     axs[2].legend(loc=0, frameon=True, framealpha=0.5)
     axs[3].set(xlabel='Difference of volatility', yticklabels=[])
 
-    sns.distplot(trace['group1_sharpe'], ax=axs[4], label='Backtest')
-    sns.distplot(trace['group2_sharpe'], ax=axs[4], label='Forward')
+    sns.histplot(trace['group1_sharpe'], ax=axs[4], label='Backtest')
+    sns.histplot(trace['group2_sharpe'], ax=axs[4], label='Forward')
     distplot_w_perc(trace['group2_sharpe'] - trace['group1_sharpe'],
                     axs[5])
     axs[4].set(xlabel='Sharpe', ylabel='Belief', yticklabels=[])
     axs[4].legend(loc=0, frameon=True, framealpha=0.5)
     axs[5].set(xlabel='Difference of Sharpes', yticklabels=[])
 
-    sns.distplot(trace['effect size'], ax=axs[6])
+    sns.histplot(trace['effect size'], ax=axs[6])
     axs[6].axvline(
         stats.scoreatpercentile(trace['effect size'], 2.5),
         color='0.5')
@@ -352,10 +356,11 @@ def model_stoch_vol(data, samples=2000, progressbar=True):
 
     Parameters
     ----------
-    data : pandas.Series
+    :param data : pandas.Series
         Return series to model.
-    samples : int, optional
+    :param samples : int, optional
         Posterior samples to draw.
+    :param progressbar : bool, optional, default: True
 
     Returns
     -------
@@ -370,7 +375,7 @@ def model_stoch_vol(data, samples=2000, progressbar=True):
     plot_stoch_vol : plotting of tochastic volatility model
     """
 
-    from pymc3.distributions.timeseries import GaussianRandomWalk
+    from pymc.distributions.timeseries import GaussianRandomWalk
 
     with pm.Model() as model:
         nu = pm.Exponential('nu', 1. / 10, testval=5.)
@@ -466,7 +471,7 @@ def compute_consistency_score(returns_test, preds):
 
     Returns
     -------
-    Consistency score
+    Consistency score:
         Score from 100 (returns_test perfectly on the median line of the
         Bayesian cone spanned by preds) to 0 (returns_test completely
         outside of Bayesian cone.)
@@ -526,25 +531,26 @@ def run_model(model, returns_train, returns_test=None,
 
     Parameters
     ----------
-    model : {'alpha_beta', 't', 'normal', 'best'}
+    :param model : {'alpha_beta', 't', 'normal', 'best'}
         Which model to run
-    returns_train : pd.Series
+    :param returns_train : pd.Series
         Timeseries of simple returns
-    returns_test : pd.Series (optional)
+    :param returns_test : pd.Series (optional)
         Out-of-sample returns. Datetimes in returns_test will be added to
         returns_train as missing values and predictions will be generated
         for them.
-    bmark : pd.Series or pd.DataFrame (optional)
+    :param bmark : pd.Series or pd.DataFrame (optional)
         Only used for alpha_beta to estimate regression coefficients.
         If bmark has more recent returns than returns_train, these dates
         will be treated as missing values and predictions will be
         generated for them taking market correlations into account.
-    samples : int (optional)
+    :param samples : int (optional)
         Number of posterior samples to draw.
-    ppc : boolean (optional)
+    :param ppc : boolean (optional)
         Whether to run a posterior predictive check. Will generate
         samples of length returns_test.  Returns a second argument
         that contains the PPC of shape samples x len(returns_test).
+    :param progressbar: bool (optional), default True
 
     Returns
     -------

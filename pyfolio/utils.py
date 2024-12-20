@@ -265,7 +265,7 @@ def extract_rets_pos_txn_from_zipline(backtest):
 
     Parameters
     ----------
-    backtest : pd.DataFrame
+    backtest : pd.DataFrame :
         DataFrame returned by zipline.TradingAlgorithm.run()
 
     Returns
@@ -283,11 +283,11 @@ def extract_rets_pos_txn_from_zipline(backtest):
 
     Example (on the Quantopian research platform)
     ---------------------------------------------
-    >>> backtest = my_algo.run()
-    >>> returns, positions, transactions =
-    >>>     pyfolio.utils.extract_rets_pos_txn_from_zipline(backtest)
-    >>> pyfolio.tears.create_full_tear_sheet(returns,
-    >>>     positions, transactions)
+    # >>> backtest = my_algo.run()
+    # >>> returns, positions, transactions =
+    # >>>     pyfolio.utils.extract_rets_pos_txn_from_zipline(backtest)
+    # >>> pyfolio.tears.create_full_tear_sheet(returns,
+    # >>>     positions, transactions)
     """
 
     backtest.index = backtest.index.normalize()
@@ -401,7 +401,7 @@ def detect_intraday(positions, transactions, threshold=0.25):
     transactions : pd.DataFrame
         Prices and amounts of executed trades. One row per trade.
          - See full explanation in create_full_tear_sheet.
-
+    threshold : default 0.25
     Returns
     -------
     boolean
@@ -461,7 +461,7 @@ def check_intraday(estimate, returns, positions, transactions):
         return positions
 
 
-def estimate_intraday(returns, positions, transactions, EOD_hour=23):
+def estimate_intraday(returns, positions, transactions, eod_hour=23):
     """
     Intraday strategies will often not hold positions at the day end.
     This attempts to find the point in the day that best represents
@@ -481,6 +481,7 @@ def estimate_intraday(returns, positions, transactions, EOD_hour=23):
     transactions : pd.DataFrame
         Prices and amounts of executed trades. One row per trade.
          - See full explanation in create_full_tear_sheet.
+    eod_hour: default 23
 
     Returns
     -------
@@ -585,7 +586,7 @@ def to_series(df):
     return df[df.columns[0]]
 
 
-# This functions is simply a passthrough to empyrical, but is
+# These functions are simply a passthrough to empyrical, but is
 # required by the register_returns_func and get_symbol_rets.
 default_returns_func = empyrical.utils.default_returns_func
 
@@ -631,7 +632,7 @@ def get_symbol_rets(symbol, start=None, end=None):
         e.g. ticker symbol or database ID
     start : date, optional
         Earliest date to fetch data for.
-        Defaults to earliest date available.
+        Defaults to the earliest date available.
     end : date, optional
         Latest date to fetch data for.
         Defaults to latest date available.
@@ -655,9 +656,9 @@ def configure_legend(ax, autofmt_xdate=True, change_colors=False,
     - make legend order match up with graph lines
     - set colors according to colormap
     """
-    chartBox = ax.get_position()
-    ax.set_position([chartBox.x0, chartBox.y0,
-                     chartBox.width * 0.75, chartBox.height])
+    chart_box = ax.get_position()
+    ax.set_position([chart_box.x0, chart_box.y0,
+                     chart_box.width * 0.75, chart_box.height])
 
     # make legend order match graph lines
     handles, labels = ax.get_legend_handles_labels()

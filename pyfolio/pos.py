@@ -101,8 +101,6 @@ def get_max_median_position_concentration(positions):
     expos = get_percent_alloc(positions)
     expos = expos.drop('cash', axis=1)
 
-    # longs = expos.where(expos.applymap(lambda x: x > 0))
-    # shorts = expos.where(expos.applymap(lambda x: x < 0))
     longs = expos.where(expos.apply(lambda x: x > 0))
     shorts = expos.where(expos.apply(lambda x: x < 0))
 

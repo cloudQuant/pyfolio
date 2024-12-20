@@ -14,6 +14,7 @@
 # limitations under the License.
 from collections import OrderedDict
 from functools import partial
+from matplotlib.cm import gist_rainbow
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -93,6 +94,7 @@ def plot_style_factor_exposures(tot_style_factor_exposure, factor_name=None,
     factor_name : string
         Name of style factor, for use in graph title
         - Defaults to tot_style_factor_exposure.name
+    ax : None
     """
 
     if ax is None:
@@ -178,13 +180,14 @@ def plot_sector_exposures_longshort(long_exposures, short_exposures,
 
     Parameters
     ----------
-    long_exposures, short_exposures : arrays
+    long_exposures, short_exposures : arrays:
         Arrays of long and short sector exposures (output of
         compute_sector_exposures).
 
     sector_dict : dict or OrderedDict
         Dictionary of all sectors
         - See full description in compute_sector_exposures
+    ax : None
     """
 
     if ax is None:
@@ -195,7 +198,7 @@ def plot_sector_exposures_longshort(long_exposures, short_exposures,
     else:
         sector_names = sector_dict.values()
 
-    color_list = plt.cm.gist_rainbow(np.linspace(0, 1, 11))
+    color_list = gist_rainbow(np.linspace(0, 1, 11))
 
     ax.stackplot(long_exposures[0].index, long_exposures,
                  labels=sector_names, colors=color_list, alpha=0.8,
@@ -216,12 +219,13 @@ def plot_sector_exposures_gross(gross_exposures, sector_dict=None, ax=None):
 
     Parameters
     ----------
-    gross_exposures : arrays
+    gross_exposures : arrays:
         Arrays of gross sector exposures (output of compute_sector_exposures).
 
     sector_dict : dict or OrderedDict
         Dictionary of all sectors
         - See full description in compute_sector_exposures
+    ax : None
     """
 
     if ax is None:
@@ -232,7 +236,7 @@ def plot_sector_exposures_gross(gross_exposures, sector_dict=None, ax=None):
     else:
         sector_names = sector_dict.values()
 
-    color_list = plt.cm.gist_rainbow(np.linspace(0, 1, 11))
+    color_list = gist_rainbow(np.linspace(0, 1, 11))
 
     ax.stackplot(gross_exposures[0].index, gross_exposures,
                  labels=sector_names, colors=color_list, alpha=0.8,
@@ -250,12 +254,13 @@ def plot_sector_exposures_net(net_exposures, sector_dict=None, ax=None):
 
     Parameters
     ----------
-    net_exposures : arrays
+    net_exposures : arrays:
         Arrays of net sector exposures (output of compute_sector_exposures).
 
     sector_dict : dict or OrderedDict
         Dictionary of all sectors
         - See full description in compute_sector_exposures
+    ax : None
     """
 
     if ax is None:
@@ -266,7 +271,7 @@ def plot_sector_exposures_net(net_exposures, sector_dict=None, ax=None):
     else:
         sector_names = sector_dict.values()
 
-    color_list = plt.cm.gist_rainbow(np.linspace(0, 1, 11))
+    color_list = gist_rainbow(np.linspace(0, 1, 11))
 
     for i in range(len(net_exposures)):
         ax.plot(net_exposures[i], color=color_list[i], alpha=0.8,
@@ -331,15 +336,16 @@ def plot_cap_exposures_longshort(long_exposures, short_exposures, ax=None):
 
     Parameters
     ----------
-    long_exposures, short_exposures : arrays
+    long_exposures, short_exposures : arrays:
         Arrays of long and short market cap exposures (output of
         compute_cap_exposures).
+    ax : None
     """
 
     if ax is None:
         ax = plt.gca()
 
-    color_list = plt.cm.gist_rainbow(np.linspace(0, 1, 5))
+    color_list = gist_rainbow(np.linspace(0, 1, 5))
 
     ax.stackplot(long_exposures[0].index, long_exposures,
                  labels=CAP_BUCKETS.keys(), colors=color_list, alpha=0.8,
@@ -362,12 +368,13 @@ def plot_cap_exposures_gross(gross_exposures, ax=None):
     ----------
     gross_exposures : array
         Arrays of gross market cap exposures (output of compute_cap_exposures).
+    ax : None
     """
 
     if ax is None:
         ax = plt.gca()
 
-    color_list = plt.cm.gist_rainbow(np.linspace(0, 1, 5))
+    color_list = gist_rainbow(np.linspace(0, 1, 5))
 
     ax.stackplot(gross_exposures[0].index, gross_exposures,
                  labels=CAP_BUCKETS.keys(), colors=color_list, alpha=0.8,
@@ -387,12 +394,13 @@ def plot_cap_exposures_net(net_exposures, ax=None):
     ----------
     net_exposures : array
         Arrays of gross market cap exposures (output of compute_cap_exposures).
+    ax : None
     """
 
     if ax is None:
         ax = plt.gca()
 
-    color_list = plt.cm.gist_rainbow(np.linspace(0, 1, 5))
+    color_list = gist_rainbow(np.linspace(0, 1, 5))
 
     cap_names = CAP_BUCKETS.keys()
     for i in range(len(net_exposures)):
@@ -416,7 +424,7 @@ def compute_volume_exposures(shares_held, volumes, percentile):
         Daily number of shares held by an algorithm.
         - See full explanation in create_risk_tear_sheet
 
-    volume : pd.DataFrame
+    volumes : pd.DataFrame
         Daily volume per asset
         - See full explanation in create_risk_tear_sheet
 
@@ -466,13 +474,14 @@ def plot_volume_exposures_longshort(longed_threshold, shorted_threshold,
 
     Parameters
     ----------
-    longed_threshold, shorted_threshold : pd.Series
+    longed_threshold, shorted_threshold : pd.Series:
         Series of longed and shorted volume exposures (output of
         compute_volume_exposures).
 
     percentile : float
         Percentile to use when computing and plotting volume exposures.
         - See full explanation in create_risk_tear_sheet
+    ax : None
     """
 
     if ax is None:
@@ -483,7 +492,7 @@ def plot_volume_exposures_longshort(longed_threshold, shorted_threshold,
     ax.plot(shorted_threshold.index, shorted_threshold,
             color='r', label='short')
     ax.axhline(0, color='k')
-    ax.set(title='Long and short exposures to illiquidity',
+    ax.set(title='Long and short exposures to ill_liquidity',
            ylabel='{}th percentile of proportion of volume (%)'
            .format(100 * percentile))
     ax.legend(frameon=True, framealpha=0.5)
@@ -497,13 +506,14 @@ def plot_volume_exposures_gross(grossed_threshold, percentile, ax=None):
 
     Parameters
     ----------
-    grossed_threshold : pd.Series
+    grossed_threshold : pd.Series:
         Series of grossed volume exposures (output of
         compute_volume_exposures).
 
     percentile : float
         Percentile to use when computing and plotting volume exposures
         - See full explanation in create_risk_tear_sheet
+    ax : None
     """
 
     if ax is None:
@@ -512,7 +522,7 @@ def plot_volume_exposures_gross(grossed_threshold, percentile, ax=None):
     ax.plot(grossed_threshold.index, grossed_threshold,
             color='b', label='gross')
     ax.axhline(0, color='k')
-    ax.set(title='Gross exposure to illiquidity',
+    ax.set(title='Gross exposure to ill_liquidity',
            ylabel='{}th percentile of \n proportion of volume (%)'
            .format(100 * percentile))
     ax.legend(frameon=True, framealpha=0.5)

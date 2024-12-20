@@ -262,7 +262,7 @@ def create_full_tear_sheet(returns,
     positions : pd.DataFrame, optional
         Daily net position values.
          - Time series of dollar amount invested in each position and cash.
-         - Days where stocks are not held can be represented by 0 or NaN.
+         - Days when stocks are not held can be represented by 0 or NaN.
          - Non-working capital is labelled 'cash'
          - Example:
             index         'AAPL'         'MSFT'          cash
@@ -282,7 +282,7 @@ def create_full_tear_sheet(returns,
     market_data : pd.Panel, optional
         Panel with items axis of 'price' and 'volume' DataFrames.
         The major and minor axes should match those of the
-        the passed positions DataFrame (same dates and symbols).
+        passed positions DataFrame (same dates and symbols).
     slippage : int/float, optional
         Basis points of slippage to apply to returns before generating
         tearsheet stats and plots.
@@ -304,13 +304,13 @@ def create_full_tear_sheet(returns,
         Security ids as keys, sectors as values.
     estimate_intraday: boolean or str, optional
         Instead of using the end-of-day positions, use the point in the day
-        where we have the most $ invested. This will adjust positions to
+        when we have the most $ invested. This will adjust positions to
         better approximate and represent how an intraday strategy behaves.
         By default, this is 'infer', and an attempt will be made to detect
         an intraday strategy. Specifying this value will prevent detection.
     cone_std : float, or tuple, optional
-        If float, The standard deviation to use for the cone plots.
-        If tuple, Tuple of standard deviation values to use for the cone plots
+        If value is float, The standard deviation to use for the cone plots.
+        If value is tuple, Tuple of standard deviation values to use for the cone plots
          - The cone is a normal distribution with this standard deviation
              centered around a linear regression.
     bootstrap : boolean (optional)
@@ -470,7 +470,7 @@ def create_simple_tear_sheet(returns,
     positions : pd.DataFrame, optional
         Daily net position values.
          - Time series of dollar amount invested in each position and cash.
-         - Days where stocks are not held can be represented by 0 or NaN.
+         - Days when stocks are not held can be represented by 0 or NaN.
          - Non-working capital is labelled 'cash'
          - Example:
             index         'AAPL'         'MSFT'          cash
@@ -496,6 +496,7 @@ def create_simple_tear_sheet(returns,
         plots will be generated from the unadjusted returns.
         Transactions and positions must also be passed.
         - See txn.adjust_returns_for_slippage for more details.
+    estimate_intraday : str, optional
     live_start_date : datetime, optional
         The point in time when the strategy began live trading,
         after its backtest period. This datetime should be normalized.
@@ -504,8 +505,6 @@ def create_simple_tear_sheet(returns,
         - See full explanation in txn.get_turnover.
     header_rows : dict or OrderedDict, optional
         Extra rows to display at the top of the perf stats table.
-    set_context : boolean, optional
-        If True, set default plotting style context.
     """
 
     positions = utils.check_intraday(estimate_intraday, returns,
@@ -647,8 +646,8 @@ def create_returns_tear_sheet(returns, positions=None,
         The point in time when the strategy began live trading,
         after its backtest period.
     cone_std : float, or tuple, optional
-        If float, The standard deviation to use for the cone plots.
-        If tuple, Tuple of standard deviation values to use for the cone plots
+        If value is float, The standard deviation to use for the cone plots.
+        If value is tuple, Tuple of standard deviation values to use for the cone plots
          - The cone is a normal distribution with this standard deviation
              centered around a linear regression.
     benchmark_rets : pd.Series, optional
@@ -1077,10 +1076,10 @@ def create_interesting_times_tear_sheet(
     Generate a number of returns plots around interesting points in time,
     like the flash crash and 9/11.
 
-    Plots: returns around the dotcom bubble burst, Lehmann Brothers' failure,
+    Plots: returns around the dotcom bubble burst, Lehman Brothers' failure,
     9/11, US downgrade and EU debt crisis, Fukushima meltdown, US housing
     bubble burst, EZB IR, Great Recession (August 2007, March and September
-    of 2008, Q1 & Q2 2009), flash crash, April and October 2014.
+    2008, Q1 & Q2 2009), flash crash, April and October 2014.
 
     benchmark_rets must be passed, as it is meaningless to analyze performance
     during interesting times without some benchmark to refer to.
@@ -1174,10 +1173,10 @@ def create_capacity_tear_sheet(returns, positions, transactions,
     transactions : pd.DataFrame
         Prices and amounts of executed trades. One row per trade.
          - See full explanation in create_full_tear_sheet.
-    market_data : pd.Panel
+    market_data : pd.Panel, maybe use dict replace
         Panel with items axis of 'price' and 'volume' DataFrames.
         The major and minor axes should match those of the
-        the passed positions DataFrame (same dates and symbols).
+        passed positions DataFrame (same dates and symbols).
     liquidation_daily_vol_limit : float
         Max proportion of a daily bar that can be consumed in the
         process of liquidating a position in the
@@ -1361,7 +1360,7 @@ def create_bayesian_tear_sheet(returns, benchmark_rets=None,
     ax_ret_pred_week = plt.subplot(gs[row, 1])
     day_pred = ppc_t[:, 0]
     p5 = scipy.stats.scoreatpercentile(day_pred, 5)
-    sns.distplot(day_pred,
+    sns.histplot(day_pred,
                  ax=ax_ret_pred_day
                  )
     ax_ret_pred_day.axvline(p5, linestyle='--', linewidth=3.)
@@ -1377,7 +1376,7 @@ def create_bayesian_tear_sheet(returns, benchmark_rets=None,
     week_pred = (
                         np.cumprod(ppc_t[:, :5] + 1, 1) - 1)[:, -1]
     p5 = scipy.stats.scoreatpercentile(week_pred, 5)
-    sns.distplot(week_pred,
+    sns.histplot(week_pred,
                  ax=ax_ret_pred_week
                  )
     ax_ret_pred_week.axvline(p5, linestyle='--', linewidth=3.)
@@ -1403,9 +1402,9 @@ def create_bayesian_tear_sheet(returns, benchmark_rets=None,
         row += 1
         ax_alpha = plt.subplot(gs[row, 0])
         ax_beta = plt.subplot(gs[row, 1])
-        sns.distplot((1 + trace_alpha_beta['alpha'][100:]) ** 252 - 1,
+        sns.histplot((1 + trace_alpha_beta['alpha'][100:]) ** 252 - 1,
                      ax=ax_alpha)
-        sns.distplot(trace_alpha_beta['beta'][100:], ax=ax_beta)
+        sns.histplot(trace_alpha_beta['beta'][100:], ax=ax_beta)
         ax_alpha.set_xlabel('Annual Alpha')
         ax_alpha.set_ylabel('Belief')
         ax_beta.set_xlabel('Beta')
@@ -1471,7 +1470,7 @@ def create_risk_tear_sheet(positions,
         2017-04-04	-108852.00	  4373.820     2.540999e+07
         2017-04-05	-119968.66	  4336.200     2.839812e+07
 
-    style_factor_panel : pd.Panel
+    style_factor_panel : pd.Panel, maybe use dict replace
         Panel where each item is a DataFrame that tabulates style factor per
         equity per day.
         - Each item has dates as index, equities as columns
@@ -1524,6 +1523,11 @@ def create_risk_tear_sheet(positions,
     percentile : float
         Percentile to use when computing and plotting volume exposures.
         - Defaults to 10th percentile
+    returns :
+    transactions :
+    estimate_intraday :
+    return_fig :
+
     """
 
     positions = utils.check_intraday(estimate_intraday, returns,
@@ -1661,7 +1665,7 @@ def create_perf_attrib_tear_sheet(returns,
     return_fig : boolean, optional
         If True, returns the figure that was plotted on.
 
-    factor_partitions : dict
+    factor_partitions : dict :
         dict specifying how factors should be separated in factor returns
         and risk exposures plots
         - Example:

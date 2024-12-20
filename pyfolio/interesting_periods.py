@@ -1,4 +1,3 @@
-#
 # Copyright 2016 Quantopian, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +23,7 @@ PERIODS = OrderedDict()
 # Dotcom bubble
 PERIODS['Dotcom'] = (pd.Timestamp('20000310'), pd.Timestamp('20000910'))
 
-# Lehmann Brothers
+# Lehman Brothers
 PERIODS['Lehman'] = (pd.Timestamp('20080801'), pd.Timestamp('20081001'))
 
 # 9/11
@@ -46,7 +45,7 @@ PERIODS['US Housing'] = (
 PERIODS['EZB IR Event'] = (
     pd.Timestamp('20120910'), pd.Timestamp('20121010'))
 
-# August 2007, March and September of 2008, Q1 & Q2 2009,
+# August 2007, March and September 2008, Q1 & Q2 2009,
 PERIODS['Aug07'] = (pd.Timestamp('20070801'), pd.Timestamp('20070901'))
 PERIODS['Mar08'] = (pd.Timestamp('20080301'), pd.Timestamp('20080401'))
 PERIODS['Sept08'] = (pd.Timestamp('20080901'), pd.Timestamp('20081001'))
@@ -57,7 +56,7 @@ PERIODS['2009Q2'] = (pd.Timestamp('20090301'), pd.Timestamp('20090601'))
 PERIODS['Flash Crash'] = (
     pd.Timestamp('20100505'), pd.Timestamp('20100510'))
 
-# April and October 2014).
+# April and October 2014
 PERIODS['Apr14'] = (pd.Timestamp('20140401'), pd.Timestamp('20140501'))
 PERIODS['Oct14'] = (pd.Timestamp('20141001'), pd.Timestamp('20141101'))
 

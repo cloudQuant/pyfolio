@@ -216,15 +216,15 @@ def compute_exposures(positions, factor_loadings, stack_positions=True,
     return ep.compute_exposures(positions, factor_loadings)
 
 
-def create_perf_attrib_stats(perf_attrib, risk_exposures):
+def create_perf_attrib_stats(perf_attrib_, risk_exposures):
     """
     Takes perf attribution data over a period of time and computes annualized
     multifactor alpha, multifactor sharpe, risk exposures.
     """
     summary = OrderedDict()
-    total_returns = perf_attrib['total_returns']
-    specific_returns = perf_attrib['specific_returns']
-    common_returns = perf_attrib['common_returns']
+    total_returns = perf_attrib_['total_returns']
+    specific_returns = perf_attrib_['specific_returns']
+    common_returns = perf_attrib_['common_returns']
 
     summary['Annualized Specific Return'] =\
         ep.annual_return(specific_returns)
@@ -245,9 +245,9 @@ def create_perf_attrib_stats(perf_attrib, risk_exposures):
 
     summary = pd.Series(summary, name='')
 
-    annualized_returns_by_factor = [ep.annual_return(perf_attrib[c])
+    annualized_returns_by_factor = [ep.annual_return(perf_attrib_[c])
                                     for c in risk_exposures.columns]
-    cumulative_returns_by_factor = [ep.cum_returns_final(perf_attrib[c])
+    cumulative_returns_by_factor = [ep.cum_returns_final(perf_attrib_[c])
                                     for c in risk_exposures.columns]
 
     risk_exposure_summary = pd.DataFrame(
@@ -343,7 +343,7 @@ def plot_returns(perf_attrib_data, cost=None, ax=None):
         if present, gets subtracted from `perf_attrib_data['total_returns']`,
         and gets plotted separately
 
-    ax :  matplotlib.axes.Axes
+    ax :  matplotlib.axes.Axes :
         axes on which plots are made. if None, current axes will be used
 
     Returns
@@ -388,14 +388,14 @@ def plot_returns(perf_attrib_data, cost=None, ax=None):
 
 def plot_alpha_returns(alpha_returns, ax=None):
     """
-    Plot histogram of daily multi-factor alpha returns (specific returns).
+    Plot histogram of daily multifactor alpha returns (specific returns).
 
     Parameters
     ----------
-    alpha_returns : pd.Series
+    alpha_returns : pd.Series:
         series of daily alpha returns indexed by datetime
 
-    ax :  matplotlib.axes.Axes
+    ax :  matplotlib.axes.Axes:
         axes on which plots are made. if None, current axes will be used
 
     Returns
@@ -435,7 +435,7 @@ def plot_factor_contribution_to_perf(
             2017-01-01  0.249087  0.935925        1.185012          1.185012
             2017-01-02 -0.003194 -0.400786       -0.403980         -0.403980
 
-    ax :  matplotlib.axes.Axes
+    ax :  matplotlib.axes.Axes:
         axes on which plots are made. if None, current axes will be used
 
     title : str, optional
@@ -473,7 +473,7 @@ def plot_risk_exposures(exposures, ax=None,
     """
     Parameters
     ----------
-    exposures : pd.DataFrame
+    :param exposures : pd.DataFrame
         df indexed by datetime, with factors as columns
         - Example:
                         momentum  reversal
@@ -481,12 +481,14 @@ def plot_risk_exposures(exposures, ax=None,
             2017-01-01 -0.238655  0.077123
             2017-01-02  0.821872  1.520515
 
-    ax :  matplotlib.axes.Axes
+    :param ax :  matplotlib.axes.Axes:
         axes on which plots are made. if None, current axes will be used
+    :param title: string, default 'Daily risk factor exposures'
 
     Returns
     -------
     ax :  matplotlib.axes.Axes
+
     """
     if ax is None:
         ax = plt.gca()
@@ -569,10 +571,6 @@ def _align_and_warn(returns,
         factor_loadings.index.get_level_values(0).unique()
     )
 
-    missing_factor_loadings_index = positions.index.difference(
-        factor_loadings.index.get_level_values(0).unique()
-    )
-
     if len(missing_factor_loadings_index) > 0:
 
         if len(missing_factor_loadings_index) > 5:
@@ -614,7 +612,7 @@ def _align_and_warn(returns,
             )
             warnings.warn(warning_msg)
 
-    return (returns, positions, factor_returns, factor_loadings)
+    return returns, positions, factor_returns, factor_loadings
 
 
 def _stack_positions(positions, pos_in_dollars=True):

@@ -1,9 +1,7 @@
 from __future__ import division
-
 import empyrical as ep
 import numpy as np
 import pandas as pd
-
 from . import pos
 
 
@@ -18,9 +16,9 @@ def daily_txns_with_bar_data(transactions, market_data):
     transactions : pd.DataFrame
         Prices and amounts of executed trades. One row per trade.
         - See full explanation in tears.create_full_tear_sheet
-    market_data : pd.Panel
+    market_data : pd.Panel,use dict replace
         Contains "volume" and "price" DataFrames for the tickers
-        in the passed positions DataFrames
+        in the dict of (name, dataframe)
 
     Returns
     -------
@@ -66,7 +64,7 @@ def days_to_liquidate_positions(positions, market_data,
     market_data : pd.Panel, 因为pd不再使用面板数据，尝试使用dict代替
         Panel with items axis of 'price' and 'volume' DataFrames.
         The major and minor axes should match those of the
-        the passed positions DataFrame (same dates and symbols).
+        passed positions DataFrame (same dates and symbols).
     max_bar_consumption : float
         Max proportion of a daily bar that can be consumed in the
         process of liquidating a position.
@@ -84,10 +82,10 @@ def days_to_liquidate_positions(positions, market_data,
     """
     # print(market_data['volume'].info())
     # print(market_data['price'].info())
-    DV = market_data['volume'] * market_data['price']
+    dv = market_data['volume'] * market_data['price']
     # DV = (market_data[market_data.index.get_level_values(1) == 'volume'] *
     #       market_data[market_data.index.get_level_values(1) == 'price'])
-    roll_mean_dv = DV.rolling(window=mean_volume_window,
+    roll_mean_dv = dv.rolling(window=mean_volume_window,
                               center=False).mean().shift()
     roll_mean_dv = roll_mean_dv.replace(0, np.nan)
 
@@ -114,10 +112,10 @@ def get_max_days_to_liquidate_by_ticker(positions, market_data,
     positions: pd.DataFrame
         Contains daily position values including cash
         - See full explanation in tears.create_full_tear_sheet
-    market_data : pd.Panel
+    market_data : pd.Panel:
         Panel with items axis of 'price' and 'volume' DataFrames.
         The major and minor axes should match those of the
-        the passed positions DataFrame (same dates and symbols).
+        passed positions DataFrame (same dates and symbols).
     max_bar_consumption : float
         Max proportion of a daily bar that can be consumed in the
         process of liquidating a position.
@@ -172,10 +170,10 @@ def get_low_liquidity_transactions(transactions, market_data,
     transactions : pd.DataFrame
         Prices and amounts of executed trades. One row per trade.
          - See full explanation in create_full_tear_sheet.
-    market_data : pd.Panel
+    market_data : pd.Panel, use dict replace
         Panel with items axis of 'price' and 'volume' DataFrames.
         The major and minor axes should match those of the
-        the passed positions DataFrame (same dates and symbols).
+        passed positions DataFrame (same dates and symbols).
     last_n_days : integer
         Compute for only the last n days of the passed backtest data.
     """

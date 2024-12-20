@@ -201,7 +201,7 @@ def extract_round_trips(transactions,
     grouped by day and directionality. Then, long and short
     transactions are matched to create round-trip round_trips for which
     PnL, duration and returns are computed. Crossings where a position
-    changes from long to short and vice-versa are handled correctly.
+    changes from long to short and vice versa are handled correctly.
 
     Under the hood, we reconstruct the individual shares in a
     portfolio over time and match round_trips in a FIFO-order.
@@ -213,7 +213,7 @@ def extract_round_trips(transactions,
     2004-01-13 14:41:23    -10      100      'AAPL'
     2004-01-13 15:23:34    -10      200       'AAPL'
 
-    First, the first two and last two round_trips will be merged into a two
+    First, the first two and last two round_trips will be merged into two
     single transactions (computing the price via vwap). Then, during
     the portfolio reconstruction, the two resulting transactions will
     be merged and result in 1 round-trip trade with a PnL of
@@ -238,10 +238,10 @@ def extract_round_trips(transactions,
 
     Returns
     -------
-    round_trips : pd.DataFrame
+    round_trips : pd.DataFrame:
         DataFrame with one row per round trip.  The returns column
         contains returns in respect to the portfolio value while
-        rt_returns are the returns in regards to the invested capital
+        rt_returns are the returns in regard to the invested capital
         into that partiulcar round-trip.
     """
 
@@ -375,7 +375,7 @@ def apply_sector_mappings_to_round_trips(round_trips, sector_mappings):
 
     Parameters
     ----------
-    round_trips : pd.DataFrame
+    round_trips : pd.DataFrame:
         DataFrame with one row per round trip trade.
         - See full explanation in round_trips.extract_round_trips
     sector_mappings : dict or pd.Series, optional
@@ -401,7 +401,7 @@ def apply_sector_mappings_to_round_trips(round_trips, sector_mappings):
 #
 #     Parameters
 #     ----------
-#     round_trips : pd.DataFrame
+#     round_trips : pd.DataFrame:
 #         DataFrame with one row per round trip trade.
 #         - See full explanation in round_trips.extract_round_trips
 #
@@ -429,7 +429,7 @@ def gen_round_trip_stats(round_trips):
 
     Parameters
     ----------
-    round_trips : pd.DataFrame
+    round_trips : pd.DataFrame:
         DataFrame with one row per round trip trade.
         - See full explanation in round_trips.extract_round_trips
 
@@ -480,9 +480,10 @@ def print_round_trip_stats(round_trips, hide_pos=False):
 
     Parameters
     ----------
-    round_trips : pd.DataFrame
+    round_trips : pd.DataFrame:
         DataFrame with one row per round trip trade.
         - See full explanation in round_trips.extract_round_trips
+    hide_pos : bool, optional, default: False
 
     See also
     --------

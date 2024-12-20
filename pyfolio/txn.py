@@ -186,12 +186,12 @@ def get_turnover(positions, transactions, denominator='AGB'):
     if denominator == 'AGB':
         # Actual gross book is the same thing as the algo's GMV
         # We want our denom to be avg(AGB previous, AGB current)
-        AGB = positions.drop('cash', axis=1).abs().sum(axis=1)
-        denom = AGB.rolling(2).mean()
+        agb = positions.drop('cash', axis=1).abs().sum(axis=1)
+        denom = agb.rolling(2).mean()
 
         # Since the first value of pd.rolling returns NaN, we
         # set our "day 0" AGB to 0.
-        denom.iloc[0] = AGB.iloc[0] / 2
+        denom.iloc[0] = agb.iloc[0] / 2
     elif denominator == 'portfolio_value':
         denom = positions.sum(axis=1)
     else:

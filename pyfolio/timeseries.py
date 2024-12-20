@@ -161,7 +161,7 @@ def calmar_ratio(returns, period=DAILY):
 
 
 @deprecated(msg=DEPRECATION_WARNING)
-def omega_ratio(returns, annual_return_threshhold=0.0):
+def omega_ratio(returns, annual_return_threshold=0.0):
     """
     Determines the Omega ratio of a strategy.
 
@@ -195,7 +195,7 @@ def omega_ratio(returns, annual_return_threshhold=0.0):
     """
 
     return ep.omega_ratio(returns,
-                          required_return=annual_return_threshhold)
+                          required_return=annual_return_threshold)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -280,7 +280,7 @@ def sharpe_ratio(returns, risk_free=0, period=DAILY):
     float
         Sharpe ratio.
     np.nan
-        If insufficient length of returns or if if adjusted returns are 0.
+        If insufficient length of returns or if is adjusted returns are 0.
 
     Note
     -----
@@ -1258,7 +1258,8 @@ def extract_interesting_date_ranges(returns):
             if len(period) == 0:
                 continue
             ranges[name] = period
-        except BaseException:
+        except BaseException as e:
+            print(e)
             continue
 
     return ranges
