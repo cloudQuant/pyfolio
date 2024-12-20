@@ -2,11 +2,7 @@
 
 #### 介绍
 
-pyfolio原本是zipline的绩效分析模块，由大名鼎鼎的量化平台quantopian开发并开源出来。
-但是，quantopian倒闭之后，pyfolio慢慢缺乏维护，已经很久没有更新了，
-在使用过程中经常会碰到各种小bug，另一个原因是pyfolio做绩效分析的效率并不高，
-数据非常多的时候处理速度会比较慢，还有pyfolio对notebook支持比较好，
-对于其他的开发环境支持较弱，本模块尝试在pyfolio的基础上，结合其他绩效分析模块的优点，
+尝试在pyfolio的基础上，结合其他绩效分析模块的优点，
 做出一个更好用的绩效分析模块，供大家使用。
 
 主要基于python语言，使用numpy、pandas、scipy、plotly、dash、flask和
