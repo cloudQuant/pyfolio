@@ -15,8 +15,9 @@ pyqt6等对原来的pyfolio进行改进优化。
 安装需要进入python包的工作目录，然后git clone下载pyfolio文件
 
 ```
-# 克隆项目
-git clone https://gitee.com/yunjinqi/pyfolio.git
+# 克隆项目，选择一个代码库进行克隆
+git clone https://gitee.com/yunjinqi/pyfolio.git       # 国内gitee速度更快
+git clone https://github.com/cloudQuant/pyfolio.git    # 国外github可能更快
 # 安装依赖包
 pip install -r ./pyfolio/requirements.txt
 # 安装pyfolio
