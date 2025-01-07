@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 */.DS_Store
 .DS_Store
+pyfolio/static/image/*
+pyfolio/static/strategy_performance*
 
 # C extensions
 *.so

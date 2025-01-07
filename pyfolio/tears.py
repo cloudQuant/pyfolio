@@ -17,6 +17,7 @@ from __future__ import division
 import warnings
 from time import time
 import os
+import shutil
 import pyfolio as pf
 import empyrical as ep
 from IPython.display import display, Markdown
@@ -106,7 +107,17 @@ def create_full_tear_sheet_by_flask(returns,
     target_static_path = data_root + "/static"
     if not os.path.exists(target_static_path):
         os.makedirs(target_static_path)
+    # 删除所有以 strategy_performance 开头的文件
+    for file in os.listdir(target_static_path):
+        try:
+            if "strategy_performance" in file:  # 确保是文件而不是文件夹
+                os.remove(os.path.join(target_static_path, file))
+                print(f"已删除文件：{file}")
+        except Exception as e:
+            print(f"删除文件 {file} 时出错：{e}")
     target_image_path = target_static_path + "/image"
+    if os.path.exists(target_image_path):
+        shutil.rmtree(target_image_path)
     if not os.path.exists(target_image_path):
         os.makedirs(target_image_path)
 
@@ -118,6 +129,7 @@ def create_full_tear_sheet_by_flask(returns,
 
     positions = utils.check_intraday(estimate_intraday, returns,
                                      positions, transactions)
+
     # returns_tear_sheet = None
     returns_tear_sheet = create_returns_tear_sheet(
         returns,
@@ -192,6 +204,7 @@ def create_full_tear_sheet_by_flask(returns,
                                                          benchmark_rets=benchmark_rets,
                                                          set_context=set_context,
                                                          return_fig=True)
+
     content = {"returns_tear_sheet": returns_tear_sheet,
                "interesting_times_tear_sheet": interesting_times_tear_sheet,
                "position_tear_sheet": position_tear_sheet,
@@ -209,7 +222,7 @@ def create_full_tear_sheet_by_flask(returns,
 
     if run_flask_app:
         from .flask_app import app
-        app.run(port="2021")
+        app.run(port=2025)
 
 
 def create_full_tear_sheet(returns,
@@ -1155,7 +1168,8 @@ def create_capacity_tear_sheet(returns, positions, transactions,
                                trade_daily_vol_limit=0.05,
                                last_n_days=utils.APPROX_BDAYS_PER_MONTH * 6,
                                days_to_liquidate_limit=1,
-                               estimate_intraday='infer'):
+                               estimate_intraday='infer',
+                               return_fig=False):
     """
     Generates a report detailing portfolio size constraints set by
     least liquid tickers. Plots a "capacity sweep," a curve describing
@@ -1252,6 +1266,8 @@ def create_capacity_tear_sheet(returns, positions, transactions,
                                  max_pv=300000000,
                                  step_size=1000000,
                                  ax=ax_capacity_sweep)
+    if return_fig:
+        return fig
 
 
 @plotting.customize

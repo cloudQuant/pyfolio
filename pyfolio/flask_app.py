@@ -1,33 +1,80 @@
-
-from flask import Flask  # 导入Flask 类创建Flask应用对象
-from flask import render_template
+from flask import Flask, render_template
 import pandas as pd
-import pyfolio as pf
-# 文件地址
-data_root = pf.__file__.replace("__init__.py","")
-target_templates_path = data_root+"/templates/"  
-target_static_path = data_root+"/static/" 
-# 初始化app    
-app = Flask(__name__,template_folder=target_templates_path,static_folder=target_static_path)  # app = application
+import os
+import shutil
+import glob
 
-performance_df = pd.read_excel(target_static_path+"strategy_performance__Out-of-sample months.xlsx",index_col=0)
-stress_events_df = pd.read_excel(target_static_path+"strategy_performance__Stress Events.xlsx",index_col=0).astype("str")
-long_position_df = pd.read_excel(target_static_path+"strategy_performance__Top 10 long positions of all time.xlsx",index_col=0)
-short_position_df = pd.read_excel(target_static_path+"strategy_performance__Top 10 positions of all time.xlsx",index_col=0)
-worst_drawdown_df = pd.read_excel(target_static_path+"strategy_performance__Worst drawdown periods.xlsx",index_col=0)
 
-@app.route("/",methods=("POST", "GET"))
-def first_page():
-    # 绩效统计数据
-    return render_template("flask_index.html",
-                           name = "pyfolio-策略绩效分析",
-                           performance_tables=[performance_df.to_html(classes='data', header="true")],
-                           stress_events_tables=[stress_events_df.to_html(classes='data', header="true")],
-                           long_position_tables=[long_position_df.to_html(classes='data', header="true")],
-                           short_position_tables=[short_position_df.to_html(classes='data', header="true")],
-                           worst_drawdown_tables=[worst_drawdown_df.to_html(classes='data', header="true")]
-                           
-    )
+# 初始化 Flask 应用
+app = Flask(__name__,
+            template_folder="templates",
+            static_folder="static")
 
-if __name__ == '__main__':  # 当前文件处于脚本状态时运行如下代码
-    app.run(port = "2021")  # 启动Flask 应用
+# 静态文件和模板文件路径
+data_root = os.path.dirname(__file__)  # 当前文件目录
+static_path = os.path.join(data_root, "static")
+template_path = os.path.join(data_root, "templates")
+# 数据文件路径
+files = {
+    "performance_df": "strategy_performance_Out-of-sample months.xlsx",
+    "stress_events_df": "strategy_performance_Stress Events.xlsx",
+    "long_position_df": "strategy_performance_Top 10 long positions of all time.xlsx",
+    "short_position_df": "strategy_performance_Top 10 short positions of all time.xlsx",
+    "total_position_df": "strategy_performance_Top 10 positions of all time.xlsx",
+    "total_months_df": "strategy_performance_Total months.xlsx",
+    "worst_drawdown_df": "strategy_performance_Worst drawdown periods.xlsx",
+}
+
+
+# 获取静态文件中的图片路径
+def get_static_images():
+    return [
+        f"image/returns_tear_sheet.png",
+        f"image/position_tear_sheet.png",
+        f"image/interesting_times_tear_sheet.png",
+    ]
+
+
+# 加载数据函数
+def load_excel_data(file_name, index_col=0):
+    file_path = os.path.join(static_path, file_name)
+    if os.path.exists(file_path):
+        try:
+            return pd.read_excel(file_path, index_col=index_col)
+        except Exception as e:
+            print(f"Error reading {file_name}: {e}")
+    return pd.DataFrame()  # 返回空 DataFrame 作为备用
+
+
+# 加载所有数据表
+performance_df = load_excel_data(files["performance_df"])
+stress_events_df = load_excel_data(files["stress_events_df"])
+long_position_df = load_excel_data(files["long_position_df"])
+short_position_df = load_excel_data(files["short_position_df"])
+worst_drawdown_df = load_excel_data(files["worst_drawdown_df"])
+total_position_df = load_excel_data(files["total_position_df"])
+total_months_df = load_excel_data(files["total_months_df"])
+
+
+@app.route("/", methods=("GET",))
+def index():
+    # 渲染模板
+    target_file = "index.html"
+    static_images = get_static_images()
+    return render_template(
+        target_file,
+        name="Pyfolio - 策略绩效分析",
+        static_images=static_images,  # 传递图片列表到模板
+        performance_tables=[performance_df.to_html(classes='data', header=True, index=True)],
+        stress_events_tables=[stress_events_df.to_html(classes='data', header=True, index=True)],
+        long_position_tables=[long_position_df.to_html(classes='data', header=True, index=True)],
+        short_position_tables=[short_position_df.to_html(classes='data', header=True, index=True)],
+        worst_drawdown_tables=[worst_drawdown_df.to_html(classes='data', header=True, index=True)],
+        total_position_tables=[total_position_df.to_html(classes='data', header=True, index=True)],
+        total_months_tables=[total_months_df.to_html(classes='data', header=True, index=True)],
+        )
+
+
+if __name__ == "__main__":
+    # 启动应用
+    app.run(host="0.0.0.0", port=2025, debug=True)

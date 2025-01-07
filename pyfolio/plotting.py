@@ -597,7 +597,14 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
         date_rows['End date'] = returns.index[-1].strftime('%Y-%m-%d')
 
     if live_start_date is not None:
-        live_start_date = ep.utils.get_utc_timestamp(live_start_date)
+        if isinstance(live_start_date, str):
+            live_start_date = pd.to_datetime(live_start_date)
+        if live_start_date.tz is None:
+            # 如果 live_start_date 没有时区，先设置时区
+            live_start_date = live_start_date.tz_localize(returns.index[0].tz)
+        else:
+            # 如果 live_start_date 已经有其他时区，转换时区
+            live_start_date = live_start_date.tz_convert(returns.index[0].tz)
         returns_is = returns[returns.index < live_start_date]
         returns_oos = returns[returns.index >= live_start_date]
 
@@ -607,6 +614,17 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
         transactions_oos = None
 
         if positions is not None:
+            if isinstance(live_start_date, str):
+                live_start_date = pd.to_datetime(live_start_date, utc=True)
+            target_date = positions.index[0]
+            if live_start_date.tz is None:
+                # 如果 live_start_date 没有时区，先设置时区
+                live_start_date = live_start_date.tz_localize(target_date.tz)
+            else:
+                # 如果 live_start_date 已经有其他时区，转换时区
+                live_start_date = live_start_date.tz_convert(target_date.tz)
+
+            # 打印具体的时间值
             positions_is = positions[positions.index < live_start_date]
             positions_oos = positions[positions.index >= live_start_date]
             if transactions is not None:
@@ -701,7 +719,15 @@ def plot_returns(returns,
     ax.set_ylabel('Returns')
 
     if live_start_date is not None:
-        live_start_date = ep.utils.get_utc_timestamp(live_start_date)
+        if isinstance(live_start_date, str):
+            live_start_date = pd.to_datetime(live_start_date, utc=True)
+        target_date = returns.index[0]
+        if live_start_date.tz is None:
+            # 如果 live_start_date 没有时区，先设置时区
+            live_start_date = live_start_date.tz_localize(target_date.tz)
+        else:
+            # 如果 live_start_date 已经有其他时区，转换时区
+            live_start_date = live_start_date.tz_convert(target_date.tz)
         is_returns = returns.loc[returns.index < live_start_date]
         oos_returns = returns.loc[returns.index >= live_start_date]
         is_returns.plot(ax=ax, color='g')
@@ -801,7 +827,15 @@ def plot_rolling_returns(returns,
                                 ax=ax, **kwargs)
 
     if live_start_date is not None:
-        live_start_date = ep.utils.get_utc_timestamp(live_start_date)
+        if isinstance(live_start_date, str):
+            live_start_date = pd.to_datetime(live_start_date, utc=True)
+        target_date = cum_rets.index[0]
+        if live_start_date.tz is None:
+            # 如果 live_start_date 没有时区，先设置时区
+            live_start_date = live_start_date.tz_localize(target_date.tz)
+        else:
+            # 如果 live_start_date 已经有其他时区，转换时区
+            live_start_date = live_start_date.tz_convert(target_date.tz)
         is_cum_returns = cum_rets.loc[cum_rets.index < live_start_date]
         oos_cum_returns = cum_rets.loc[cum_rets.index >= live_start_date]
     else:
@@ -1299,9 +1333,17 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, **kwargs):
 
     if ax is None:
         ax = plt.gca()
-
-    is_returns = returns if live_start_date is None \
-        else returns.loc[returns.index < live_start_date]
+    if live_start_date is None:
+        is_returns = returns
+    else:
+        target_date = returns.index[0]
+        if live_start_date.tz is None:
+            # 如果 live_start_date 没有时区，先设置时区
+            live_start_date = live_start_date.tz_localize(target_date.tz)
+        else:
+            # 如果 live_start_date 已经有其他时区，转换时区
+            live_start_date = live_start_date.tz_convert(target_date.tz)
+        is_returns = returns.loc[returns.index < live_start_date]
     is_weekly = ep.aggregate_returns(is_returns, 'weekly')
     is_monthly = ep.aggregate_returns(is_returns, 'monthly')
     data = pd.concat([
