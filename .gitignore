@@ -6,6 +6,7 @@ __pycache__/
 .DS_Store
 pyfolio/static/image/*
 pyfolio/static/strategy_performance*
+examples/.ipynb_checkpoints/*
 
 # C extensions
 *.so

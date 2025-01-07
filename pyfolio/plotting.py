@@ -540,7 +540,8 @@ STAT_FUNCS_PCT = [
 def show_perf_stats(returns, factor_returns=None, positions=None,
                     transactions=None, turnover_denom='AGB',
                     live_start_date=None, bootstrap=False,
-                    header_rows=None):
+                    header_rows=None,
+                    run_flask_app=False):
     """
     Prints some performance metrics of the strategy.
 
@@ -577,6 +578,8 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
          - For more information, see timeseries.perf_stats_bootstrap
     header_rows : dict or OrderedDict, optional
         Extra rows to display at the top of the displayed table.
+    run_flask_app : boolean, optional, default False
+        Whether to run the flask app.
     """
 
     if bootstrap:
@@ -681,6 +684,7 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
         perf_stats,
         float_format='{0:.2f}'.format,
         header_rows=header_rows,
+        run_flask_app=run_flask_app
     )
 
 
@@ -1152,6 +1156,7 @@ def plot_exposures(returns, positions, ax=None, **kwargs):
 def show_and_plot_top_positions(returns, positions_alloc,
                                 show_and_plot=2, hide_positions=False,
                                 legend_loc='real_best', ax=None,
+                                run_flask_app=False,
                                 **kwargs):
     """
     Prints and/or plots the exposures of the top 10 held positions of
@@ -1174,6 +1179,8 @@ def show_and_plot_top_positions(returns, positions_alloc,
         By default, the legend will display below the plot.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
+    run_flask_app : bool, optional, default False
+        If True, will run a Flask app to display the plot in a web browser.
     **kwargs, optional
         Passed to plotting function.
 
@@ -1192,15 +1199,18 @@ def show_and_plot_top_positions(returns, positions_alloc,
     if show_and_plot == 1 or show_and_plot == 2:
         utils.print_table(pd.DataFrame(df_top_long * 100, columns=['max']),
                           float_format='{0:.2f}%'.format,
-                          name='Top 10 long positions of all time')
+                          name='Top 10 long positions of all time',
+                          run_flask_app=run_flask_app)
 
         utils.print_table(pd.DataFrame(df_top_short * 100, columns=['max']),
                           float_format='{0:.2f}%'.format,
-                          name='Top 10 short positions of all time')
+                          name='Top 10 short positions of all time',
+                          run_flask_app=run_flask_app)
 
         utils.print_table(pd.DataFrame(df_top_abs * 100, columns=['max']),
                           float_format='{0:.2f}%'.format,
-                          name='Top 10 positions of all time')
+                          name='Top 10 positions of all time',
+                          run_flask_app=run_flask_app)
 
     if show_and_plot == 0 or show_and_plot == 2:
 
@@ -1704,7 +1714,7 @@ def plot_txn_time_hist(transactions, bin_minutes=5, tz='America/New_York',
     return ax
 
 
-def show_worst_drawdown_periods(returns, top=5):
+def show_worst_drawdown_periods(returns, top=5, run_flask_app=False):
     """
     Prints information about the worst drawdown periods.
 
@@ -1718,6 +1728,10 @@ def show_worst_drawdown_periods(returns, top=5):
          - See full explanation in tears.create_full_tear_sheet.
     top : int, optional
         Amount of top drawdowns periods to plot (default 5).
+    run_flask_app : bool, optional,default=False
+        Whether to run the flask app to display the plot.
+
+
     """
 
     drawdown_df = timeseries.gen_drawdown_table(returns, top=top)
@@ -1725,6 +1739,7 @@ def show_worst_drawdown_periods(returns, top=5):
         drawdown_df.sort_values('Net drawdown in %', ascending=False),
         name='Worst drawdown periods',
         float_format='{0:.2f}'.format,
+        run_flask_app=run_flask_app
     )
 
 
@@ -1887,7 +1902,7 @@ def plot_round_trip_lifetimes(round_trips, disp_amount=16, lsize=18, ax=None):
     return ax
 
 
-def show_profit_attribution(round_trips):
+def show_profit_attribution(round_trips, run_flask_app=False):
     """
     Prints the share of total PnL contributed by each
     traded name.
@@ -1899,7 +1914,8 @@ def show_profit_attribution(round_trips):
         - See full explanation in round_trips.extract_round_trips
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-
+    run_flask_app : bool, optional,default=False
+        Whether to run the flask app to display the plot.
     Returns
     -------
     ax : matplotlib.Axes
@@ -1918,6 +1934,7 @@ def show_profit_attribution(round_trips):
         ),
         name='Profitability (PnL / PnL total) per name',
         float_format='{:.2%}'.format,
+        run_flask_app=run_flask_app
     )
 
 

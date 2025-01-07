@@ -474,7 +474,7 @@ def gen_round_trip_stats(round_trips):
     return stats
 
 
-def print_round_trip_stats(round_trips, hide_pos=False):
+def print_round_trip_stats(round_trips, hide_pos=False, run_flask_app=False):
     """Print various round-trip statistics. Tries to pretty-print tables
     with HTML output if run inside IPython NB.
 
@@ -484,6 +484,10 @@ def print_round_trip_stats(round_trips, hide_pos=False):
         DataFrame with one row per round trip trade.
         - See full explanation in round_trips.extract_round_trips
     hide_pos : bool, optional, default: False
+        Whether to hide the position-based statistics.
+
+    run_flask_app : bool, optional, default: False
+        Whether to run a Flask app to serve the round-trip statistics.
 
     See also
     --------
@@ -492,15 +496,26 @@ def print_round_trip_stats(round_trips, hide_pos=False):
 
     stats = gen_round_trip_stats(round_trips)
 
-    print_table(stats['summary'], float_format='{:.2f}'.format,
-                name='Summary stats')
-    print_table(stats['pnl'], float_format='${:.2f}'.format, name='PnL stats')
-    print_table(stats['duration'], float_format='{:.2f}'.format,
-                name='Duration stats')
-    print_table(stats['returns'] * 100, float_format='{:.2f}%'.format,
-                name='Return stats')
+    print_table(stats['summary'],
+                float_format='{:.2f}'.format,
+                name='Summary stats',
+                run_flask_app=run_flask_app)
+    print_table(stats['pnl'],
+                float_format='${:.2f}'.format,
+                name='PnL stats',
+                run_flask_app=run_flask_app)
+    print_table(stats['duration'],
+                float_format='{:.2f}'.format,
+                name='Duration stats',
+                run_flask_app=run_flask_app)
+    print_table(stats['returns'] * 100,
+                float_format='{:.2f}%'.format,
+                name='Return stats',
+                run_flask_app=run_flask_app)
 
     if not hide_pos:
         stats['symbols'].columns = stats['symbols'].columns.map(format_asset)
         print_table(stats['symbols'] * 100,
-                    float_format='{:.2f}%'.format, name='Symbol stats')
+                    float_format='{:.2f}%'.format,
+                    name='Symbol stats',
+                    run_flask_app=run_flask_app)

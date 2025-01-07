@@ -142,12 +142,12 @@ def create_full_tear_sheet_by_flask(returns,
         turnover_denom=turnover_denom,
         header_rows=header_rows,
         set_context=set_context,
-        return_fig=True)
+        run_flask_app=True)
 
     interesting_times_tear_sheet = create_interesting_times_tear_sheet(returns,
                                                                        benchmark_rets=benchmark_rets,
                                                                        set_context=set_context,
-                                                                       return_fig=True)
+                                                                       run_flask_app=True)
     position_tear_sheet = None
     txn_tear_sheet = None
     round_trip_tear_sheet = None
@@ -161,14 +161,14 @@ def create_full_tear_sheet_by_flask(returns,
                                                          set_context=set_context,
                                                          sector_mappings=sector_mappings,
                                                          estimate_intraday=False,
-                                                         return_fig=True)
+                                                         run_flask_app=True)
 
         if transactions is not None:
             txn_tear_sheet = create_txn_tear_sheet(returns, positions, transactions,
                                                    unadjusted_returns=unadjusted_returns,
                                                    estimate_intraday=False,
                                                    set_context=set_context,
-                                                   return_fig=True)
+                                                   run_flask_app=True)
             if round_trips:
                 round_trip_tear_sheet = create_round_trip_tear_sheet(
                     returns=returns,
@@ -176,7 +176,7 @@ def create_full_tear_sheet_by_flask(returns,
                     transactions=transactions,
                     sector_mappings=sector_mappings,
                     estimate_intraday=False,
-                    return_fig=True)
+                    run_flask_app=True)
 
             if market_data is not None:
                 capacity_tear_sheet = create_capacity_tear_sheet(returns, positions, transactions,
@@ -184,26 +184,26 @@ def create_full_tear_sheet_by_flask(returns,
                                                                  liquidation_daily_vol_limit=0.2,
                                                                  last_n_days=125,
                                                                  estimate_intraday=False,
-                                                                 return_fig=True)
+                                                                 run_flask_app=True)
 
         if style_factor_panel is not None:
             risk_tear_sheet = create_risk_tear_sheet(positions, style_factor_panel, sectors,
                                                      caps, shares_held, volumes, percentile,
-                                                     return_fig=True)
+                                                     run_flask_app=True)
 
         if factor_returns is not None and factor_loadings is not None:
             perf_attrib_tear_sheet = create_perf_attrib_tear_sheet(returns, positions, factor_returns,
                                                                    factor_loadings, transactions,
                                                                    pos_in_dollars=pos_in_dollars,
                                                                    factor_partitions=factor_partitions,
-                                                                   return_fig=True)
+                                                                   run_flask_app=True)
 
     if bayesian:
         bayesian_tear_sheet = create_bayesian_tear_sheet(returns,
                                                          live_start_date=live_start_date,
                                                          benchmark_rets=benchmark_rets,
                                                          set_context=set_context,
-                                                         return_fig=True)
+                                                         run_flask_app=True)
 
     content = {"returns_tear_sheet": returns_tear_sheet,
                "interesting_times_tear_sheet": interesting_times_tear_sheet,
@@ -217,7 +217,7 @@ def create_full_tear_sheet_by_flask(returns,
 
     for name, fig in content.items():
         if fig is not None:
-            print(f"{name}保存在文件夹{target_image_path}")
+            # print(f"{name}保存在文件夹{target_image_path}")
             fig.savefig(target_image_path + "/" + name + ".png")
 
     if run_flask_app:
@@ -632,7 +632,7 @@ def create_returns_tear_sheet(returns, positions=None,
                               bootstrap=False,
                               turnover_denom='AGB',
                               header_rows=None,
-                              return_fig=False):
+                              run_flask_app=False):
     """
     Generate a number of plots for analyzing a strategy's returns.
 
@@ -674,7 +674,7 @@ def create_returns_tear_sheet(returns, positions=None,
         - See full explanation in txn.get_turnover.
     header_rows : dict or OrderedDict, optional
         Extra rows to display at the top of the perf stats table.
-    return_fig : boolean, optional
+    run_flask_app : boolean, optional
         If True, returns the figure that was plotted on.
     """
 
@@ -687,9 +687,10 @@ def create_returns_tear_sheet(returns, positions=None,
                              turnover_denom=turnover_denom,
                              bootstrap=bootstrap,
                              live_start_date=live_start_date,
-                             header_rows=header_rows)
+                             header_rows=header_rows,
+                             run_flask_app=run_flask_app)
 
-    plotting.show_worst_drawdown_periods(returns)
+    plotting.show_worst_drawdown_periods(returns, run_flask_app=run_flask_app)
 
     vertical_sections = 11
 
@@ -809,14 +810,14 @@ def create_returns_tear_sheet(returns, positions=None,
     for ax in fig.axes:
         plt.setp(ax.get_xticklabels(), visible=True)
 
-    if return_fig:
+    if run_flask_app:
         return fig
 
 
 @plotting.customize
 def create_position_tear_sheet(returns, positions,
                                show_and_plot_top_pos=2, hide_positions=False,
-                               return_fig=False, sector_mappings=None,
+                               run_flask_app=False, sector_mappings=None,
                                transactions=None, estimate_intraday='infer'):
     """
     Generate a number of plots for analyzing a
@@ -840,7 +841,7 @@ def create_position_tear_sheet(returns, positions,
     hide_positions : bool, optional
         If True, will not output any symbol names.
         Overrides show_and_plot_top_pos to 0 to suppress text output.
-    return_fig : boolean, optional
+    run_flask_app : boolean, optional
         If True, returns the figure that was plotted on.
     sector_mappings : dict or pd.Series, optional
         Security identifier to sector mapping.
@@ -878,7 +879,8 @@ def create_position_tear_sheet(returns, positions,
         positions_alloc,
         show_and_plot=show_and_plot_top_pos,
         hide_positions=hide_positions,
-        ax=ax_top_positions)
+        ax=ax_top_positions,
+        run_flask_app=run_flask_app)
 
     plotting.plot_max_median_position_concentration(positions,
                                                     ax=ax_max_median_pos)
@@ -904,14 +906,14 @@ def create_position_tear_sheet(returns, positions,
     for ax in fig.axes:
         plt.setp(ax.get_xticklabels(), visible=True)
 
-    if return_fig:
+    if run_flask_app:
         return fig
 
 
 @plotting.customize
 def create_txn_tear_sheet(returns, positions, transactions,
                           unadjusted_returns=None, estimate_intraday='infer',
-                          return_fig=False):
+                          run_flask_app=False):
     """
     Generate a number of plots for analyzing a strategy's transactions.
 
@@ -936,7 +938,7 @@ def create_txn_tear_sheet(returns, positions, transactions,
     estimate_intraday: boolean or str, optional
         Approximate returns for intraday strategies.
         See description in create_full_tear_sheet.
-    return_fig : boolean, optional
+    run_flask_app : boolean, optional
         If True, returns the figure that was plotted on.
     """
 
@@ -984,14 +986,15 @@ def create_txn_tear_sheet(returns, positions, transactions,
     for ax in fig.axes:
         plt.setp(ax.get_xticklabels(), visible=True)
 
-    if return_fig:
+    if run_flask_app:
         return fig
 
 
 @plotting.customize
 def create_round_trip_tear_sheet(returns, positions, transactions,
                                  sector_mappings=None,
-                                 estimate_intraday='infer', return_fig=False):
+                                 estimate_intraday='infer',
+                                 run_flask_app=False):
     """
     Generate a number of figures and plots describing the duration,
     frequency, and profitability of trade "round trips."
@@ -1016,7 +1019,7 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
     estimate_intraday: boolean or str, optional
         Approximate returns for intraday strategies.
         See description in create_full_tear_sheet.
-    return_fig : boolean, optional
+    run_flask_app : boolean, optional
         If True, returns the figure that was plotted on.
     """
 
@@ -1037,14 +1040,14 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
                Skipping round trip tearsheet.""", UserWarning)
         return
 
-    round_trips.print_round_trip_stats(trades)
+    round_trips.print_round_trip_stats(trades, run_flask_app=run_flask_app)
 
-    plotting.show_profit_attribution(trades)
+    plotting.show_profit_attribution(trades, run_flask_app=run_flask_app)
 
     if sector_mappings is not None:
         sector_trades = round_trips.apply_sector_mappings_to_round_trips(
             trades, sector_mappings)
-        plotting.show_profit_attribution(sector_trades)
+        plotting.show_profit_attribution(sector_trades, run_flask_app=run_flask_app)
 
     fig = plt.figure(figsize=(14, 3 * 6))
 
@@ -1078,13 +1081,13 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
 
     gs.tight_layout(fig)
 
-    if return_fig:
+    if run_flask_app:
         return fig
 
 
 @plotting.customize
 def create_interesting_times_tear_sheet(
-        returns, benchmark_rets=None, legend_loc='best', return_fig=False):
+        returns, benchmark_rets=None, legend_loc='best', run_flask_app=False):
     """
     Generate a number of returns plots around interesting points in time,
     like the flash crash and 9/11.
@@ -1107,7 +1110,7 @@ def create_interesting_times_tear_sheet(
          - This is in the same style as returns.
     legend_loc : plt.legend_loc, optional
          The legend's location.
-    return_fig : boolean, optional
+    run_flask_app : boolean, optional
         If True, returns the figure that was plotted on.
     """
 
@@ -1122,7 +1125,8 @@ def create_interesting_times_tear_sheet(
                       .describe().transpose()
                       .loc[:, ['mean', 'min', 'max']] * 100,
                       name='Stress Events',
-                      float_format='{0:.2f}%'.format)
+                      float_format='{0:.2f}%'.format,
+                      run_flask_app=run_flask_app)
 
     if benchmark_rets is not None:
         returns = utils.clip_returns_to_benchmark(returns, benchmark_rets)
@@ -1157,7 +1161,7 @@ def create_interesting_times_tear_sheet(
         ax.set_ylabel('Returns')
         ax.set_xlabel('')
 
-    if return_fig:
+    if run_flask_app:
         return fig
 
 
@@ -1169,7 +1173,7 @@ def create_capacity_tear_sheet(returns, positions, transactions,
                                last_n_days=utils.APPROX_BDAYS_PER_MONTH * 6,
                                days_to_liquidate_limit=1,
                                estimate_intraday='infer',
-                               return_fig=False):
+                               run_flask_app=False):
     """
     Generates a report detailing portfolio size constraints set by
     least liquid tickers. Plots a "capacity sweep," a curve describing
@@ -1206,6 +1210,8 @@ def create_capacity_tear_sheet(returns, positions, transactions,
     estimate_intraday: boolean or str, optional
         Approximate returns for intraday strategies.
         See description in create_full_tear_sheet.
+    run_flask_app : boolean, optional, default False
+        If True, returns the figure that was plotted on.
     """
 
     positions = utils.check_intraday(estimate_intraday, returns,
@@ -1226,9 +1232,8 @@ def create_capacity_tear_sheet(returns, positions, transactions,
         max_days_by_ticker.index.map(utils.format_asset))
 
     print("Whole backtest:")
-    utils.print_table(
-        max_days_by_ticker[max_days_by_ticker.days_to_liquidate >
-                           days_to_liquidate_limit])
+    utils.print_table(max_days_by_ticker[max_days_by_ticker.days_to_liquidate > days_to_liquidate_limit],
+                      run_flask_app=run_flask_app)
 
     max_days_by_ticker_lnd = capacity.get_max_days_to_liquidate_by_ticker(
         positions, market_data,
@@ -1240,23 +1245,23 @@ def create_capacity_tear_sheet(returns, positions, transactions,
         max_days_by_ticker_lnd.index.map(utils.format_asset))
 
     print("Last {} trading days:".format(last_n_days))
-    utils.print_table(
-        max_days_by_ticker_lnd[max_days_by_ticker_lnd.days_to_liquidate > 1])
+    utils.print_table(max_days_by_ticker_lnd[max_days_by_ticker_lnd.days_to_liquidate > 1],
+                      run_flask_app=run_flask_app)
 
     llt = capacity.get_low_liquidity_transactions(transactions, market_data)
     llt.index = llt.index.map(utils.format_asset)
 
     print('Tickers with daily transactions consuming >{}% of daily bar \n'
           'all backtest:'.format(trade_daily_vol_limit * 100))
-    utils.print_table(
-        llt[llt['max_pct_bar_consumed'] > trade_daily_vol_limit * 100])
+    utils.print_table(llt[llt['max_pct_bar_consumed'] > trade_daily_vol_limit * 100],
+                      run_flask_app=run_flask_app)
 
     llt = capacity.get_low_liquidity_transactions(
         transactions, market_data, last_n_days=last_n_days)
 
     print("Last {} trading days:".format(last_n_days))
-    utils.print_table(
-        llt[llt['max_pct_bar_consumed'] > trade_daily_vol_limit * 100])
+    utils.print_table(llt[llt['max_pct_bar_consumed'] > trade_daily_vol_limit * 100],
+                      run_flask_app=run_flask_app)
 
     bt_starting_capital = positions.iloc[0].sum() / (1 + returns.iloc[0])
     fig, ax_capacity_sweep = plt.subplots(figsize=(14, 6))
@@ -1266,14 +1271,14 @@ def create_capacity_tear_sheet(returns, positions, transactions,
                                  max_pv=300000000,
                                  step_size=1000000,
                                  ax=ax_capacity_sweep)
-    if return_fig:
+    if run_flask_app:
         return fig
 
 
 @plotting.customize
 def create_bayesian_tear_sheet(returns, benchmark_rets=None,
                                live_start_date=None, samples=2000,
-                               return_fig=False, stoch_vol=False,
+                               run_flask_app=False, stoch_vol=False,
                                progressbar=True):
     """
     Generate a number of Bayesian distributions and a Bayesian
@@ -1296,7 +1301,7 @@ def create_bayesian_tear_sheet(returns, benchmark_rets=None,
         trading, after its backtest period.
     samples : int, optional
         Number of posterior samples to draw.
-    return_fig : boolean, optional
+    run_flask_app : boolean, optional
         If True, returns the figure that was plotted on.
     stoch_vol : boolean, optional
         If True, run and plot the stochastic volatility model
@@ -1453,7 +1458,7 @@ def create_bayesian_tear_sheet(returns, benchmark_rets=None,
 
     gs.tight_layout(fig)
 
-    if return_fig:
+    if run_flask_app:
         return fig
 
 
@@ -1468,7 +1473,7 @@ def create_risk_tear_sheet(positions,
                            returns=None,
                            transactions=None,
                            estimate_intraday='infer',
-                           return_fig=False):
+                           run_flask_app=False):
     """
     Creates risk tear sheet: computes and plots style factor exposures, sector
     exposures, market cap exposures and volume exposures.
@@ -1542,7 +1547,8 @@ def create_risk_tear_sheet(positions,
     returns :
     transactions :
     estimate_intraday :
-    return_fig :
+    run_flask_app : boolean, optional, default False
+        If True, returns the figure that was plotted on.
 
     """
 
@@ -1636,7 +1642,7 @@ def create_risk_tear_sheet(positions,
     for ax in fig.axes:
         plt.setp(ax.get_xticklabels(), visible=True)
 
-    if return_fig:
+    if run_flask_app:
         return fig
 
 
@@ -1647,7 +1653,7 @@ def create_perf_attrib_tear_sheet(returns,
                                   factor_loadings,
                                   transactions=None,
                                   pos_in_dollars=True,
-                                  return_fig=False,
+                                  run_flask_app=False,
                                   factor_partitions=FACTOR_PARTITIONS):
     """
     Generate plots and tables for analyzing a strategy's performance.
@@ -1678,7 +1684,7 @@ def create_perf_attrib_tear_sheet(returns,
         Flag indicating whether `positions` are in dollars or percentages
         If True, positions are in dollars.
 
-    return_fig : boolean, optional
+    run_flask_app : boolean, optional
         If True, returns the figure that was plotted on.
 
     factor_partitions : dict :
@@ -1754,5 +1760,5 @@ def create_perf_attrib_tear_sheet(returns,
 
     gs.tight_layout(fig)
 
-    if return_fig:
+    if run_flask_app:
         return fig

@@ -316,7 +316,8 @@ def print_table(table,
                 name=None,
                 float_format=None,
                 formatters=None,
-                header_rows=None):
+                header_rows=None,
+                run_flask_app=False):
     """
     Pretty print a pandas DataFrame.
 
@@ -338,6 +339,8 @@ def print_table(table,
         pd.Dataframe.to_html.
     header_rows : dict, optional
         Extra rows to display at the top of the table.
+    run_flask_app : bool, optional, default False
+        Whether to run Flask app for displaying table in a web browser.
     """
 
     if isinstance(table, pd.Series):
@@ -360,27 +363,26 @@ def print_table(table,
 
         # Inject the new HTML
         html = html.replace('<thead>', '<thead>' + rows)
+    if run_flask_app:
+        # 检查pyfolio中是否存在static文件夹,如果存在,就保存数据到static中
+        # 获取 pyfolio 的根目录
+        data_root = Path(pf.__file__).parent
 
-    # 检查pyfolio中是否存在static文件夹,如果存在,就保存数据到static中
-    # 获取 pyfolio 的根目录
-    data_root = Path(pf.__file__).parent
+        # 目标静态文件路径
+        target_static_path = data_root / "static"
 
-    # 目标静态文件路径
-    target_static_path = data_root / "static"
+        # 检查目标路径是否存在，如果不存在则创建
+        target_static_path.mkdir(parents=True, exist_ok=True)
 
-    # 检查目标路径是否存在，如果不存在则创建
-    target_static_path.mkdir(parents=True, exist_ok=True)
+        # 生成 Excel 文件路径
+        excel_file_path = target_static_path / f"strategy_performance_{name}.xlsx"
 
-    # 生成 Excel 文件路径
-    excel_file_path = target_static_path / f"strategy_performance_{name}.xlsx"
-
-    # 将表格数据写入 Excel 文件
-    try:
-        table.to_excel(excel_file_path, index=False)  # index=False 避免写入行索引
-        print(f"文件已成功保存到：{excel_file_path}")
-    except Exception as e:
-        print(f"保存文件时出错：{e}")
-
+        # 将表格数据写入 Excel 文件
+        try:
+            table.to_excel(excel_file_path, index=False)  # index=False 避免写入行索引
+            print(f"文件已成功保存到：{excel_file_path}")
+        except Exception as e:
+            print(f"保存文件时出错：{e}")
     display(HTML(html))
 
 
