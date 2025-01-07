@@ -51,31 +51,24 @@ pf.create_full_tear_sheet(df['returns'],benchmark_rets=df['benchmark_rets'],posi
 
 ##### 绩效指标分析
 
-![绩效统计指标1](https://img-blog.csdnimg.cn/aa15defc2c11403f9590c5cca2ed2e83.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+![绩效统计指标1](./img/image-20211218133956274.png)
 
-![绩效统计指标2](https://img-blog.csdnimg.cn/554ea5a6007847d785d3c72a3b050274.png#pic_center)
+![绩效统计指标2](./img/image-20211218134015808.png)
+
 
 ##### 收益相关的图
 
-![累计收益率](https://img-blog.csdnimg.cn/0e09ad44096c4336a0ef750aa4d4e403.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
-![累计收益率在对数坐标轴上](https://img-blog.csdnimg.cn/51a0010aa2cb406e8edd875ebfed753e.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
-![累计收益率的波动率](https://img-blog.csdnimg.cn/51a0010aa2cb406e8edd875ebfed753e.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
-![日收益率](https://img-blog.csdnimg.cn/18710ef4d9964cc29c8f1b34d9deed94.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
-![滚动夏普率](https://img-blog.csdnimg.cn/cd1ffa71138f4fe08793637f6b726676.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
-![滚动贝塔值](https://img-blog.csdnimg.cn/18710ef4d9964cc29c8f1b34d9deed94.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
-![滚动波动率](https://img-blog.csdnimg.cn/cd1ffa71138f4fe08793637f6b726676.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
-![最大回撤](https://img-blog.csdnimg.cn/b208313bfb614b46ac0a17560383b167.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
-![5次最大回撤](https://img-blog.csdnimg.cn/b208313bfb614b46ac0a17560383b167.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
-![收益率分析](https://img-blog.csdnimg.cn/5bf3808296c8466aaee3709573666c26.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+![累计收益率](./img/image-20211218134037434.png)
+![累计收益率在对数坐标轴上](./img/image-20211218134059209.png)
+![累计收益率的波动率](./img/image-20211218134125818.png)
+![日收益率](./img/image-20211218134146879.png)
+![最大回撤](./img/image-20211218134231902.png)
 
 ##### 持仓及杠杆相关的图
 
-![总的持仓](https://img-blog.csdnimg.cn/c325397edef343ed93e58503afdacbe2.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
-![持仓集中度](https://img-blog.csdnimg.cn/c325397edef343ed93e58503afdacbe2.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
-![10个最大持仓的分布](https://img-blog.csdnimg.cn/c37248b7257942e59c66b3045a15f339.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
-![多空持仓](https://img-blog.csdnimg.cn/7d68517645674f8097791d98d57d806c.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
-![总的杠杆](https://img-blog.csdnimg.cn/7d68517645674f8097791d98d57d806c.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
-![exposure](https://img-blog.csdnimg.cn/c37248b7257942e59c66b3045a15f339.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LqR6YeR5p2e,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+![总的持仓](./img/image-20211218134259958.png)
+![10个最大持仓的分布](./img/image-20211218134322190.png)
+![多空持仓](./img/image-20211218134342757.png)
 
 
 
