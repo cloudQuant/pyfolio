@@ -4,61 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ name }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header>
         <h1>{{ name }}</h1>
     </header>
     <main>
-        <section>
-            <h2>Static Images</h2>
-            <div class="image-gallery">
-                {% for image in static_images %}
-                    <img src="{{ url_for('static', filename=image) }}" alt="Static Image" class="gallery-image">
-                {% endfor %}
+        <div class="grid-layout">
+            <!-- 第一排：前两个表格和第一张图片 -->
+            <div class="row">
+                <div class="table-container">
+                    {% for table in performance_tables %}
+                        {{ table|safe }}
+                    {% endfor %}
+                </div>
+                <div class="image-container">
+                    <img src="{{ url_for('static', filename=static_images[0]) }}" alt="Static Image 1" class="gallery-image">
+                </div>
             </div>
-        </section>
-        <section>
-            <h2>绩效统计数据</h2>
-            {% for table in performance_tables %}
+
+            <!-- 第二排：第三个表格和第二张图片 -->
+            <div class="row">
                 <div class="table-container">
-                    {{ table|safe }}
+                    {% for table in stress_events_tables %}
+                        {{ table|safe }}
+                    {% endfor %}
                 </div>
-            {% endfor %}
-        </section>
-        <section>
-            <h2>压力事件</h2>
-            {% for table in stress_events_tables %}
+                <div class="image-container">
+                    <img src="{{ url_for('static', filename=static_images[1]) }}" alt="Static Image 2" class="gallery-image">
+                </div>
+            </div>
+
+            <!-- 第三排：其他表格和第三张图片 -->
+            <div class="row">
                 <div class="table-container">
-                    {{ table|safe }}
+                    {% for table in long_position_tables %}
+                        {{ table|safe }}
+                    {% endfor %}
+                    {% for table in short_position_tables %}
+                        {{ table|safe }}
+                    {% endfor %}
                 </div>
-            {% endfor %}
-        </section>
-        <section>
-            <h2>历史最佳多头头寸</h2>
-            {% for table in long_position_tables %}
-                <div class="table-container">
-                    {{ table|safe }}
+                <div class="image-container">
+                    <img src="{{ url_for('static', filename=static_images[2]) }}" alt="Static Image 3" class="gallery-image">
                 </div>
-            {% endfor %}
-        </section>
-        <section>
-            <h2>历史最佳空头头寸</h2>
-            {% for table in short_position_tables %}
-                <div class="table-container">
-                    {{ table|safe }}
-                </div>
-            {% endfor %}
-        </section>
-        <section>
-            <h2>最差回撤期</h2>
-            {% for table in worst_drawdown_tables %}
-                <div class="table-container">
-                    {{ table|safe }}
-                </div>
-            {% endfor %}
-        </section>
+            </div>
+        </div>
     </main>
 </body>
 </html>
