@@ -48,6 +48,9 @@ except ImportError:
         ImportWarning)
     have_bayesian = False
 
+import matplotlib
+matplotlib.use('Agg')
+
 FACTOR_PARTITIONS = {
     'style': ['momentum', 'size', 'value', 'reversal_short_term',
               'volatility'],
@@ -258,8 +261,8 @@ def create_full_tear_sheet(returns,
     for analyzing a strategy's performance.
 
     - Fetches benchmarks if needed.
-    - Creates tear sheets for returns, and significant events.
-        If possible, also creates tear sheets for position analysis,
+    - Creates tear sheets for returns and significant events.
+        If possible, also create tear sheets for position analysis,
         transaction analysis, and Bayesian analysis.
 
     Parameters
@@ -286,7 +289,7 @@ def create_full_tear_sheet(returns,
         Executed trade volumes and fill prices.
         - One row per trade.
         - Trades on different names that occur at the
-          same time will have identical indicies.
+          same time will have identical indices.
         - Example:
             index                  amount   price    symbol
             2004-01-09 12:18:01    483      324.12   'AAPL'
@@ -304,7 +307,7 @@ def create_full_tear_sheet(returns,
         Transactions and positions must also be passed.
         - See txn.adjust_returns_for_slippage for more details.
     live_start_date : datetime, optional
-        The point in time when the strategy began live trading,
+        The point in time when the strategy began to live trading,
         after its backtest period. This datetime should be normalized.
     hide_positions : bool, optional
         If True, will not output any symbol names.
@@ -338,7 +341,7 @@ def create_full_tear_sheet(returns,
         Factor loadings for all days in the date range, with date and
         ticker as index, and factors as columns.
     pos_in_dollars : boolean, optional
-        indicates whether positions is in dollars
+        indicates whether positions are in dollars
     header_rows : dict or OrderedDict, optional
         Extra rows to display at the top of the perf stats table.
     set_context : boolean, optional
@@ -467,7 +470,7 @@ def create_simple_tear_sheet(returns,
     - Never accept market_data input (market_data = None)
     - Never accept sector_mappings input (sector_mappings = None)
     - Never perform bootstrap analysis (bootstrap = False)
-    - Never hide posistions on top 10 holdings plot (hide_positions = False)
+    - Never hide positions on top 10 holdings plot (hide_positions = False)
     - Always use default cone_std (cone_std = (1.0, 1.5, 2.0))
 
     Parameters
@@ -494,7 +497,7 @@ def create_simple_tear_sheet(returns,
         Executed trade volumes and fill prices.
         - One row per trade.
         - Trades on different names that occur at the
-          same time will have identical indicies.
+          same time will have identical indices.
         - Example:
             index                  amount   price    symbol
             2004-01-09 12:18:01    483      324.12   'AAPL'
@@ -656,7 +659,7 @@ def create_returns_tear_sheet(returns, positions=None,
         Executed trade volumes and fill prices.
         - See full explanation in create_full_tear_sheet.
     live_start_date : datetime, optional
-        The point in time when the strategy began live trading,
+        The point in time when the strategy began to live trading,
         after its backtest period.
     cone_std : float, or tuple, optional
         If value is float, The standard deviation to use for the cone plots.
@@ -847,11 +850,11 @@ def create_position_tear_sheet(returns, positions,
         Security identifier to sector mapping.
         Security ids as keys, sectors as values.
     transactions : pd.DataFrame, optional
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades.One row per trade.
          - See full explanation in create_full_tear_sheet.
     estimate_intraday: boolean or str, optional
         Approximate returns for intraday strategies.
-        See description in create_full_tear_sheet.
+        See the description in create_full_tear_sheet.
     """
 
     positions = utils.check_intraday(estimate_intraday, returns,
@@ -928,16 +931,16 @@ def create_txn_tear_sheet(returns, positions, transactions,
         Daily net position values.
          - See full explanation in create_full_tear_sheet.
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades.One row per trade.
          - See full explanation in create_full_tear_sheet.
     unadjusted_returns : pd.Series, optional
         Daily unadjusted returns of the strategy, noncumulative.
-        Will plot additional swippage sweep analysis.
-         - See pyfolio.plotting.plot_swippage_sleep and
+        Will plot additional swip page sweep analysis.
+         - See pyfolio.plotting.plot_swip page_sleep and
            pyfolio.plotting.plot_slippage_sensitivity
     estimate_intraday: boolean or str, optional
         Approximate returns for intraday strategies.
-        See description in create_full_tear_sheet.
+        See the description in create_full_tear_sheet.
     run_flask_app : boolean, optional
         If True, returns the figure that was plotted on.
     """
@@ -1011,14 +1014,14 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
         Daily net position values.
          - See full explanation in create_full_tear_sheet.
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades.One row per trade.
          - See full explanation in create_full_tear_sheet.
     sector_mappings : dict or pd.Series, optional
         Security identifier to sector mapping.
         Security ids as keys, sectors as values.
     estimate_intraday: boolean or str, optional
         Approximate returns for intraday strategies.
-        See description in create_full_tear_sheet.
+        See the description in create_full_tear_sheet.
     run_flask_app : boolean, optional
         If True, returns the figure that was plotted on.
     """
@@ -1098,7 +1101,7 @@ def create_interesting_times_tear_sheet(
     2008, Q1 & Q2 2009), flash crash, April and October 2014.
 
     benchmark_rets must be passed, as it is meaningless to analyze performance
-    during interesting times without some benchmark to refer to.
+    during interesting times without any benchmark to refer to.
 
     Parameters
     ----------
@@ -1189,10 +1192,10 @@ def create_capacity_tear_sheet(returns, positions, transactions,
         Daily net position values.
          - See full explanation in create_full_tear_sheet.
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades. One row per trade.
          - See full explanation in create_full_tear_sheet.
-    market_data : pd.Panel, maybe use dict replace
-        Panel with items axis of 'price' and 'volume' DataFrames.
+    market_data: `pd.Panel`, maybe use dict replace
+        Panel with `items` axis of 'price' and 'volume' DataFrames.
         The major and minor axes should match those of the
         passed positions DataFrame (same dates and symbols).
     liquidation_daily_vol_limit : float
@@ -1200,7 +1203,7 @@ def create_capacity_tear_sheet(returns, positions, transactions,
         process of liquidating a position in the
         "days to liquidation" analysis.
     trade_daily_vol_limit : float
-        Flag daily transaction totals that exceed proportion of
+        Flag daily transaction totals that exceed the proportion of
         daily bar.
     last_n_days : integer
         Compute max position allocation and dollar volume for only
@@ -1209,7 +1212,7 @@ def create_capacity_tear_sheet(returns, positions, transactions,
         Display all tickers with greater max days to liquidation.
     estimate_intraday: boolean or str, optional
         Approximate returns for intraday strategies.
-        See description in create_full_tear_sheet.
+        See the description in create_full_tear_sheet.
     run_flask_app : boolean, optional, default False
         If True, returns the figure that was plotted on.
     """
@@ -1297,7 +1300,7 @@ def create_bayesian_tear_sheet(returns, benchmark_rets=None,
         Daily noncumulative returns of the benchmark.
          - This is in the same style as returns.
     live_start_date : datetime, optional
-        The point in time when the strategy began live
+        The point in time when the strategy began to live
         trading, after its backtest period.
     samples : int, optional
         Number of posterior samples to draw.
@@ -1325,7 +1328,7 @@ def create_bayesian_tear_sheet(returns, benchmark_rets=None,
     df_train = returns.loc[returns.index < live_start_date]
     df_test = returns.loc[returns.index >= live_start_date]
 
-    # Run T model with missing data
+    # Run a T model with missing data
     print("Running T model")
     previous_time = time()
     # track the total run time of the Bayesian tear sheet
@@ -1409,7 +1412,7 @@ def create_bayesian_tear_sheet(returns, benchmark_rets=None,
                           transform=ax_ret_pred_week.transAxes)
     previous_time = timer("plotting Bayesian VaRs estimate", previous_time)
 
-    # Run alpha beta model
+    # Run an alpha beta model
     if benchmark_rets is not None:
         print("\nRunning alpha beta model")
         benchmark_rets = benchmark_rets.loc[df_train.index]
@@ -1433,7 +1436,7 @@ def create_bayesian_tear_sheet(returns, benchmark_rets=None,
         previous_time = timer("plotting alpha beta model", previous_time)
 
     if stoch_vol:
-        # run stochastic volatility model
+        # run a stochastic volatility model
         returns_cutoff = 400
         print(
             "\nRunning stochastic volatility model on "
@@ -1506,40 +1509,40 @@ def create_risk_tear_sheet(positions,
         Daily Morningstar sector code per asset
         - DataFrame with dates as index and equities as columns
         - Example:
-                     Equity(24   Equity(62
-                       [AAPL])      [ABT])
-        2017-04-03	     311.0       206.0
-        2017-04-04	     311.0       206.0
-        2017-04-05	     311.0	     206.0
+                     Equity(24 Equity(62
+                       [AAPL]) [ABT])
+        2017-04-03	311.0 206.0
+        2017-04-04	311.0 206.0
+        2017-04-05	311.0 206.0
 
     caps : pd.DataFrame
         Daily market cap per asset
         - DataFrame with dates as index and equities as columns
         - Example:
-                          Equity(24        Equity(62
-                            [AAPL])           [ABT])
-        2017-04-03     1.327160e+10     6.402460e+10
-        2017-04-04	   1.329620e+10     6.403694e+10
-        2017-04-05	   1.297464e+10	    6.397187e+10
+                          Equity(24 Equity(62
+                            [AAPL]) [ABT])
+        2017-04-03 1.327160e+10 6.402460e+10
+        2017-04-04	1.329620e+10 6.403694e+10
+        2017-04-05	1.297464e+10 6.397187e+10
 
     shares_held : pd.DataFrame
         Daily number of shares held by an algorithm.
         - Example:
-                          Equity(24        Equity(62
-                            [AAPL])           [ABT])
-        2017-04-03             1915            -2595
-        2017-04-04	           1968            -3272
-        2017-04-05	           2104            -3917
+                          Equity(24 Equity(62
+                            [AAPL]) [ABT])
+        2017-04-03 1915 -2595
+        2017-04-04	1968 -3272
+        2017-04-05	2104-3917
 
     volumes : pd.DataFrame
         Daily volume per asset
         - DataFrame with dates as index and equities as columns
         - Example:
-                          Equity(24        Equity(62
-                            [AAPL])           [ABT])
-        2017-04-03      34940859.00       4665573.80
-        2017-04-04	    35603329.10       4818463.90
-        2017-04-05	    41846731.75	      4129153.10
+                          Equity(24 Equity(62
+                            [AAPL]) [ABT])
+        2017-04-03 34940859.00 4665573.80
+        2017-04-04	35603329.10 4818463.90
+        2017-04-05	41846731.75	4129153.10
 
     percentile : float
         Percentile to use when computing and plotting volume exposures.
@@ -1676,7 +1679,7 @@ def create_perf_attrib_tear_sheet(returns,
         and ticker as index, and factors as columns.
 
     transactions : pd.DataFrame, optional
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades.One row per trade.
          - See full explanation in create_full_tear_sheet.
          - Default is None.
 
@@ -1706,7 +1709,7 @@ def create_perf_attrib_tear_sheet(returns,
                                        factor_loadings, transactions,
                                        pos_in_dollars)
 
-    # one section for the returns plot, and for each factor grouping
+    # one section for the `returns` plot, and for each factor grouping
     # one section for factor returns, and one for risk exposures
     vertical_sections = 1 + 2 * max(len(factor_partitions), 1)
     current_section = 0

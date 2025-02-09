@@ -20,6 +20,8 @@ import scipy as sp
 from scipy import stats
 
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
 
 import pymc as pm
 
@@ -33,8 +35,7 @@ def model_returns_t_alpha_beta(data, bmark, samples=2000, progressbar=True):
 
     This model estimates intercept (alpha) and slope (beta) of two
     return sets. Usually, these will be algorithm returns and
-    benchmark returns (e.g. S&P500). The data is assumed to be T
-    distributed and thus is robust to outliers and takes tail events
+    benchmark returns (e.g. S&P500). The data is assumed to be T-distributed and thus is robust to outliers and takes tail events
     into account.  If a pandas.DataFrame is passed as a benchmark, then
     multiple linear regression is used to estimate alpha and beta.
 
@@ -48,9 +49,9 @@ def model_returns_t_alpha_beta(data, bmark, samples=2000, progressbar=True):
         If bmark has more recent returns than returns_train, these dates
         will be treated as missing values and predictions will be
         generated for them taking market correlations into account.
-    :param samples : int (optional)
+    :param samples : Int (optional)
         Number of posterior samples to draw.
-    :param progressbar : bool (optional), default True
+    :param progressbar : Bool (optional), default True
 
     Returns
     -------
@@ -89,15 +90,15 @@ def model_returns_t_alpha_beta(data, bmark, samples=2000, progressbar=True):
 
 def model_returns_normal(data, samples=500, progressbar=True):
     """
-    Run Bayesian model assuming returns are normally distributed.
+    Run a Bayesian model assuming returns are normally distributed.
 
     Parameters
     ----------
     :param data : pandas.Series:
         Series of simple returns of an algorithm or stock.
-    :param samples : int (optional)
+    :param samples : Int (optional)
         Number of posterior samples to draw.
-    :param progressbar : bool (optional), default True
+    :param progressbar : Bool (optional), default True
 
     Returns
     -------
@@ -176,7 +177,7 @@ def model_best(y1, y2, samples=1000, progressbar=True):
     This model runs a Bayesian hypothesis comparing if y1 and y2 come
     from the same distribution. Returns are assumed to be T-distributed.
 
-    In addition, computes annual volatility and Sharpe of in and
+    In addition, it computes annual volatility and Sharpe of in and
     out-of-sample periods.
 
     This model replicates the example used in:
@@ -186,9 +187,9 @@ def model_best(y1, y2, samples=1000, progressbar=True):
     Parameters
     ----------
     :param y1 : array-like
-        Array of returns (e.g. in-sample)
+        Array of returns (e.g., in-sample)
     :param y2 : array-like
-        Array of returns (e.g. out-of-sample)
+        Array of returns (e.g., out-of-sample)
     :param samples : int, optional
         Number of posterior samples to draw.
     :param progressbar: bool, optional, default True
@@ -203,7 +204,7 @@ def model_best(y1, y2, samples=1000, progressbar=True):
 
     See Also
     --------
-    plot_stoch_vol : plotting of tochastic volatility model
+    plot_stoch_vol : plotting of the stochastic volatility model
     """
 
     y = np.concatenate((y1, y2))
@@ -258,7 +259,7 @@ def model_best(y1, y2, samples=1000, progressbar=True):
 def plot_best(trace=None, data_train=None, data_test=None,
               samples=1000, burn=200, axs=None):
     """
-    Plot BEST significance analysis.
+    Plot the BEST significance analysis.
 
     Parameters
     ----------
@@ -267,17 +268,17 @@ def plot_best(trace=None, data_train=None, data_test=None,
         If not passed, will run model_best(), for which
         data_train and data_test are required.
     data_train : pandas.Series, optional
-        Returns of in-sample period.
+        Returns of an in-sample period.
         Required if trace=None.
     data_test : pandas.Series, optional
-        Returns of out-of-sample period.
+        Returns of an out-of-sample period.
         Required if trace=None.
     samples : int, optional
         Posterior samples to draw.
     burn : int
-        Posterior sampels to discard as burn-in.
+        Posterior samples to discard as burn-in.
     axs : array of matplotlib.axes objects, optional
-        Plot into passed axes objects. Needs 6 axes.
+        Plot into passed axes objects.Needs six axes.
 
     Returns
     -------
@@ -285,7 +286,7 @@ def plot_best(trace=None, data_train=None, data_test=None,
 
     See Also
     --------
-    model_best : Estimation of BEST model.
+    model_best : Estimation of the BEST model.
     """
 
     if trace is None:
@@ -348,9 +349,9 @@ def plot_best(trace=None, data_train=None, data_test=None,
 
 def model_stoch_vol(data, samples=2000, progressbar=True):
     """
-    Run stochastic volatility model.
+    Run a stochastic volatility model.
 
-    This model estimates the volatility of a returns series over time.
+    This model estimates the volatility of a `returns` series over time.
     Returns are assumed to be T-distributed. lambda (width of
     T-distributed) is assumed to follow a random-walk.
 
@@ -372,7 +373,7 @@ def model_stoch_vol(data, samples=2000, progressbar=True):
 
     See Also
     --------
-    plot_stoch_vol : plotting of tochastic volatility model
+    plot_stoch_vol : plotting of a stochastic volatility model
     """
 
     from pymc.distributions.timeseries import GaussianRandomWalk
@@ -392,7 +393,7 @@ def model_stoch_vol(data, samples=2000, progressbar=True):
 
 def plot_stoch_vol(data, trace=None, ax=None):
     """
-    Generate plot for stochastic volatility model.
+    Generate plot for a stochastic volatility model.
 
     Parameters
     ----------
@@ -400,9 +401,9 @@ def plot_stoch_vol(data, trace=None, ax=None):
         Returns to model.
     trace : pymc3.sampling.BaseTrace object, optional
         trace as returned by model_stoch_vol
-        If not passed, sample from model.
+        If not passed, sample from the model.
     ax : matplotlib.axes object, optional
-        Plot into axes object
+        Plot into an axe object
 
     Returns
     -------
@@ -539,7 +540,7 @@ def run_model(model, returns_train, returns_test=None,
         Out-of-sample returns. Datetimes in returns_test will be added to
         returns_train as missing values and predictions will be generated
         for them.
-    :param bmark : pd.Series or pd.DataFrame (optional)
+    :param bmark : pd.Series or pd.DataFrame (optional) is
         Only used for alpha_beta to estimate regression coefficients.
         If bmark has more recent returns than returns_train, these dates
         will be treated as missing values and predictions will be
@@ -559,7 +560,7 @@ def run_model(model, returns_train, returns_test=None,
         of the posterior.
 
     ppc : numpy.array (if ppc==True)
-       PPC of shape samples x len(returns_test).
+       PPC of shape samples x-len(returns_test).
     """
 
     if model == 'alpha_beta':
@@ -604,7 +605,7 @@ def plot_bayes_cone(returns_train, returns_test, ppc,
         returns_train as missing values and predictions will be generated
         for them.
     ppc : np.array
-        Posterior predictive samples of shape samples x
+        Posterior predictive samples of shape samples x,
         len(returns_test).
     plot_train_len : int (optional)
         How many data points to plot of returns_train. Useful to zoom in on

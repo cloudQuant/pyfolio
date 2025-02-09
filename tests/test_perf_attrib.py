@@ -455,7 +455,7 @@ class PerfAttribTestCase(unittest.TestCase):
                 ['AAPL', 'TLT', 'XOM'], level='ticker'
             )
 
-            with self.assertRaisesRegexp(ValueError,
+            with self.assertRaisesRegex(ValueError,
                                          "No factor loadings were available"):
 
                 exposures, perf_attrib_data = \

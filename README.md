@@ -8,7 +8,6 @@
 主要基于python语言，使用numpy、pandas、scipy、plotly、dash、flask和
 pyqt6等对原来的pyfolio进行改进优化。
 
-
 #### 安装教程
 
 

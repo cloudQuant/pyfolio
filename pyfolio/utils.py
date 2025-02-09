@@ -30,6 +30,8 @@ from pandas.testing import assert_frame_equal, assert_series_equal
 
 from . import pos
 from . import txn
+import matplotlib
+matplotlib.use('Agg')
 
 APPROX_BDAYS_PER_MONTH = 21
 APPROX_BDAYS_PER_YEAR = 252
@@ -263,7 +265,7 @@ def extract_rets_pos_txn_from_zipline(backtest):
 
     The returned data structures are in a format compatible with the
     rest of pyfolio and can be directly passed to
-    e.g. tears.create_full_tear_sheet().
+    e.g., tears.create_full_tear_sheet().
 
     Parameters
     ----------
@@ -279,7 +281,7 @@ def extract_rets_pos_txn_from_zipline(backtest):
         Daily net position values.
          - See full explanation in tears.create_full_tear_sheet.
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades.One row per trade.
          - See full explanation in tears.create_full_tear_sheet.
 
 
@@ -287,9 +289,9 @@ def extract_rets_pos_txn_from_zipline(backtest):
     ---------------------------------------------
     # >>> backtest = my_algo.run()
     # >>> returns, positions, transactions =
-    # >>>     pyfolio.utils.extract_rets_pos_txn_from_zipline(backtest)
+    # >>> pyfolio.utils.extract_rets_pos_txn_from_zipline(backtest)
     # >>> pyfolio.tears.create_full_tear_sheet(returns,
-    # >>>     positions, transactions)
+    # >>> positions, transactions)
     """
 
     backtest.index = backtest.index.normalize()
@@ -329,7 +331,7 @@ def print_table(table,
     table : pandas.Series or pandas.DataFrame
         Table to pretty-print.
     name : str, optional
-        Table name to display in upper left corner.
+        Table name to display in the upper-left corner.
     float_format : function, optional
         Formatter to use for displaying table elements, passed as the
         `float_format` arg to pd.Dataframe.to_html.
@@ -413,7 +415,7 @@ def detect_intraday(positions, transactions, threshold=0.25):
         Daily net position values.
          - See full explanation in create_full_tear_sheet.
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades. One row per trade.
          - See full explanation in create_full_tear_sheet.
     threshold : default 0.25
     Returns
@@ -445,7 +447,7 @@ def check_intraday(estimate, returns, positions, transactions):
         Daily net position values.
          - See full explanation in create_full_tear_sheet.
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades.One row per trade.
          - See full explanation in create_full_tear_sheet.
 
     Returns
@@ -457,8 +459,7 @@ def check_intraday(estimate, returns, positions, transactions):
     if estimate == 'infer':
         if positions is not None and transactions is not None:
             if detect_intraday(positions, transactions):
-                warnings.warn('Detected intraday strategy; inferring positi' +
-                              'ons from transactions. Set estimate_intraday' +
+                warnings.warn('Detected intraday strategy; inferring positions from transactions. Set estimate_intraday' +
                               '=False to disable.')
                 return estimate_intraday(returns, positions, transactions)
             else:
@@ -493,7 +494,7 @@ def estimate_intraday(returns, positions, transactions, eod_hour=23):
         Daily net position values.
          - See full explanation in create_full_tear_sheet.
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades. One row per trade.
          - See full explanation in create_full_tear_sheet.
     eod_hour: default 23
 
@@ -580,7 +581,7 @@ def clip_returns_to_benchmark(rets, benchmark_rets):
 
 def to_utc(df):
     """
-    For use in tests; applied UTC timestamp to DataFrame.
+    For use in tests, applied UTC timestamp to DataFrame.
     """
 
     try:
@@ -604,7 +605,7 @@ def to_series(df):
 default_returns_func = empyrical.utils.default_returns_func
 
 # Settings dict to store functions/values that may
-# need to be overridden depending on the users environment
+# need to be overridden depending on the user's environment
 SETTINGS = {
     'returns_func': default_returns_func
 }
@@ -642,13 +643,13 @@ def get_symbol_rets(symbol, start=None, end=None):
     symbol : object
         An identifier for the asset whose return
         series is desired.
-        e.g. ticker symbol or database ID
+        e.g., ticker symbol or database ID
     start : date, optional
         Earliest date to fetch data for.
         Defaults to the earliest date available.
     end : date, optional
         Latest date to fetch data for.
-        Defaults to latest date available.
+        Defaults to the latest date available.
 
     Returns
     -------
@@ -667,7 +668,7 @@ def configure_legend(ax, autofmt_xdate=True, change_colors=False,
     Format legend for perf attribution plots:
     - put legend to the right of plot instead of overlapping with it
     - make legend order match up with graph lines
-    - set colors according to colormap
+    - set colors, according to colormap
     """
     chart_box = ax.get_position()
     ax.set_position([chart_box.x0, chart_box.y0,

@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="pyfolio",
-    version="0.9.4",
+    version="0.9.6",
     author="quantopian、cloudQuant",
     author_email="yunjinqi@gmail.com",
     description="pyfolio packages",

@@ -204,7 +204,7 @@ def extract_round_trips(transactions,
     changes from long to short and vice versa are handled correctly.
 
     Under the hood, we reconstruct the individual shares in a
-    portfolio over time and match round_trips in a FIFO-order.
+    portfolio over time and match round_trips in a FIFO order.
 
     For example, the following transactions would constitute one round trip:
     index                  amount   price    symbol
@@ -219,7 +219,7 @@ def extract_round_trips(transactions,
     be merged and result in 1 round-trip trade with a PnL of
     (150 * 20) - (75 * 20) = 1500.
 
-    Note, that round trips do not have to close out positions
+    Note that round trips do not have to close out positions
     completely. For example, we could have removed the last
     transaction in the example above and still generated a round-trip
     over 10 shares with 10 shares left in the portfolio to be matched
@@ -239,10 +239,10 @@ def extract_round_trips(transactions,
     Returns
     -------
     round_trips : pd.DataFrame:
-        DataFrame with one row per round trip.  The returns column
+        DataFrame with one row per round trip.  The `returns` column
         contains returns in respect to the portfolio value while
         rt_returns are the returns in regard to the invested capital
-        into that partiulcar round-trip.
+        into that particular round-trip.
     """
 
     transactions = _groupby_consecutive(transactions)
@@ -274,7 +274,7 @@ def extract_round_trips(transactions,
                 for price in indiv_prices:
                     if len(price_stack) != 0 and \
                             (copysign(1, price_stack[-1]) != copysign(1, price)):
-                        # Retrieve first dt, stock-price pair from
+                        # Retrieve the first dt, stock-price pair from
                         # stack
                         prev_price = price_stack.popleft()
                         prev_dt = dt_stack.popleft()
@@ -284,7 +284,7 @@ def extract_round_trips(transactions,
                         invested += abs(prev_price)
 
                     else:
-                        # Push additional stock-prices onto stack
+                        # Push additional stock prices onto the stack
                         price_stack.append(price)
                         dt_stack.append(dt)
 
@@ -376,7 +376,7 @@ def apply_sector_mappings_to_round_trips(round_trips, sector_mappings):
     Parameters
     ----------
     round_trips : pd.DataFrame:
-        DataFrame with one row per round trip trade.
+        DataFrame with one row per-round-trip trade.
         - See full explanation in round_trips.extract_round_trips
     sector_mappings : dict or pd.Series, optional
         Security identifier to sector mapping.
@@ -402,7 +402,7 @@ def apply_sector_mappings_to_round_trips(round_trips, sector_mappings):
 #     Parameters
 #     ----------
 #     round_trips : pd.DataFrame:
-#         DataFrame with one row per round trip trade.
+#         DataFrame with one row per-round-trip trade.
 #         - See full explanation in round_trips.extract_round_trips
 #
 #     Returns
@@ -430,7 +430,7 @@ def gen_round_trip_stats(round_trips):
     Parameters
     ----------
     round_trips : pd.DataFrame:
-        DataFrame with one row per round trip trade.
+        DataFrame with one row per-round-trip trade.
         - See full explanation in round_trips.extract_round_trips
 
     Returns
@@ -481,7 +481,7 @@ def print_round_trip_stats(round_trips, hide_pos=False, run_flask_app=False):
     Parameters
     ----------
     round_trips : pd.DataFrame:
-        DataFrame with one row per round trip trade.
+        DataFrame with one row per-round-trip trade.
         - See full explanation in round_trips.extract_round_trips
     hide_pos : bool, optional, default: False
         Whether to hide the position-based statistics.

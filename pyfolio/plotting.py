@@ -29,7 +29,8 @@ import scipy as sp
 from matplotlib import figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.ticker import FuncFormatter
-
+import matplotlib
+matplotlib.use('Agg')
 from . import _seaborn as sns
 from . import capacity
 from . import pos
@@ -81,7 +82,7 @@ def plotting_context(context='notebook', font_scale=1.5, rc=None):
     Example
     -------
     # >>> with pyfolio.plotting.plotting_context(font_scale=2):
-    # >>>    pyfolio.create_full_tear_sheet(..., set_context=False)
+    # >>> pyfolio.create_full_tear_sheet(..., set_context=False)
 
     See also
     --------
@@ -121,7 +122,7 @@ def axes_style(style='darkgrid', rc=None):
     Example
     -------
     # >>> with pyfolio.plotting.axes_style(style='whitegrid'):
-    # >>>    pyfolio.create_full_tear_sheet(..., set_context=False)
+    # >>> pyfolio.create_full_tear_sheet(..., set_context=False)
 
     See also
     --------
@@ -151,7 +152,7 @@ def plot_monthly_returns_heatmap(returns, ax=None, **kwargs):
          - See full explanation in tears.create_full_tear_sheet.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to seaborn plotting function.
 
     Returns
@@ -193,7 +194,7 @@ def plot_annual_returns(returns, ax=None, **kwargs):
          - See full explanation in tears.create_full_tear_sheet.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to plotting function.
 
     Returns
@@ -243,7 +244,7 @@ def plot_monthly_returns_dist(returns, ax=None, **kwargs):
          - See full explanation in tears.create_full_tear_sheet.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to plotting function.
 
     Returns
@@ -285,7 +286,7 @@ def plot_monthly_returns_dist(returns, ax=None, **kwargs):
 
 def plot_holdings(returns, positions, legend_loc='best', ax=None, **kwargs):
     """
-    Plots total amount of stocks with an active position, either short
+    Plots total `amount` of stocks with an active position, either short
     or long. Displays daily total, daily average per month, and
     all-time daily average.
 
@@ -301,7 +302,7 @@ def plot_holdings(returns, positions, legend_loc='best', ax=None, **kwargs):
         The location of the legend on the plot.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to plotting function.
 
     Returns
@@ -345,10 +346,10 @@ def plot_holdings(returns, positions, legend_loc='best', ax=None, **kwargs):
 
 
 def plot_long_short_holdings(returns, positions,
-                             legend_loc='upper left', ax=None, **kwargs):
+                             legend_loc='upper left', ax=None, **_kwargs):
     """
-    Plots total amount of stocks with an active position, breaking out
-    short and long into transparent filled regions.
+    Plots total `amount` of stocks with an active position, breaking out
+    short and long into transparent-filled regions.
 
     Parameters
     ----------
@@ -362,7 +363,7 @@ def plot_long_short_holdings(returns, positions,
         The location of the legend on the plot.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **_kwargs
         Passed to plotting function.
 
     Returns
@@ -411,10 +412,10 @@ def plot_drawdown_periods(returns, top=10, ax=None, **kwargs):
         Daily returns of the strategy, noncumulative.
          - See full explanation in tears.create_full_tear_sheet.
     top : int, optional
-        Amount of top drawdowns periods to plot (default 10).
+        `Amount` of top drawdowns periods to plot (default 10).
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to plotting function.
 
     Returns
@@ -466,7 +467,7 @@ def plot_drawdown_underwater(returns, ax=None, **kwargs):
          - See full explanation in tears.create_full_tear_sheet.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to plotting function.
 
     Returns
@@ -484,7 +485,7 @@ def plot_drawdown_underwater(returns, ax=None, **kwargs):
     df_cum_rets = ep.cum_returns(returns, starting_value=1.0)
     running_max = np.maximum.accumulate(df_cum_rets)
     underwater = -100 * ((running_max - df_cum_rets) / running_max)
-    (underwater).plot(ax=ax, kind='area', color='coral', alpha=0.7, **kwargs)
+    underwater.plot(ax=ax, kind='area', color='coral', alpha=0.7, **kwargs)
     ax.set_ylabel('Drawdown')
     ax.set_title('Underwater plot')
     ax.set_xlabel('')
@@ -493,7 +494,7 @@ def plot_drawdown_underwater(returns, ax=None, **kwargs):
 
 def plot_perf_stats(returns, factor_returns, ax=None):
     """
-    Create box plot of some performance metrics of the strategy.
+    Create a box plot of some performance metrics of the strategy.
     The width of the box whiskers is determined by a bootstrap.
 
     Parameters
@@ -564,13 +565,13 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
         Daily net position values.
          - See full explanation in create_full_tear_sheet.
     transactions : pd.DataFrame, optional
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades. One row per trade.
         - See full explanation in tears.create_full_tear_sheet
     turnover_denom : str, optional
         Either AGB or portfolio_value, default AGB.
         - See full explanation in txn.get_turnover.
     live_start_date : datetime, optional
-        The point in time when the strategy began live trading, after
+        The point in time when the strategy began to live trading, after
         its backtest period.
     bootstrap : boolean, optional
         Whether to perform bootstrap analysis for the performance
@@ -703,13 +704,10 @@ def plot_returns(returns,
         Daily returns of the strategy, noncumulative.
          - See full explanation in tears.create_full_tear_sheet.
     live_start_date : datetime, optional
-        The date when the strategy began live trading, after
+        The date when the strategy began to live trading, after
         its backtest period. This date should be normalized.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
-        Passed to plotting function.
-
     Returns
     -------
     ax : matplotlib.Axes
@@ -771,12 +769,12 @@ def plot_rolling_returns(returns,
         computed. Usually a benchmark such as market returns.
          - This is in the same style as returns.
     live_start_date : datetime, optional
-        The date when the strategy began live trading, after
+        The date when the strategy began to live trading, after
         its backtest period. This date should be normalized.
     logy : bool, optional
         Whether to log-scale the y-axis.
     cone_std : float, or tuple, optional
-        If float, The standard deviation to use for the cone plots.
+        If `float`, The standard deviation to use for the cone plots.
         If tuple, Tuple of standard deviation values to use for the cone plots
          - See timeseries.forecast_cone_bounds for more details.
     legend_loc : matplotlib.loc, optional
@@ -795,7 +793,7 @@ def plot_rolling_returns(returns,
         See timeseries.forecast_cone_bootstrap for an example.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to plotting function.
 
     Returns
@@ -896,7 +894,7 @@ def plot_rolling_beta(returns, factor_returns, legend_loc='best',
         The location of the legend on the plot.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to plotting function.
 
     Returns
@@ -946,12 +944,12 @@ def plot_rolling_volatility(returns, factor_returns=None,
         computed. Usually a benchmark such as market returns.
          - This is in the same style as returns.
     rolling_window : int, optional
-        The days window over which to compute the volatility.
+        The day window over which to compute the volatility.
     legend_loc : matplotlib.loc, optional
         The location of the legend on the plot.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to plotting function.
 
     Returns
@@ -1013,12 +1011,12 @@ def plot_rolling_sharpe(returns, factor_returns=None,
         a benchmark such as market returns.
          - This is in the same style as returns.
     rolling_window : int, optional
-        The days window over which to compute the sharpe ratio.
+        The day window over which to compute the sharpe ratio.
     legend_loc : matplotlib.loc, optional
         The location of the legend on the plot.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to plotting function.
 
     Returns
@@ -1064,7 +1062,7 @@ def plot_rolling_sharpe(returns, factor_returns=None,
     return ax
 
 
-def plot_gross_leverage(returns, positions, ax=None, **kwargs):
+def plot_gross_leverage(_returns, positions, ax=None, **kwargs):
     """
     Plots gross leverage versus date.
 
@@ -1073,7 +1071,7 @@ def plot_gross_leverage(returns, positions, ax=None, **kwargs):
 
     Parameters
     ----------
-    returns : pd.Series
+    _returns : pd.Series
         Daily returns of the strategy, noncumulative.
          - See full explanation in tears.create_full_tear_sheet.
     positions : pd.DataFrame
@@ -1081,7 +1079,7 @@ def plot_gross_leverage(returns, positions, ax=None, **kwargs):
          - See full explanation in create_full_tear_sheet.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to plotting function.
 
     Returns
@@ -1103,7 +1101,7 @@ def plot_gross_leverage(returns, positions, ax=None, **kwargs):
     return ax
 
 
-def plot_exposures(returns, positions, ax=None, **kwargs):
+def plot_exposures(returns, positions, ax=None, **_kwargs):
     """
     Plots a cake chart of the long and short exposure.
 
@@ -1112,12 +1110,12 @@ def plot_exposures(returns, positions, ax=None, **kwargs):
     returns : pd.Series
         Daily returns of the strategy, noncumulative.
          - See full explanation in tears.create_full_tear_sheet.
-    positions_alloc : pd.DataFrame
+    positions: pd.DataFrame
         Portfolio allocation of positions. See
         pos.get_percent_alloc.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **_kwargs
         Passed to plotting function.
 
     Returns
@@ -1181,7 +1179,7 @@ def show_and_plot_top_positions(returns, positions_alloc,
         Axes upon which to plot.
     run_flask_app : bool, optional, default False
         If True, will run a Flask app to display the plot in a web browser.
-    **kwargs, optional
+    **kwargs
         Passed to plotting function.
 
     Returns
@@ -1242,7 +1240,7 @@ def show_and_plot_top_positions(returns, positions_alloc,
         return ax
 
 
-def plot_max_median_position_concentration(positions, ax=None, **kwargs):
+def plot_max_median_position_concentration(positions, ax=None, **_kwargs):
     """
     Plots the max and median of long and short position concentrations
     over the time.
@@ -1274,20 +1272,20 @@ def plot_max_median_position_concentration(positions, ax=None, **kwargs):
     return ax
 
 
-def plot_sector_allocations(returns, sector_alloc, ax=None, **kwargs):
+def plot_sector_allocations(_returns, sector_alloc, ax=None, **kwargs):
     """
     Plots the sector exposures of the portfolio over time.
 
     Parameters
     ----------
-    returns : pd.Series
+    _returns : pd.Series
         Daily returns of the strategy, noncumulative.
          - See full explanation in tears.create_full_tear_sheet.
     sector_alloc : pd.DataFrame
         Portfolio allocation of positions. See pos.get_sector_alloc.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to plotting function.
 
     Returns
@@ -1328,11 +1326,11 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, **kwargs):
         Daily returns of the strategy, noncumulative.
          - See full explanation in tears.create_full_tear_sheet.
     live_start_date : datetime, optional
-        The point in time when the strategy began live trading, after
+        The point in time when the strategy began to live trading, after
         its backtest period.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to seaborn plotting function.
 
     Returns
@@ -1406,7 +1404,7 @@ def plot_turnover(returns, transactions, positions,
         Daily returns of the strategy, noncumulative.
          - See full explanation in tears.create_full_tear_sheet.
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades.One row per trade.
          - See full explanation in tears.create_full_tear_sheet.
     positions : pd.DataFrame
         Daily net position values.
@@ -1415,7 +1413,7 @@ def plot_turnover(returns, transactions, positions,
         The location of the legend on the plot.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to plotting function.
 
     Returns
@@ -1455,7 +1453,7 @@ def plot_turnover(returns, transactions, positions,
 
 def plot_slippage_sweep(returns, positions, transactions,
                         slippage_params=(3, 8, 10, 12, 15, 20, 50),
-                        ax=None, **kwargs):
+                        ax=None, **_kwargs):
     """
     Plots equity curves at different per-dollar slippage assumptions.
 
@@ -1468,14 +1466,14 @@ def plot_slippage_sweep(returns, positions, transactions,
         Daily net position values.
          - See full explanation in tears.create_full_tear_sheet.
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades.One row per trade.
          - See full explanation in tears.create_full_tear_sheet.
     slippage_params: tuple
-        Slippage pameters to apply to the return time series (in
+        Slippage parameters to apply to the return time series (in
         basis points).
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **_kwargs
         Passed to seaborn plotting function.
 
     Returns
@@ -1505,7 +1503,7 @@ def plot_slippage_sweep(returns, positions, transactions,
 
 
 def plot_slippage_sensitivity(returns, positions, transactions,
-                              ax=None, **kwargs):
+                              ax=None, **_kwargs):
     """
     Plots curve relating per-dollar slippage to average annual returns.
 
@@ -1518,11 +1516,11 @@ def plot_slippage_sensitivity(returns, positions, transactions,
         Daily net position values.
          - See full explanation in tears.create_full_tear_sheet.
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades.One row per trade.
          - See full explanation in tears.create_full_tear_sheet.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **_kwargs
         Passed to seaborn plotting function.
 
     Returns
@@ -1591,14 +1589,14 @@ def plot_daily_turnover_hist(transactions, positions,
     Parameters
     ----------
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades. One row per trade.
          - See full explanation in tears.create_full_tear_sheet.
     positions : pd.DataFrame
         Daily net position values.
          - See full explanation in tears.create_full_tear_sheet.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to seaborn plotting function.
 
     Returns
@@ -1630,11 +1628,11 @@ def plot_daily_volume(returns, transactions, ax=None, **kwargs):
         Daily returns of the strategy, noncumulative.
          - See full explanation in tears.create_full_tear_sheet.
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades.One row per trade.
          - See full explanation in tears.create_full_tear_sheet.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to plotting function.
 
     Returns
@@ -1665,7 +1663,7 @@ def plot_txn_time_hist(transactions, bin_minutes=5, tz='America/New_York',
     Parameters
     ----------
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades. One row per trade.
          - See full explanation in tears.create_full_tear_sheet.
     bin_minutes : float, optional
         Sizes of the bins in minutes, defaults to 5 minutes.
@@ -1675,7 +1673,7 @@ def plot_txn_time_hist(transactions, bin_minutes=5, tz='America/New_York',
         may be partially offset.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **kwargs
         Passed to plotting function.
 
     Returns
@@ -1727,8 +1725,8 @@ def show_worst_drawdown_periods(returns, top=5, run_flask_app=False):
         Daily returns of the strategy, noncumulative.
          - See full explanation in tears.create_full_tear_sheet.
     top : int, optional
-        Amount of top drawdowns periods to plot (default 5).
-    run_flask_app : bool, optional,default=False
+        `Amount` of top drawdowns periods to plot (default 5).
+    run_flask_app : bool, optional, default=False
         Whether to run the flask app to display the plot.
 
 
@@ -1743,7 +1741,7 @@ def show_worst_drawdown_periods(returns, top=5, run_flask_app=False):
     )
 
 
-def plot_monthly_returns_timeseries(returns, ax=None, **kwargs):
+def plot_monthly_returns_timeseries(returns, ax=None, **_kwargs):
     """
     Plots monthly returns as a timeseries.
 
@@ -1754,7 +1752,7 @@ def plot_monthly_returns_timeseries(returns, ax=None, **kwargs):
          - See full explanation in tears.create_full_tear_sheet.
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
-    **kwargs, optional
+    **_kwargs
         Passed to seaborn plotting function.
 
     Returns
@@ -1799,16 +1797,16 @@ def plot_monthly_returns_timeseries(returns, ax=None, **kwargs):
     return ax
 
 
-# def plot_round_trip_lifetimes(round_trips, disp_amount=16, lsize=18, ax=None):
+# Def plot_round_trip_lifetimes(round_trips, disp_amount=16, lsize=18, ax=None):
 #     """
 #     Plots timespans and directions of a sample of round trip trades.
 #
 #     Parameters
 #     ----------
-#     round_trips : pd.DataFrame
-#         DataFrame with one row per round trip trade.
+#     round_trips : `pd.DataFrame`
+#         DataFrame with one row per-round-trip trade.
 #         - See full explanation in round_trips.extract_round_trips
-#     ax : matplotlib.Axes, optional
+#     ax: matplotlib.Axes, optional
 #         Axes upon which to plot.
 #
 #     Returns
@@ -1855,16 +1853,19 @@ def plot_round_trip_lifetimes(round_trips, disp_amount=16, lsize=18, ax=None):
 
     Parameters
     ----------
-    round_trips : pd.DataFrame
-        DataFrame with one row per round trip trade.
+    round_trips : `pd.DataFrame`
+        DataFrame with one row per-round-trip trade.
         - See full explanation in round_trips.extract_round_trips
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
+    disp_amount:
+    lsize:
 
     Returns
     -------
     ax : matplotlib.Axes
         The axes that were plotted on.
+
     """
 
     if ax is None:
@@ -1909,12 +1910,10 @@ def show_profit_attribution(round_trips, run_flask_app=False):
 
     Parameters
     ----------
-    round_trips : pd.DataFrame
-        DataFrame with one row per round trip trade.
+    round_trips : `pd.DataFrame`
+        DataFrame with one row per-round-trip trade.
         - See full explanation in round_trips.extract_round_trips
-    ax : matplotlib.Axes, optional
-        Axes upon which to plot.
-    run_flask_app : bool, optional,default=False
+    run_flask_app : bool, optional, default=False
         Whether to run the flask app to display the plot.
     Returns
     -------
@@ -1945,8 +1944,8 @@ def plot_prob_profit_trade(round_trips, ax=None):
 
     Parameters
     ----------
-    round_trips : pd.DataFrame
-        DataFrame with one row per round trip trade.
+    round_trips : `pd.DataFrame`
+        DataFrame with one row per-round-trip trade.
         - See full explanation in round_trips.extract_round_trips
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
@@ -1985,12 +1984,12 @@ def plot_prob_profit_trade(round_trips, ax=None):
     return ax
 
 
-def plot_cones(name, bounds, oos_returns, num_samples=1000, ax=None,
-               cone_std=(1., 1.5, 2.), random_seed=None, num_strikes=3):
+def plot_cones(name, bounds, oos_returns, _num_samples=1000, ax=None,
+               cone_std=(1., 1.5, 2.), _random_seed=None, num_strikes=3):
     """
     Plots the upper and lower bounds of an n standard deviation
     cone of forecasted cumulative returns. Redraws a new cone when
-    cumulative returns fall outside of last cone drawn.
+    cumulative returns fall outside of the last cone drawn.
 
     Parameters
     ----------
@@ -1998,12 +1997,12 @@ def plot_cones(name, bounds, oos_returns, num_samples=1000, ax=None,
         Account name to be used as figure title.
     bounds : pandas.core.frame.DataFrame
         Contains upper and lower cone boundaries. Column names are
-        strings corresponding to the number of standard devations
+        strings corresponding to the number of standard deviations
         above (positive) or below (negative) the projected mean
         cumulative returns.
     oos_returns : pandas.core.frame.DataFrame
         Non-cumulative out-of-sample returns.
-    num_samples : int
+    _num_samples : int
         Number of samples to draw from the in-sample daily returns.
         Each sample will be an array with length num_days.
         A higher number of samples will generate a more accurate
@@ -2011,10 +2010,10 @@ def plot_cones(name, bounds, oos_returns, num_samples=1000, ax=None,
     ax : matplotlib.Axes, optional
         Axes upon which to plot.
     cone_std : list of int/float
-        Number of standard devations to use in the boundaries of
+        Number of standard deviations to use in the boundaries of
         the cone. If multiple values are passed, cone bounds will
         be generated for each value.
-    random_seed : int
+    _random_seed : int
         Seed for the pseudorandom number generator used by the pandas
         sample method.
     num_strikes : int

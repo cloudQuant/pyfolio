@@ -12,7 +12,7 @@ from . import perf_attrib
 
 from .tears import *  # noqa
 from .plotting import *  # noqa
-from ._version import get_versions
+
 
 try:
     from . import bayesian
@@ -22,8 +22,7 @@ except ImportError:
         ImportWarning)
 
 
-__version__ = get_versions()['version']
-del get_versions
+__version__ = "0.9.6"
 
 __all__ = ['utils', 'timeseries', 'pos', 'txn', 'bayesian',
            'interesting_periods', 'capacity', 'round_trips',

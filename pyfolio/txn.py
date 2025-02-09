@@ -61,7 +61,7 @@ def make_transaction_frame(transactions):
     Returns
     -------
     df : pd.DataFrame
-        Daily transaction volume and dollar ammount.
+        Daily transaction volume and dollar amount.
          - See full explanation in tears.create_full_tear_sheet.
     """
 
@@ -83,7 +83,7 @@ def make_transaction_frame(transactions):
 
 def get_txn_vol(transactions):
     """
-    Extract daily transaction data from set of transaction objects.
+    Extract daily transaction data from a set of transaction objects.
 
     Parameters
     ----------
@@ -125,7 +125,7 @@ def adjust_returns_for_slippage(returns, positions, transactions,
         Daily net position values.
          - See full explanation in create_full_tear_sheet.
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades.One row per trade.
          - See full explanation in create_full_tear_sheet.
     slippage_bps: int/float
         Basis points of slippage to apply.
@@ -149,7 +149,7 @@ def adjust_returns_for_slippage(returns, positions, transactions,
 
 def get_turnover(positions, transactions, denominator='AGB'):
     """
-     - Value of purchases and sales divided
+     Value of purchases and sales divided
     by either the actual gross book or the portfolio value
     for the time step.
 
@@ -159,7 +159,7 @@ def get_turnover(positions, transactions, denominator='AGB'):
         Contains daily position values including cash.
         - See full explanation in tears.create_full_tear_sheet
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades.One row per trade.
         - See full explanation in tears.create_full_tear_sheet
     denominator : str, optional
         Either 'AGB' or 'portfolio_value', default AGB.
@@ -171,7 +171,7 @@ def get_turnover(positions, transactions, denominator='AGB'):
         - We use average of the previous and the current end-of-period
         AGB to avoid singularities when trading only into or
         out of an entire book in one trading period.
-        - portfolio_value is the total value of the algo's
+        - Portfolio_value is the total value of the algo's
         positions end-of-period, including cash.
 
     Returns

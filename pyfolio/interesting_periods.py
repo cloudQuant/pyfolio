@@ -37,7 +37,7 @@ PERIODS[
 # 16/03/11  Fukushima melt down 2011
 PERIODS['Fukushima'] = (pd.Timestamp('20110316'), pd.Timestamp('20110416'))
 
-# 01/08/03  US Housing Bubble 2003
+# 01/08/03 US Housing Bubble 2003
 PERIODS['US Housing'] = (
     pd.Timestamp('20030108'), pd.Timestamp('20030208'))
 
@@ -52,7 +52,7 @@ PERIODS['Sept08'] = (pd.Timestamp('20080901'), pd.Timestamp('20081001'))
 PERIODS['2009Q1'] = (pd.Timestamp('20090101'), pd.Timestamp('20090301'))
 PERIODS['2009Q2'] = (pd.Timestamp('20090301'), pd.Timestamp('20090601'))
 
-# Flash Crash (May 6, 2010 + 1 week post),
+# Flash Crash (May 6, 2010 + 1-week post),
 PERIODS['Flash Crash'] = (
     pd.Timestamp('20100505'), pd.Timestamp('20100510'))
 

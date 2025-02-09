@@ -18,6 +18,8 @@ from matplotlib.cm import gist_rainbow
 
 import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 
 
 SECTORS = OrderedDict([
@@ -45,7 +47,7 @@ CAP_BUCKETS = OrderedDict([
 
 def compute_style_factor_exposures(positions, risk_factor):
     """
-    Returns style factor exposure of an algorithm's positions
+    Return style factor exposure of an algorithm's positions
 
     Parameters
     ----------
@@ -57,11 +59,11 @@ def compute_style_factor_exposures(positions, risk_factor):
         Daily risk factor per asset.
         - DataFrame with dates as index and equities as columns
         - Example:
-                         Equity(24   Equity(62
-                           [AAPL])      [ABT])
-        2017-04-03	  -0.51284     1.39173
-        2017-04-04	  -0.73381     0.98149
-        2017-04-05	  -0.90132     1.13981
+                         Equity(24 Equity(62
+                           [AAPL]) [ABT])
+        2017-04-03	-0.51284 1.39173
+        2017-04-04	-0.73381 0.98149
+        2017-04-05	-0.90132 1.13981
     """
 
     positions_wo_cash = positions.drop('cash', axis='columns')
@@ -86,13 +88,13 @@ def plot_style_factor_exposures(tot_style_factor_exposure, factor_name=None,
         Daily style factor exposures (output of compute_style_factor_exposures)
         - Time series with decimal style factor exposures
         - Example:
-            2017-04-24    0.037820
-            2017-04-25    0.016413
-            2017-04-26   -0.021472
-            2017-04-27   -0.024859
+            2017-04-24 0.037820
+            2017-04-25 0.016413
+            2017-04-26 -0.021472
+            2017-04-27 -0.024859
 
     factor_name : string
-        Name of style factor, for use in graph title
+        Name of a style factor, for use in graph title
         - Defaults to tot_style_factor_exposure.name
     ax : None
     """
@@ -135,7 +137,7 @@ def compute_sector_exposures(positions, sectors, sector_dict=SECTORS):
 
     sector_dict : dict or OrderedDict
         Dictionary of all sectors
-        - Keys are sector codes (e.g. ints or strings) and values are sector
+        - Keys are sector codes (e.g., ints or strings) and values are sector
           names (which must be strings)
         - Defaults to Morningstar sectors
     """

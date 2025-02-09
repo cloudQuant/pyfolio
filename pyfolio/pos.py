@@ -94,8 +94,8 @@ def get_max_median_position_concentration(positions):
     Returns
     -------
     pd.DataFrame
-        Columns are max long, max short, median long, and median short
-        position concentrations. Rows are timeperiods.
+        Columns are the max long, max short, median long, and median short
+        position concentrations.Rows are time periods.
     """
 
     expos = get_percent_alloc(positions)
@@ -115,7 +115,7 @@ def get_max_median_position_concentration(positions):
 
 def extract_pos(positions, cash):
     """
-    Extract position values from backtest object as returned by
+    Extract position values from the backtest object as returned by
     get_backtest() on the Quantopian research platform.
 
     Parameters
@@ -150,7 +150,7 @@ def extract_pos(positions, cash):
 
     values = values.join(cash).fillna(0)
 
-    # NOTE: Set name of DataFrame.columns to sid, to match the behavior
+    # NOTE: Set the name of DataFrame.columns to sid, to match the behavior
     # of DataFrame.join in earlier versions of pandas.
     values.columns.name = 'sid'
 
@@ -173,20 +173,20 @@ def get_sector_exposures(positions, symbol_sector_map):
     symbol_sector_map : dict or pd.Series
         Security identifier to sector mapping.
         Security ids as keys/index, sectors as values.
-        - Example:
-            {'AAPL' : 'Technology'
-             'MSFT' : 'Technology'
-             'CHK' : 'Natural Resources'}
+        - `Example`:
+            {'AAPL': 'Technology'
+             'MSFT': 'Technology'
+             'CHK': 'Natural Resources'}
 
     Returns
     -------
     sector_exp : pd.DataFrame
         Sectors and their allocations.
         - Example:
-            index         'Technology'    'Natural Resources' cash
-            2004-01-09    -1073.613       -403.870            1477.4830
-            2004-01-12    -4132.240       142.630             3989.6100
-            2004-01-13    -199.640        -100.980            100.0000
+            index         'Technology' 'Natural Resources' cash
+            2004-01-09 -1073.613 -403.870 1477.4830
+            2004-01-12 -4132.240 142.630 3989.6100
+            2004-01-13 -199.640 -100.980 100.0000
     """
 
     cash = positions['cash']

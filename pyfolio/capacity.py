@@ -8,15 +8,15 @@ from . import pos
 def daily_txns_with_bar_data(transactions, market_data):
     """
     Sums the absolute value of shares traded in each name on each day.
-    Adds columns containing the closing price and total daily volume for
+    Add columns containing the closing price and total daily volume for
     each day-ticker combination.
 
     Parameters
     ----------
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades. One row per trade.
         - See full explanation in tears.create_full_tear_sheet
-    market_data : pd.Panel,use dict replace
+    market_data : pd.Panel, use dict replace
         Contains "volume" and "price" DataFrames for the tickers
         in the dict of (name, dataframe)
 
@@ -24,7 +24,7 @@ def daily_txns_with_bar_data(transactions, market_data):
     -------
     txn_daily : pd.DataFrame
         Daily totals for transacted shares in each traded name.
-        price and volume columns for close price and daily volume for
+        Price and volume columns for close price and daily volume for
         the corresponding ticker, respectively.
     """
 
@@ -45,10 +45,9 @@ def days_to_liquidate_positions(positions, market_data,
                                 capital_base=1e6,
                                 mean_volume_window=5):
     """
-    Compute the number of days that would have been required
-    to fully liquidate each position on each day based on the
-    trailing n day mean daily bar volume and a limit on the proportion
-    of a daily bar that we are allowed to consume.
+    Compute the number of days that would have been required to fully liquidate each position
+    on each day, based on the trailing n day mean daily bar volume,
+    and a limit on the proportion of a daily bar that we are allowed to consume.
 
     This analysis uses portfolio allocations and a provided capital base
     rather than the dollar values in the positions DataFrame to remove the
@@ -168,10 +167,10 @@ def get_low_liquidity_transactions(transactions, market_data,
     Parameters
     ----------
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades. One row per trade.
          - See full explanation in create_full_tear_sheet.
     market_data : pd.Panel, use dict replace
-        Panel with items axis of 'price' and 'volume' DataFrames.
+        Panel with `items` axis of 'price' and 'volume' DataFrames.
         The major and minor axes should match those of the
         passed positions DataFrame (same dates and symbols).
     last_n_days : integer
@@ -198,7 +197,7 @@ def get_low_liquidity_transactions(transactions, market_data,
 def apply_slippage_penalty(returns, txn_daily, simulate_starting_capital,
                            backtest_starting_capital, impact=0.1):
     """
-    Applies quadratic volumeshare slippage model to daily returns based
+    Applies a quadratic volume share slippage model to daily returns based
     on the proportion of the observed historical daily bar dollar volume
     consumed by the strategy's trades. Scales the size of trades based
     on the ratio of the starting capital we wish to test to the starting
@@ -214,7 +213,7 @@ def apply_slippage_penalty(returns, txn_daily, simulate_starting_capital,
     simulate_starting_capital : integer
         capital at which we want to test
     backtest_starting_capital: capital base at which backtest was
-        origionally run. impact: See Zipline volumeshare slippage model
+        origionally run. impact: See Zipline volume share slippage model
     impact : float
         Scales the size of the slippage penalty.
 

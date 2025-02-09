@@ -92,10 +92,10 @@ def annual_return(returns, period=DAILY):
     ----------
     returns : pd.Series
         Periodic returns of the strategy, noncumulative.
-        - See full explanation in :func:`~pyfolio.timeseries.cum_returns`.
+        - See full explanation in: func:`~pyfolio.timeseries.cum_returns`.
     period : str, optional
         Defines the periodicity of the 'returns' data for purposes of
-        annualizing. Can be 'monthly', 'weekly', or 'daily'.
+        annualizing.It Can be 'monthly', 'weekly', or 'daily'.
         - Defaults to 'daily'.
 
     Returns
@@ -116,10 +116,10 @@ def annual_volatility(returns, period=DAILY):
     ----------
     returns : pd.Series
         Periodic returns of the strategy, noncumulative.
-        - See full explanation in :func:`~pyfolio.timeseries.cum_returns`.
+        - See full explanation in: func:`~pyfolio.timeseries.cum_returns`.
     period : str, optional
         Defines the periodicity of the 'returns' data for purposes of
-        annualizing volatility. Can be 'monthly' or 'weekly' or 'daily'.
+        annualizing volatility.It Can be 'monthly' or 'weekly' or 'daily'.
         - Defaults to 'daily'.
 
     Returns
@@ -140,10 +140,10 @@ def calmar_ratio(returns, period=DAILY):
     ----------
     returns : pd.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~pyfolio.timeseries.cum_returns`.
+        - See full explanation in: func:`~pyfolio.timeseries.cum_returns`.
     period : str, optional
         Defines the periodicity of the 'returns' data for purposes of
-        annualizing. Can be 'monthly', 'weekly', or 'daily'.
+        annualizing.It Can be 'monthly', 'weekly', or 'daily'.
         - Defaults to 'daily'.
 
     Returns
@@ -169,18 +169,18 @@ def omega_ratio(returns, annual_return_threshold=0.0):
     ----------
     returns : pd.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~pyfolio.timeseries.cum_returns`.
+        - See full explanation in: func:`~pyfolio.timeseries.cum_returns`.
     annual_return_threshold : float, optional
-        Minimum acceptable return of the investor. Annual threshold over which
+        Minimum acceptable return of the investor.The Annual threshold over which
         returns are considered positive or negative. It is converted to a
         value appropriate for the period of the returns for this ratio.
-        E.g. An annual minimum acceptable return of 100 translates to a daily
-        minimum acceptable return of 0.01848.
+        E.g., An annual minimum-acceptable return of 100 translates to a daily
+        minimum-acceptable return of 0.01848.
             (1 + 100) ** (1. / 252) - 1 = 0.01848
         Daily returns must exceed this value to be considered positive. The
         daily return yields the desired annual return when compounded over
         the average number of business days in a year.
-            (1 + 0.01848) ** 252 - 1 = 99.93
+            (1 + 0.01848) ** 252-1 = 99.93
         - Defaults to 0.0
 
 
@@ -207,12 +207,12 @@ def sortino_ratio(returns, required_return=0, period=DAILY):
     ----------
     returns : pd.Series or pd.DataFrame
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~pyfolio.timeseries.cum_returns`.
+        - See full explanation in: func:`~pyfolio.timeseries.cum_returns`.
     required_return: float / series
         minimum acceptable return
     period : str, optional
         Defines the periodicity of the 'returns' data for purposes of
-        annualizing. Can be 'monthly', 'weekly', or 'daily'.
+        annualizing.It Can be 'monthly', 'weekly', or 'daily'.
         - Defaults to 'daily'.
 
     Returns
@@ -236,12 +236,12 @@ def downside_risk(returns, required_return=0, period=DAILY):
     ----------
     returns : pd.Series or pd.DataFrame
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~pyfolio.timeseries.cum_returns`.
+        - See full explanation in: func:`~pyfolio.timeseries.cum_returns`.
     required_return: float / series
         minimum acceptable return
     period : str, optional
         Defines the periodicity of the 'returns' data for purposes of
-        annualizing. Can be 'monthly', 'weekly', or 'daily'.
+        annualizing.It Can be 'monthly', 'weekly', or 'daily'.
         - Defaults to 'daily'.
 
     Returns
@@ -267,12 +267,12 @@ def sharpe_ratio(returns, risk_free=0, period=DAILY):
     ----------
     returns : pd.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~pyfolio.timeseries.cum_returns`.
+        - See full explanation in: func:`~pyfolio.timeseries.cum_returns`.
     risk_free : int, float
         Constant risk-free return throughout the period.
     period : str, optional
         Defines the periodicity of the 'returns' data for purposes of
-        annualizing. Can be 'monthly', 'weekly', or 'daily'.
+        annualizing.It Can be 'monthly', 'weekly', or 'daily'.
         - Defaults to 'daily'.
 
     Returns
@@ -280,7 +280,7 @@ def sharpe_ratio(returns, risk_free=0, period=DAILY):
     float
         Sharpe ratio.
     np.nan
-        If insufficient length of returns or if is adjusted returns are 0.
+        If insufficient length of returns or if is adjusted, returns are 0.
 
     Note
     -----
@@ -299,7 +299,7 @@ def alpha_beta(returns, factor_returns):
     ----------
     returns : pd.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~pyfolio.timeseries.cum_returns`.
+        - See full explanation in: func:`~pyfolio.timeseries.cum_returns`.
     factor_returns : pd.Series
         Daily noncumulative returns of the benchmark factor to which betas are
         computed. Usually a benchmark such as market returns.
@@ -309,7 +309,7 @@ def alpha_beta(returns, factor_returns):
     -------
     float
         Alpha.
-    float
+    Float
         Beta.
     """
 
@@ -325,7 +325,7 @@ def alpha(returns, factor_returns):
     ----------
     returns : pd.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~pyfolio.timeseries.cum_returns`.
+        - See full explanation in: func:`~pyfolio.timeseries.cum_returns`.
     factor_returns : pd.Series
         Daily noncumulative returns of the benchmark factor to which betas are
         computed. Usually a benchmark such as market returns.
@@ -349,7 +349,7 @@ def beta(returns, factor_returns):
     ----------
     returns : pd.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~pyfolio.timeseries.cum_returns`.
+        - See full explanation in: func:`~pyfolio.timeseries.cum_returns`.
     factor_returns : pd.Series
         Daily noncumulative returns of the benchmark factor to which betas are
         computed. Usually a benchmark such as market returns.
@@ -375,7 +375,7 @@ def stability_of_timeseries(returns):
     ----------
     returns : pd.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~pyfolio.timeseries.cum_returns`.
+        - See full explanation in: func:`~pyfolio.timeseries.cum_returns`.
 
     Returns
     -------
@@ -398,7 +398,7 @@ def tail_ratio(returns):
     ----------
     returns : pd.Series
         Daily returns of the strategy, noncumulative.
-         - See full explanation in :func:`~pyfolio.timeseries.cum_returns`.
+         - See full explanation in: func:`~pyfolio.timeseries.cum_returns`.
 
     Returns
     -------
@@ -414,7 +414,7 @@ def common_sense_ratio(returns):
     Common sense ratio is the multiplication of the tail ratio and the
     Gain-to-Pain-Ratio -- sum(profits) / sum(losses).
 
-    See http://bit.ly/1ORzGBk for more information on motivation of
+    See https://bit.ly/1ORzGBk for more information on the motivation of
     this metric.
 
 
@@ -491,7 +491,7 @@ def aggregate_returns(returns, convert_to):
     ----------
     returns : pd.Series
        Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~pyfolio.timeseries.cum_returns`.
+        - See full explanation in: func:`~pyfolio.timeseries.cum_returns`.
     convert_to : str
         Can be 'weekly', 'monthly', or 'yearly'.
 
@@ -553,7 +553,7 @@ def rolling_regression(returns, factor_returns,
                        nan_threshold=0.1):
     """
     Computes rolling factor betas using a multivariate linear regression
-    (separate linear regressions is problematic because the factors may be
+    (separate linear regressions are problematic because the factors may be
     confounded).
 
     Parameters
@@ -567,10 +567,9 @@ def rolling_regression(returns, factor_returns,
          - Computes rolling beta for each column.
          - This is in the same style as returns.
     rolling_window : int, optional
-        The days window over which to compute the beta. Defaults to 6 months.
-    nan_threshold : float, optional
-        If there are more than this fraction of NaNs, the rolling regression
-        for the given date will be skipped.
+        The `days` window over which to compute the beta. Defaults to 6 months.
+    nan_threshold : float, optionally, If there is more than this fraction of NaNs,
+        the rolling regression for the given date will be skipped.
 
     Returns
     -------
@@ -634,7 +633,7 @@ def value_at_risk(returns, period=None, sigma=2.0):
          - See full explanation in tears.create_full_tear_sheet.
     period : str, optional
         Period over which to calculate VaR. Set to 'weekly',
-        'monthly', or 'yearly', otherwise defaults to period of
+        'monthly', or 'yearly', otherwise defaults to a period of
         returns (typically daily).
     sigma : float, optional
         Standard deviations of VaR, default 2.
@@ -704,12 +703,12 @@ def perf_stats(returns, factor_returns=None, positions=None,
         Daily noncumulative returns of the benchmark factor to which betas are
         computed. Usually a benchmark such as market returns.
          - This is in the same style as returns.
-         - If None, do not compute alpha, beta, and information ratio.
+         - If `None`, do not compute the alpha, beta, and information ratio.
     positions : pd.DataFrame
         Daily net position values.
          - See full explanation in tears.create_full_tear_sheet.
     transactions : pd.DataFrame
-        Prices and amounts of executed trades. One row per trade.
+        Prices and `amounts` of executed trades. One row per trade.
         - See full explanation in tears.create_full_tear_sheet.
     turnover_denom : str
         Either AGB or portfolio_value, default AGB.
@@ -740,7 +739,7 @@ def perf_stats(returns, factor_returns=None, positions=None,
 
 
 def perf_stats_bootstrap(returns, factor_returns=None, return_stats=True,
-                         **kwargs):
+                         **_kwargs):
     """Calculates various bootstrapped performance metrics of a strategy.
 
     Parameters
@@ -752,11 +751,11 @@ def perf_stats_bootstrap(returns, factor_returns=None, return_stats=True,
         Daily noncumulative returns of the benchmark factor to which betas are
         computed. Usually a benchmark such as market returns.
          - This is in the same style as returns.
-         - If None, do not compute alpha, beta, and information ratio.
+         - If `None`, do not compute the alpha, beta, and information ratio.
     return_stats : boolean (optional)
         If True, returns a DataFrame of mean, median, 5 and 95 percentiles
         for each perf metric.
-        If False, returns a DataFrame with the bootstrap samples for
+        If False, return a DataFrame with the bootstrap samples for
         each perf metric.
 
     Returns
@@ -765,7 +764,7 @@ def perf_stats_bootstrap(returns, factor_returns=None, return_stats=True,
         if return_stats is True:
         - Distributional statistics of bootstrapped sampling
         distribution of performance metrics.
-        if return_stats is False:
+        If return_stats is False:
         - Bootstrap samples for each performance metric.
     """
 
@@ -807,11 +806,11 @@ def calc_bootstrap(func, returns, *args, **kwargs):
     returns : pd.Series
         Daily returns of the strategy, noncumulative.
          - See full explanation in tears.create_full_tear_sheet.
-    factor_returns : pd.Series, optional
+    :factor_returns : pd.Series, optional
         Daily noncumulative returns of the benchmark factor to which betas are
         computed. Usually a benchmark such as market returns.
          - This is in the same style as returns.
-    n_samples : int, optional
+    :n_samples : int, optional
         Number of bootstrap samples to draw. Default is 1000.
         Increasing this will lead to more stable / accurate estimates.
 
@@ -850,7 +849,7 @@ def calc_distribution_stats(x):
 
     Returns
     -------
-    pandas.Series type
+    `pandas.Series` type
         Series containing mean, median, std, as well as 5, 25, 75 and
         95 percentiles of passed in values.
     """
@@ -913,8 +912,8 @@ def get_max_drawdown_underwater(underwater):
     try:
         recovery = underwater[valley:][underwater[valley:] == 0].index[0]
     except IndexError:
-        recovery = np.nan  # drawdown not recovered
-    # print(peak, valley, recovery)
+        recovery = np.nan  # drawdown isn't recovered
+    # `print(peak, valley, recovery)`
     return peak, valley, recovery
 
 
@@ -926,7 +925,7 @@ def get_max_drawdown(returns):
     ----------
     returns : pd.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~pyfolio.timeseries.cum_returns`.
+        - See full explanation in: func:`~pyfolio.timeseries.cum_returns`.
 
     Returns
     -------
@@ -955,7 +954,7 @@ def get_top_drawdowns(returns, top=10):
         Daily returns of the strategy, noncumulative.
          - See full explanation in tears.create_full_tear_sheet.
     top : int, optional
-        The amount of top drawdowns to find (default 10).
+        The `amount` of top drawdowns to find (default 10).
 
     Returns
     -------
@@ -979,7 +978,7 @@ def get_top_drawdowns(returns, top=10):
             underwater.drop(underwater[peak: recovery].index[1:-1],
                             inplace=True)
         else:
-            # drawdown has not ended yet
+            # the drawdown has not ended yet
             underwater = underwater.loc[:peak]
         # print("get_top_drawdowns",peak, valley, recovery)
         drawdowns.append((peak, valley, recovery))
@@ -999,7 +998,7 @@ def gen_drawdown_table(returns, top=10):
         Daily returns of the strategy, noncumulative.
          - See full explanation in tears.create_full_tear_sheet.
     top : int, optional
-        The amount of top drawdowns to find (default 10).
+        The `amount` of top drawdowns to find (default 10).
 
     Returns
     -------
@@ -1063,7 +1062,7 @@ def rolling_volatility(returns, rolling_vol_window):
         Daily returns of the strategy, noncumulative.
          - See full explanation in tears.create_full_tear_sheet.
     rolling_vol_window : int
-        Length of rolling window, in days, over which to compute.
+        Length of the rolling window, in days, over which to compute.
 
     Returns
     -------
@@ -1085,7 +1084,7 @@ def rolling_sharpe(returns, rolling_sharpe_window):
         Daily returns of the strategy, noncumulative.
          - See full explanation in tears.create_full_tear_sheet.
     rolling_sharpe_window : int
-        Length of rolling window, in days, over which to compute.
+        Length of the rolling window, in days, over which to compute.
 
     Returns
     -------
@@ -1102,9 +1101,9 @@ def rolling_sharpe(returns, rolling_sharpe_window):
 
 
 def simulate_paths(is_returns, num_days,
-                   starting_value=1, num_samples=1000, random_seed=None):
+                   _starting_value=1, num_samples=1000, random_seed=None):
     """
-    Gnerate alternate paths using available values from in-sample returns.
+    Generate alternate paths using available values from in-sample returns.
 
     Parameters
     ----------
@@ -1112,8 +1111,8 @@ def simulate_paths(is_returns, num_days,
         Non-cumulative in-sample returns.
     num_days : int
         Number of days to project the probability cone forward.
-    starting_value : int or float
-        Starting value of the out of sample period.
+    _starting_value : int or float
+        Starting value of the out sample period.
     num_samples : int
         Number of samples to draw from the in-sample daily returns.
         Each sample will be an array with length num_days.
@@ -1139,21 +1138,23 @@ def simulate_paths(is_returns, num_days,
 
 def summarize_paths(samples, cone_std=(1., 1.5, 2.), starting_value=1.):
     """
-    Gnerate the upper and lower bounds of an n standard deviation
+    Generate the upper and lower bounds of an n standard deviation
     cone of forecasted cumulative returns.
 
     Parameters
     ----------
-    samples : numpy.ndarray
+    :param samples : numpy.ndarray
         Alternative paths, or series of possible outcomes.
-    cone_std : list of int/float
-        Number of standard devations to use in the boundaries of
+    :param cone_std : list of int/float
+        Number of standard deviations to use in the boundaries of
         the cone. If multiple values are passed, cone bounds will
         be generated for each value.
+    :param starting_value: default 1
 
     Returns
     -------
     samples : pandas.core.frame.DataFrame
+
     """
 
     cum_samples = ep.cum_returns(samples.T,
@@ -1180,8 +1181,8 @@ def forecast_cone_bootstrap(is_returns, num_days, cone_std=(1., 1.5, 2.),
     """
     Determines the upper and lower bounds of an n standard deviation
     cone of forecasted cumulative returns. Future cumulative mean and
-    standard devation are computed by repeatedly sampling from the
-    in-sample daily returns (i.e. bootstrap). This cone is non-parametric,
+    standard deviation are computed by repeatedly sampling from the
+    in-sample daily returns (i.e., bootstrap). This cone is non-parametric,
     meaning it does not assume that returns are normally distributed.
 
     Parameters
@@ -1192,11 +1193,11 @@ def forecast_cone_bootstrap(is_returns, num_days, cone_std=(1., 1.5, 2.),
     num_days : int
         Number of days to project the probability cone forward.
     cone_std : int, float, or list of int/float
-        Number of standard devations to use in the boundaries of
+        Number of standard deviations to use in the boundaries of
         the cone. If multiple values are passed, cone bounds will
         be generated for each value.
     starting_value : int or float
-        Starting value of the out of sample period.
+        Starting value of the out sample period.
     num_samples : int
         Number of samples to draw from the in-sample daily returns.
         Each sample will be an array with length num_days.
@@ -1210,7 +1211,7 @@ def forecast_cone_bootstrap(is_returns, num_days, cone_std=(1., 1.5, 2.),
     -------
     pd.DataFrame
         Contains upper and lower cone boundaries. Column names are
-        strings corresponding to the number of standard devations
+        strings corresponding to the number of standard deviations
         above (positive) or below (negative) the projected mean
         cumulative returns.
     """
@@ -1218,7 +1219,7 @@ def forecast_cone_bootstrap(is_returns, num_days, cone_std=(1., 1.5, 2.),
     samples = simulate_paths(
         is_returns=is_returns,
         num_days=num_days,
-        starting_value=starting_value,
+        _starting_value=starting_value,
         num_samples=num_samples,
         random_seed=random_seed
     )

@@ -1,14 +1,14 @@
 empyrical
 flask
 ipython
+tk
 matplotlib
-nbformat
 parameterized
 numpy
 pandas
+ipython
 pymc
 pytz
-runipy
 scikit-learn
 scipy
 seaborn

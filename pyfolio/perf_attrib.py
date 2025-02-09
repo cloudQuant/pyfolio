@@ -19,7 +19,8 @@ from collections import OrderedDict
 import empyrical as ep
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import matplotlib
+matplotlib.use('Agg')
 from pyfolio.pos import get_percent_alloc
 from pyfolio.txn import get_turnover
 from pyfolio.utils import print_table, configure_legend
@@ -34,7 +35,7 @@ def perf_attrib(returns,
                 transactions=None,
                 pos_in_dollars=True):
     """
-    Attributes the performance of a returns stream to a set of risk factors.
+    Attributes the performance of a `returns` stream to a set of risk factors.
 
     Preprocesses inputs, and then calls empyrical.perf_attrib. See
     empyrical.perf_attrib for more info.
@@ -52,19 +53,19 @@ def perf_attrib(returns,
     returns : pd.Series
         Returns for each day in the date range.
         - Example:
-            2017-01-01   -0.017098
-            2017-01-02    0.002683
-            2017-01-03   -0.008669
+            2017-01-01 -0.017098
+            2017-01-02 0.002683
+            2017-01-03 -0.008669
 
     positions: pd.DataFrame
         Daily holdings (in dollars or percentages), indexed by date.
-        Will be converted to percentages if positions are in dollars.
+        It Will be converted to percentages if positions are in dollars.
         Short positions show up as cash in the 'cash' column.
         - Examples:
-                        AAPL  TLT  XOM  cash
-            2017-01-01    34   58   10     0
-            2017-01-02    22   77   18     0
-            2017-01-03   -15   27   30    15
+                        AAPL  TLT XOM cash
+            2017-01-01 34 58 10 0
+            2017-01-02 22 77 18 0
+            2017-01-03 -15 27 30 15
 
                             AAPL       TLT       XOM  cash
             2017-01-01  0.333333  0.568627  0.098039   0.0
@@ -99,7 +100,7 @@ def perf_attrib(returns,
 
         - One row per trade.
         - Trades on different names that occur at the
-          same time will have identical indicies.
+          same time will have identical indices.
         - Example:
             index                  amount   price    symbol
             2004-01-09 12:18:01    483      324.12   'AAPL'
@@ -119,17 +120,17 @@ def perf_attrib(returns,
         - Example:
                         momentum  reversal
             dt
-            2017-01-01 -0.238655  0.077123
-            2017-01-02  0.821872  1.520515
+            2017-01-01 -0.238655 0.077123
+            2017-01-02 0.821872 1.520515
 
     perf_attribution : pd.DataFrame
         df with factors, common returns, and specific returns as columns,
         and datetimes as index
         - Example:
-                        momentum  reversal  common_returns  specific_returns
+                        momentum  reversal common_returns specific_returns
             dt
-            2017-01-01  0.249087  0.935925        1.185012          1.185012
-            2017-01-02 -0.003194 -0.400786       -0.403980         -0.403980
+            2017-01-01 0.249087 0.935925 1.185012 1.185012
+            2017-01-02 -0.003194 -0.400786 -0.403980 -0.403980
     """
     (returns,
      positions,
@@ -162,17 +163,17 @@ def compute_exposures(positions, factor_loadings, stack_positions=True,
         Daily holdings (in dollars or percentages), indexed by date, OR
         a series of holdings indexed by date and ticker.
         - Examples:
-                        AAPL  TLT  XOM  cash
-            2017-01-01    34   58   10     0
-            2017-01-02    22   77   18     0
-            2017-01-03   -15   27   30    15
+                        AAPL  TLT XOM cash
+            2017-01-01 34 58 10 0
+            2017-01-02 22 77 18 0
+            2017-01-03 -15 27 30 15
 
                             AAPL       TLT       XOM  cash
             2017-01-01  0.333333  0.568627  0.098039   0.0
             2017-01-02  0.188034  0.658120  0.153846   0.0
             2017-01-03  0.208333  0.375000  0.416667   0.0
 
-            dt          ticker
+            Dt ticker
             2017-01-01  AAPL      0.417582
                         TLT       0.010989
                         XOM       0.571429
@@ -207,8 +208,8 @@ def compute_exposures(positions, factor_loadings, stack_positions=True,
         - Example:
                         momentum  reversal
             dt
-            2017-01-01 -0.238655  0.077123
-            2017-01-02  0.821872  1.520515
+            2017-01-01 -0.238655 0.077123
+            2017-01-02 0.821872 1.520515
     """
     if stack_positions:
         positions = _stack_positions(positions, pos_in_dollars=pos_in_dollars)
@@ -218,7 +219,7 @@ def compute_exposures(positions, factor_loadings, stack_positions=True,
 
 def create_perf_attrib_stats(perf_attrib_, risk_exposures):
     """
-    Takes perf attribution data over a period of time and computes annualized
+    Takes perf attribution data over a period of time and computes annualized the
     multifactor alpha, multifactor sharpe, risk exposures.
     """
     summary = OrderedDict()
@@ -313,8 +314,8 @@ def show_perf_attrib_stats(returns,
     print_table(
         risk_exposure_stats,
         name='Exposures Summary',
-        # In exposures table, format exposure column to 2 decimal places, and
-        # return columns  as percentages.
+        # In `exposures` table, format exposure column to 2 decimal places, and
+        # return columns as percentages.
         formatters={
             'Average Risk Factor Exposure': float_formatter,
             'Annualized Return': percentage_formatter,
@@ -344,7 +345,7 @@ def plot_returns(perf_attrib_data, cost=None, ax=None):
         and gets plotted separately
 
     ax :  matplotlib.axes.Axes :
-        axes on which plots are made. if None, current axes will be used
+        axes on which plots are made. If None, current axes will be used
 
     Returns
     -------
@@ -396,7 +397,7 @@ def plot_alpha_returns(alpha_returns, ax=None):
         series of daily alpha returns indexed by datetime
 
     ax :  matplotlib.axes.Axes:
-        axes on which plots are made. if None, current axes will be used
+        axes on which plots are made.If None, current axes will be used
 
     Returns
     -------
@@ -430,13 +431,13 @@ def plot_factor_contribution_to_perf(
         df with factors, common returns, and specific returns as columns,
         and datetimes as index
         - Example:
-                        momentum  reversal  common_returns  specific_returns
+                        momentum  reversal common_returns specific_returns
             dt
-            2017-01-01  0.249087  0.935925        1.185012          1.185012
-            2017-01-02 -0.003194 -0.400786       -0.403980         -0.403980
+            2017-01-01 0.249087 0.935925 1.185012 1.185012
+            2017-01-02 -0.003194 -0.400786 -0.403980 -0.403980
 
     ax :  matplotlib.axes.Axes:
-        axes on which plots are made. if None, current axes will be used
+        axes on which plots are made.If None, current axes will be used
 
     title : str, optional
         title of plot
@@ -478,11 +479,11 @@ def plot_risk_exposures(exposures, ax=None,
         - Example:
                         momentum  reversal
             dt
-            2017-01-01 -0.238655  0.077123
-            2017-01-02  0.821872  1.520515
+            2017-01-01 -0.238655 0.077123
+            2017-01-02 0.821872 1.520515
 
     :param ax :  matplotlib.axes.Axes:
-        axes on which plots are made. if None, current axes will be used
+        axes on which plots are made.If None, current axes will be used
     :param title: string, default 'Daily risk factor exposures'
 
     Returns
@@ -624,7 +625,7 @@ def _stack_positions(positions, pos_in_dollars=True):
     ----------
     positions: pd.DataFrame
         Daily holdings (in dollars or percentages), indexed by date.
-        Will be converted to percentages if positions are in dollars.
+        It Will be converted to percentages if positions are in dollars.
         Short positions show up as cash in the 'cash' column.
 
     pos_in_dollars : bool
