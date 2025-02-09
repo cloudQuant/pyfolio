@@ -558,14 +558,14 @@ def create_simple_tear_sheet(returns,
     fig = plt.figure(figsize=(14, vertical_sections * 6))
     gs = gridspec.GridSpec(vertical_sections, 3, wspace=0.5, hspace=0.5)
 
-    ax_rolling_returns = plt.subplot(gs[:2, :])
+    ax_rolling_returns = fig.add_subplot(gs[:2, :])
     i = 2
     if benchmark_rets is not None:
-        ax_rolling_beta = plt.subplot(gs[i, :], sharex=ax_rolling_returns)
+        ax_rolling_beta = fig.add_subplot(gs[i, :], sharex=ax_rolling_returns)
         i += 1
-    ax_rolling_sharpe = plt.subplot(gs[i, :], sharex=ax_rolling_returns)
+    ax_rolling_sharpe = fig.add_subplot(gs[i, :], sharex=ax_rolling_returns)
     i += 1
-    ax_underwater = plt.subplot(gs[i, :], sharex=ax_rolling_returns)
+    ax_underwater = fig.add_subplot(gs[i, :], sharex=ax_rolling_returns)
     i += 1
 
     plotting.plot_rolling_returns(returns,
@@ -584,13 +584,13 @@ def create_simple_tear_sheet(returns,
 
     if positions is not None:
         # Plot simple positions tear sheet
-        ax_exposures = plt.subplot(gs[i, :])
+        ax_exposures = fig.add_subplot(gs[i, :])
         i += 1
-        ax_top_positions = plt.subplot(gs[i, :], sharex=ax_exposures)
+        ax_top_positions = fig.add_subplot(gs[i, :], sharex=ax_exposures)
         i += 1
-        ax_holdings = plt.subplot(gs[i, :], sharex=ax_exposures)
+        ax_holdings = fig.add_subplot(gs[i, :], sharex=ax_exposures)
         i += 1
-        ax_long_short_holdings = plt.subplot(gs[i, :])
+        ax_long_short_holdings = fig.add_subplot(gs[i, :])
         i += 1
 
         positions_alloc = pos.get_percent_alloc(positions)
@@ -610,9 +610,9 @@ def create_simple_tear_sheet(returns,
 
         if transactions is not None:
             # Plot simple transactions tear sheet
-            ax_turnover = plt.subplot(gs[i, :])
+            ax_turnover = fig.add_subplot(gs[i, :])
             i += 1
-            ax_txn_timings = plt.subplot(gs[i, :])
+            ax_txn_timings = fig.add_subplot(gs[i, :])
             i += 1
 
             plotting.plot_turnover(returns,
@@ -709,34 +709,34 @@ def create_returns_tear_sheet(returns, positions=None,
 
     fig = plt.figure(figsize=(14, vertical_sections * 6))
     gs = gridspec.GridSpec(vertical_sections, 3, wspace=0.5, hspace=0.5)
-    ax_rolling_returns = plt.subplot(gs[:2, :])
+    ax_rolling_returns = fig.add_subplot(gs[:2, :])
 
     i = 2
-    ax_rolling_returns_vol_match = plt.subplot(gs[i, :],
+    ax_rolling_returns_vol_match = fig.add_subplot(gs[i, :],
                                                sharex=ax_rolling_returns)
     i += 1
-    ax_rolling_returns_log = plt.subplot(gs[i, :],
+    ax_rolling_returns_log = fig.add_subplot(gs[i, :],
                                          sharex=ax_rolling_returns)
     i += 1
-    ax_returns = plt.subplot(gs[i, :],
+    ax_returns = fig.add_subplot(gs[i, :],
                              sharex=ax_rolling_returns)
     i += 1
     if benchmark_rets is not None:
-        ax_rolling_beta = plt.subplot(gs[i, :], sharex=ax_rolling_returns)
+        ax_rolling_beta = fig.add_subplot(gs[i, :], sharex=ax_rolling_returns)
         i += 1
-    ax_rolling_volatility = plt.subplot(gs[i, :], sharex=ax_rolling_returns)
+    ax_rolling_volatility = fig.add_subplot(gs[i, :], sharex=ax_rolling_returns)
     i += 1
-    ax_rolling_sharpe = plt.subplot(gs[i, :], sharex=ax_rolling_returns)
+    ax_rolling_sharpe = fig.add_subplot(gs[i, :], sharex=ax_rolling_returns)
     i += 1
-    ax_drawdown = plt.subplot(gs[i, :], sharex=ax_rolling_returns)
+    ax_drawdown = fig.add_subplot(gs[i, :], sharex=ax_rolling_returns)
     i += 1
-    ax_underwater = plt.subplot(gs[i, :], sharex=ax_rolling_returns)
+    ax_underwater = fig.add_subplot(gs[i, :], sharex=ax_rolling_returns)
     i += 1
-    ax_monthly_heatmap = plt.subplot(gs[i, 0])
-    ax_annual_returns = plt.subplot(gs[i, 1])
-    ax_monthly_dist = plt.subplot(gs[i, 2])
+    ax_monthly_heatmap = fig.add_subplot(gs[i, 0])
+    ax_annual_returns = fig.add_subplot(gs[i, 1])
+    ax_monthly_dist = fig.add_subplot(gs[i, 2])
     i += 1
-    ax_return_quantiles = plt.subplot(gs[i, :])
+    ax_return_quantiles = fig.add_subplot(gs[i, :])
     i += 1
 
     plotting.plot_rolling_returns(
@@ -804,7 +804,7 @@ def create_returns_tear_sheet(returns, positions=None,
         ax=ax_return_quantiles)
 
     if bootstrap and (benchmark_rets is not None):
-        ax_bootstrap = plt.subplot(gs[i, :])
+        ax_bootstrap = fig.add_subplot(gs[i, :])
         plotting.plot_perf_stats(returns, benchmark_rets,
                                  ax=ax_bootstrap)
     elif bootstrap:
@@ -866,12 +866,12 @@ def create_position_tear_sheet(returns, positions,
 
     fig = plt.figure(figsize=(14, vertical_sections * 6))
     gs = gridspec.GridSpec(vertical_sections, 3, wspace=0.5, hspace=0.5)
-    ax_exposures = plt.subplot(gs[0, :])
-    ax_top_positions = plt.subplot(gs[1, :], sharex=ax_exposures)
-    ax_max_median_pos = plt.subplot(gs[2, :], sharex=ax_exposures)
-    ax_holdings = plt.subplot(gs[3, :], sharex=ax_exposures)
-    ax_long_short_holdings = plt.subplot(gs[4, :])
-    ax_gross_leverage = plt.subplot(gs[5, :], sharex=ax_exposures)
+    ax_exposures = fig.add_subplot(gs[0, :])
+    ax_top_positions = fig.add_subplot(gs[1, :], sharex=ax_exposures)
+    ax_max_median_pos = fig.add_subplot(gs[2, :], sharex=ax_exposures)
+    ax_holdings = fig.add_subplot(gs[3, :], sharex=ax_exposures)
+    ax_long_short_holdings = fig.add_subplot(gs[4, :])
+    ax_gross_leverage = fig.add_subplot(gs[5, :], sharex=ax_exposures)
 
     positions_alloc = pos.get_percent_alloc(positions)
 
@@ -902,7 +902,7 @@ def create_position_tear_sheet(returns, positions,
         if len(sector_exposures.columns) > 1:
             sector_alloc = pos.get_percent_alloc(sector_exposures)
             sector_alloc = sector_alloc.drop('cash', axis='columns')
-            ax_sector_alloc = plt.subplot(gs[6, :], sharex=ax_exposures)
+            ax_sector_alloc = fig.add_subplot(gs[6, :], sharex=ax_exposures)
             plotting.plot_sector_allocations(returns, sector_alloc,
                                              ax=ax_sector_alloc)
 
@@ -952,10 +952,10 @@ def create_txn_tear_sheet(returns, positions, transactions,
 
     fig = plt.figure(figsize=(14, vertical_sections * 6))
     gs = gridspec.GridSpec(vertical_sections, 3, wspace=0.5, hspace=0.5)
-    ax_turnover = plt.subplot(gs[0, :])
-    ax_daily_volume = plt.subplot(gs[1, :], sharex=ax_turnover)
-    ax_turnover_hist = plt.subplot(gs[2, :])
-    ax_txn_timings = plt.subplot(gs[3, :])
+    ax_turnover = fig.add_subplot(gs[0, :])
+    ax_daily_volume = fig.add_subplot(gs[1, :], sharex=ax_turnover)
+    ax_turnover_hist = fig.add_subplot(gs[2, :])
+    ax_txn_timings = fig.add_subplot(gs[3, :])
 
     plotting.plot_turnover(
         returns,
@@ -974,13 +974,13 @@ def create_txn_tear_sheet(returns, positions, transactions,
     plotting.plot_txn_time_hist(transactions, ax=ax_txn_timings)
 
     if unadjusted_returns is not None:
-        ax_slippage_sweep = plt.subplot(gs[4, :])
+        ax_slippage_sweep = fig.add_subplot(gs[4, :])
         plotting.plot_slippage_sweep(unadjusted_returns,
                                      positions,
                                      transactions,
                                      ax=ax_slippage_sweep
                                      )
-        ax_slippage_sensitivity = plt.subplot(gs[5, :])
+        ax_slippage_sensitivity = fig.add_subplot(gs[5, :])
         plotting.plot_slippage_sensitivity(unadjusted_returns,
                                            positions,
                                            transactions,
@@ -1056,11 +1056,11 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
 
     gs = gridspec.GridSpec(3, 2, wspace=0.5, hspace=0.5)
 
-    ax_trade_lifetimes = plt.subplot(gs[0, :])
-    ax_prob_profit_trade = plt.subplot(gs[1, 0])
-    ax_holding_time = plt.subplot(gs[1, 1])
-    ax_pnl_per_round_trip_dollars = plt.subplot(gs[2, 0])
-    ax_pnl_per_round_trip_pct = plt.subplot(gs[2, 1])
+    ax_trade_lifetimes = fig.add_subplot(gs[0, :])
+    ax_prob_profit_trade = fig.add_subplot(gs[1, 0])
+    ax_holding_time = fig.add_subplot(gs[1, 1])
+    ax_pnl_per_round_trip_dollars = fig.add_subplot(gs[2, 0])
+    ax_pnl_per_round_trip_pct = fig.add_subplot(gs[2, 1])
 
     plotting.plot_round_trip_lifetimes(trades, ax=ax_trade_lifetimes)
 
@@ -1145,7 +1145,7 @@ def create_interesting_times_tear_sheet(
 
     for i, (name, rets_period) in enumerate(rets_interesting.items()):
         # i=0 -> 0, i=1 -> 0, i=2 -> 1 ;; i=0 -> 0, i=1 -> 1, i=2 -> 0
-        ax = plt.subplot(gs[int(i / 2.0), i % 2])
+        ax = fig.add_subplot(gs[int(i / 2.0), i % 2])
 
         ep.cum_returns(rets_period).plot(
             ax=ax, color='forestgreen', label='algo', alpha=0.7, lw=2)
@@ -1357,31 +1357,31 @@ def create_bayesian_tear_sheet(returns, benchmark_rets=None,
     row = 0
 
     # Plot Bayesian cone
-    ax_cone = plt.subplot(gs[row, :])
+    ax_cone = fig.add_subplot(gs[row, :])
     bayesian.plot_bayes_cone(df_train, df_test, ppc_t, ax=ax_cone)
     previous_time = timer("plotting Bayesian cone", previous_time)
 
     # Plot BEST results
     row += 1
-    axs.append(plt.subplot(gs[row, 0]))
-    axs.append(plt.subplot(gs[row, 1]))
+    axs.append(fig.add_subplot(gs[row, 0]))
+    axs.append(fig.add_subplot(gs[row, 1]))
     row += 1
-    axs.append(plt.subplot(gs[row, 0]))
-    axs.append(plt.subplot(gs[row, 1]))
+    axs.append(fig.add_subplot(gs[row, 0]))
+    axs.append(fig.add_subplot(gs[row, 1]))
     row += 1
-    axs.append(plt.subplot(gs[row, 0]))
-    axs.append(plt.subplot(gs[row, 1]))
+    axs.append(fig.add_subplot(gs[row, 0]))
+    axs.append(fig.add_subplot(gs[row, 1]))
     row += 1
     # Effect size across two
-    axs.append(plt.subplot(gs[row, :]))
+    axs.append(fig.add_subplot(gs[row, :]))
 
     bayesian.plot_best(trace=trace_best, axs=axs)
     previous_time = timer("plotting BEST results", previous_time)
 
     # Compute Bayesian predictions
     row += 1
-    ax_ret_pred_day = plt.subplot(gs[row, 0])
-    ax_ret_pred_week = plt.subplot(gs[row, 1])
+    ax_ret_pred_day = fig.add_subplot(gs[row, 0])
+    ax_ret_pred_week = fig.add_subplot(gs[row, 1])
     day_pred = ppc_t[:, 0]
     p5 = scipy.stats.scoreatpercentile(day_pred, 5)
     sns.histplot(day_pred,
@@ -1424,8 +1424,8 @@ def create_bayesian_tear_sheet(returns, benchmark_rets=None,
 
         # Plot alpha and beta
         row += 1
-        ax_alpha = plt.subplot(gs[row, 0])
-        ax_beta = plt.subplot(gs[row, 1])
+        ax_alpha = fig.add_subplot(gs[row, 0])
+        ax_beta = fig.add_subplot(gs[row, 1])
         sns.histplot((1 + trace_alpha_beta['alpha'][100:]) ** 252 - 1,
                      ax=ax_alpha)
         sns.histplot(trace_alpha_beta['beta'][100:], ax=ax_beta)
@@ -1450,7 +1450,7 @@ def create_bayesian_tear_sheet(returns, benchmark_rets=None,
 
         # plot latent volatility
         row += 1
-        ax_volatility = plt.subplot(gs[row, :])
+        ax_volatility = fig.add_subplot(gs[row, :])
         bayesian.plot_stoch_vol(
             df_train_truncated, trace=trace_stoch_vol, ax=ax_volatility)
         previous_time = timer(
@@ -1591,9 +1591,9 @@ def create_risk_tear_sheet(positions,
 
     if style_factor_panel is not None:
         style_axes = []
-        style_axes.append(plt.subplot(gs[0, :]))
+        style_axes.append(fig.add_subplot(gs[0, :]))
         for i in range(1, len(style_factor_panel.items)):
-            style_axes.append(plt.subplot(gs[i, :], sharex=style_axes[0]))
+            style_axes.append(fig.add_subplot(gs[i, :], sharex=style_axes[0]))
 
         j = 0
         for name, df in style_factor_panel.items():
@@ -1603,11 +1603,11 @@ def create_risk_tear_sheet(positions,
 
     if sectors is not None:
         i += 1
-        ax_sector_longshort = plt.subplot(gs[i:i + 2, :], sharex=style_axes[0])
+        ax_sector_longshort = fig.add_subplot(gs[i:i + 2, :], sharex=style_axes[0])
         i += 2
-        ax_sector_gross = plt.subplot(gs[i, :], sharex=style_axes[0])
+        ax_sector_gross = fig.add_subplot(gs[i, :], sharex=style_axes[0])
         i += 1
-        ax_sector_net = plt.subplot(gs[i, :], sharex=style_axes[0])
+        ax_sector_net = fig.add_subplot(gs[i, :], sharex=style_axes[0])
         long_exposures, short_exposures, gross_exposures, net_exposures \
             = risk.compute_sector_exposures(positions, sectors)
         risk.plot_sector_exposures_longshort(long_exposures, short_exposures,
@@ -1617,11 +1617,11 @@ def create_risk_tear_sheet(positions,
 
     if caps is not None:
         i += 1
-        ax_cap_longshort = plt.subplot(gs[i:i + 2, :], sharex=style_axes[0])
+        ax_cap_longshort = fig.add_subplot(gs[i:i + 2, :], sharex=style_axes[0])
         i += 2
-        ax_cap_gross = plt.subplot(gs[i, :], sharex=style_axes[0])
+        ax_cap_gross = fig.add_subplot(gs[i, :], sharex=style_axes[0])
         i += 1
-        ax_cap_net = plt.subplot(gs[i, :], sharex=style_axes[0])
+        ax_cap_net = fig.add_subplot(gs[i, :], sharex=style_axes[0])
         long_exposures, short_exposures, gross_exposures, net_exposures \
             = risk.compute_cap_exposures(positions, caps)
         risk.plot_cap_exposures_longshort(long_exposures, short_exposures,
@@ -1631,9 +1631,9 @@ def create_risk_tear_sheet(positions,
 
     if volumes is not None:
         i += 1
-        ax_vol_longshort = plt.subplot(gs[i:i + 2, :], sharex=style_axes[0])
+        ax_vol_longshort = fig.add_subplot(gs[i:i + 2, :], sharex=style_axes[0])
         i += 2
-        ax_vol_gross = plt.subplot(gs[i, :], sharex=style_axes[0])
+        ax_vol_gross = fig.add_subplot(gs[i, :], sharex=style_axes[0])
         longed_threshold, shorted_threshold, grossed_threshold \
             = risk.compute_volume_exposures(positions, volumes, percentile)
         risk.plot_volume_exposures_longshort(longed_threshold,
@@ -1668,7 +1668,7 @@ def create_perf_attrib_tear_sheet(returns,
 
     positions: pd.DataFrame
         Daily holdings (in dollars or percentages), indexed by date.
-        Will be converted to percentages if positions are in dollars.
+        It Will be converted to percentages if positions are in dollars.
         Short positions show up as cash in the 'cash' column.
 
     factor_returns : pd.DataFrame
@@ -1720,7 +1720,7 @@ def create_perf_attrib_tear_sheet(returns,
                            wspace=0.5, hspace=0.5)
 
     perf_attrib.plot_returns(perf_attrib_data,
-                             ax=plt.subplot(gs[current_section]))
+                             ax=fig.add_subplot(gs[current_section]))
     current_section += 1
 
     if factor_partitions is not None:
@@ -1732,7 +1732,7 @@ def create_perf_attrib_tear_sheet(returns,
 
             perf_attrib.plot_factor_contribution_to_perf(
                 perf_attrib_data[columns_to_select],
-                ax=plt.subplot(gs[current_section]),
+                ax=fig.add_subplot(gs[current_section]),
                 title=(
                     'Cumulative common {} returns attribution'
                 ).format(factor_type)
@@ -1743,7 +1743,7 @@ def create_perf_attrib_tear_sheet(returns,
             perf_attrib.plot_risk_exposures(
                 portfolio_exposures[portfolio_exposures.columns
                 .intersection(partitions)],
-                ax=plt.subplot(gs[current_section]),
+                ax=fig.add_subplot(gs[current_section]),
                 title='Daily {} factor exposures'.format(factor_type)
             )
             current_section += 1
@@ -1752,13 +1752,13 @@ def create_perf_attrib_tear_sheet(returns,
 
         perf_attrib.plot_factor_contribution_to_perf(
             perf_attrib_data,
-            ax=plt.subplot(gs[current_section])
+            ax=fig.add_subplot(gs[current_section])
         )
         current_section += 1
 
         perf_attrib.plot_risk_exposures(
             portfolio_exposures,
-            ax=plt.subplot(gs[current_section])
+            ax=fig.add_subplot(gs[current_section])
         )
 
     gs.tight_layout(fig)

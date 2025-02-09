@@ -14,12 +14,12 @@
 # limitations under the License.
 from collections import OrderedDict
 from functools import partial
-from matplotlib.cm import gist_rainbow
-
+# from matplotlib.cm import gist_rainbow
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
+cmap = plt.get_cmap('gist_rainbow')
 
 
 SECTORS = OrderedDict([
@@ -200,7 +200,7 @@ def plot_sector_exposures_longshort(long_exposures, short_exposures,
     else:
         sector_names = sector_dict.values()
 
-    color_list = gist_rainbow(np.linspace(0, 1, 11))
+    color_list = cmap(np.linspace(0, 1, 11))
 
     ax.stackplot(long_exposures[0].index, long_exposures,
                  labels=sector_names, colors=color_list, alpha=0.8,
@@ -238,7 +238,7 @@ def plot_sector_exposures_gross(gross_exposures, sector_dict=None, ax=None):
     else:
         sector_names = sector_dict.values()
 
-    color_list = gist_rainbow(np.linspace(0, 1, 11))
+    color_list = cmap(np.linspace(0, 1, 11))
 
     ax.stackplot(gross_exposures[0].index, gross_exposures,
                  labels=sector_names, colors=color_list, alpha=0.8,
@@ -273,7 +273,7 @@ def plot_sector_exposures_net(net_exposures, sector_dict=None, ax=None):
     else:
         sector_names = sector_dict.values()
 
-    color_list = gist_rainbow(np.linspace(0, 1, 11))
+    color_list = cmap(np.linspace(0, 1, 11))
 
     for i in range(len(net_exposures)):
         ax.plot(net_exposures[i], color=color_list[i], alpha=0.8,
@@ -347,7 +347,7 @@ def plot_cap_exposures_longshort(long_exposures, short_exposures, ax=None):
     if ax is None:
         ax = plt.gca()
 
-    color_list = gist_rainbow(np.linspace(0, 1, 5))
+    color_list = cmap(np.linspace(0, 1, 5))
 
     ax.stackplot(long_exposures[0].index, long_exposures,
                  labels=CAP_BUCKETS.keys(), colors=color_list, alpha=0.8,
@@ -376,7 +376,7 @@ def plot_cap_exposures_gross(gross_exposures, ax=None):
     if ax is None:
         ax = plt.gca()
 
-    color_list = gist_rainbow(np.linspace(0, 1, 5))
+    color_list = cmap(np.linspace(0, 1, 5))
 
     ax.stackplot(gross_exposures[0].index, gross_exposures,
                  labels=CAP_BUCKETS.keys(), colors=color_list, alpha=0.8,
@@ -402,7 +402,7 @@ def plot_cap_exposures_net(net_exposures, ax=None):
     if ax is None:
         ax = plt.gca()
 
-    color_list = gist_rainbow(np.linspace(0, 1, 5))
+    color_list = cmap(np.linspace(0, 1, 5))
 
     cap_names = CAP_BUCKETS.keys()
     for i in range(len(net_exposures)):
