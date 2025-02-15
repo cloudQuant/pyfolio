@@ -6,9 +6,14 @@ EGG_INFO_DIR="pyfolio.egg-info"
 BENCHMARKS_DIR=".benchmarks"
 EMPYRICAL_VERSION="0.5.6"
 
-# 切换到上一级目录
-echo "Switching to the parent directory..."
-cd ..
+# 获取默认工作目录（用户主目录）
+DEFAULT_WORK_DIR="$HOME"
+echo "Default working directory: $DEFAULT_WORK_DIR"
+
+# 切换到默认工作目录
+echo "Switching to the default working directory..."
+cd "$DEFAULT_WORK_DIR" || { echo "Failed to switch to default working directory. Exiting..."; exit 1; }
+
 
 # Function to check if a Python package is installed
 check_package_installed() {
@@ -32,7 +37,8 @@ if ! check_package_installed "empyrical"; then
     fi
     # 运行 install_unix.sh 安装 empyrical
     echo "Running install_unix.sh for empyrical..."
-    sh ./empyrical/install_unix.sh
+    cd ./empyrical
+    sh install_unix.sh
     if [ $? -ne 0 ]; then
         echo "Failed to run install_unix.sh for empyrical. Exiting..."
         exit 1
