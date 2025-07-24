@@ -1,0 +1,170 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main, develop ]
+  schedule:
+    # Run tests once a week to catch dependency issues
+    - cron: '0 0 * * 0'
+
+jobs:
+  test:
+    name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
+        exclude:
+          # Python 3.13 might not be available on all OS yet
+          - os: windows-latest
+            python-version: '3.13'
+          - os: macos-latest
+            python-version: '3.13'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
+
+    - name: Display Python version
+      run: python -c "import sys; print(sys.version)"
+
+    - name: Upgrade pip
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools wheel
+
+    - name: Install dependencies
+      run: |
+        pip install pytest pytest-cov pytest-xdist pytest-timeout
+        # Install empyrical from GitHub (primary) or Gitee (fallback)
+        pip install git+https://github.com/cloudQuant/empyrical.git || pip install git+https://gitee.com/yunjinqi/empyrical.git
+        pip install -e .
+
+    - name: Run tests with pytest
+      run: |
+        pytest tests/ -v --cov=pyfolio --cov-report=xml --cov-report=term -n auto
+
+    - name: Upload coverage to Codecov
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black isort mypy
+        # Install empyrical for linting
+        pip install git+https://github.com/cloudQuant/empyrical.git || pip install git+https://gitee.com/yunjinqi/empyrical.git
+
+    - name: Lint with flake8
+      run: |
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 pyfolio --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings
+        flake8 pyfolio --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
+
+    - name: Check formatting with black
+      run: |
+        black --check pyfolio || echo "Code formatting issues found. Run 'black pyfolio' to fix."
+
+    - name: Check import sorting with isort
+      run: |
+        isort --check-only pyfolio || echo "Import sorting issues found. Run 'isort pyfolio' to fix."
+
+  build:
+    name: Build distribution
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build
+
+    - name: Build distribution
+      run: python -m build
+
+    - name: Check distribution
+      run: |
+        pip install twine
+        twine check dist/*
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: dist/
+
+  test-install:
+    name: Test installation
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.8', '3.11']
+
+    steps:
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: dist/
+
+    - name: Install from wheel
+      run: |
+        # Install empyrical first
+        pip install git+https://github.com/cloudQuant/empyrical.git || pip install git+https://gitee.com/yunjinqi/empyrical.git
+        pip install dist/*.whl
+        python -c "import pyfolio; print(f'Successfully imported pyfolio {pyfolio.__version__}')"
+
+    - name: Test basic functionality
+      run: |
+        python -c "
+import pyfolio
+import pandas as pd
+import numpy as np
+# Create sample returns
+dates = pd.date_range('2020-01-01', periods=252, freq='D')
+returns = pd.Series(np.random.randn(252) * 0.01, index=dates)
+# Test basic stats computation
+print('Testing pyfolio basic functionality...')
+print(f'Annual return: {pyfolio.timeseries.annual_return(returns):.2%}')
+print(f'Sharpe ratio: {pyfolio.timeseries.sharpe_ratio(returns):.2f}')
+print('Basic functionality test passed!')
+"

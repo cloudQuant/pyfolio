@@ -1,21 +1,13 @@
-empyrical
-flask
-ipython
-tk
-matplotlib
-parameterized
-numpy
-pandas
-ipython
-pymc
-pytz
-scikit-learn
-scipy
-seaborn
-setuptools
-pytest
-pytest-benchmark
-pytest-sugar
-pytest-cov
-pytest-picked
-pytest-xdist
+# Note: empyrical must be installed from GitHub/Gitee, not PyPI
+# pip install git+https://github.com/cloudQuant/empyrical.git
+# or
+# pip install git+https://gitee.com/yunjinqi/empyrical.git
+flask>=2.0.0
+matplotlib>=3.0.0
+numpy>=1.20.0
+pandas>=1.3.0
+pytz>=2019.3
+scikit-learn>=0.22.0
+scipy>=1.5.0
+seaborn>=0.10.0
+setuptools>=40.0.0

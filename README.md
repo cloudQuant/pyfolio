@@ -1,9 +1,11 @@
 ### pyfolio
 <p style="text-align: center;">
+    <img src="https://github.com/cloudQuant/pyfolio/workflows/CI/badge.svg" alt="CI Status" style="margin-right: 10px;"/>
     <img src="https://img.shields.io/badge/version-0.9.6-blueviolet.svg" alt="Version 0.9.6" style="margin-right: 10px;"/>
     <img src="https://img.shields.io/badge/platform-mac%7Clinux%7Cwin-yellow.svg" alt="Supported Platforms: Mac, Linux, and Windows" style="margin-right: 10px;"/>
-    <img src="https://img.shields.io/badge/python-3.11%7C3.12-brightgreen.svg" alt="Build: Passing" style="margin-right: 10px;"/>
-    <img src="https://img.shields.io/badge/license-MIT-orange" alt="License: MIT"/>
+    <img src="https://img.shields.io/badge/python-3.8%7C3.9%7C3.10%7C3.11%7C3.12%7C3.13-brightgreen.svg" alt="Python Versions" style="margin-right: 10px;"/>
+    <img src="https://codecov.io/gh/cloudQuant/pyfolio/branch/master/graph/badge.svg" alt="Code Coverage" style="margin-right: 10px;"/>
+    <img src="https://img.shields.io/badge/license-Apache%202.0-orange" alt="License: Apache 2.0"/>
 </p>
 #### 介绍
 
@@ -22,10 +24,18 @@ pyqt6等对原来的pyfolio进行改进优化。
 # 克隆项目，选择一个代码库进行克隆
 git clone https://gitee.com/yunjinqi/pyfolio.git       # 国内gitee速度更快
 git clone https://github.com/cloudQuant/pyfolio.git    # 国外github可能更快
-# 安装依赖包
+
+# 首先安装empyrical (必须从GitHub/Gitee安装，不能从PyPI安装)
+pip install git+https://github.com/cloudQuant/empyrical.git  # 国外用户
+# 或者
+pip install git+https://gitee.com/yunjinqi/empyrical.git     # 国内用户
+
+# 安装其他依赖包
 pip install -r ./pyfolio/requirements.txt
+
 # 安装pyfolio
 pip install -U ./pyfolio
+
 # 运行测试
 pytest ./pyfolio/tests/ -n 4
 ```

@@ -1,0 +1,12 @@
+# Empyrical installation
+# This package must be installed from GitHub/Gitee, not from PyPI
+# The PyPI version is outdated and incompatible with NumPy 2.0+
+
+# For users outside China (GitHub):
+# pip install git+https://github.com/cloudQuant/empyrical.git
+
+# For users in China (Gitee - faster):
+# pip install git+https://gitee.com/yunjinqi/empyrical.git
+
+# Direct URL format for pip install -r:
+git+https://github.com/cloudQuant/empyrical.git#egg=empyrical
