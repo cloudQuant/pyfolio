@@ -222,7 +222,8 @@ def create_full_tear_sheet_by_flask(returns,
     for name, fig in content.items():
         if fig is not None:
             # print(f"{name}保存在文件夹{target_image_path}")
-            fig.savefig(target_image_path + "/" + name + ".png")
+            fig.tight_layout()
+            fig.savefig(target_image_path + "/" + name + ".png", bbox_inches='tight', pad_inches=0.1)
 
     if run_flask_app:
         from .flask_app import app

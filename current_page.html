@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pyfolio - 策略绩效分析</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-chart-line"></i>
+                <span>PyFolio Analytics</span>
+            </div>
+            <div class="nav-time">
+                <i class="far fa-clock"></i>
+                <span id="current-time"></span>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <h1 class="hero-title">Pyfolio - 策略绩效分析</h1>
+        <p class="hero-subtitle">专业的量化投资策略分析报告</p>
+    </header>
+
+    <main class="container">
+        <!-- 性能指标卡片 -->
+        <section class="metrics-section">
+            <h2 class="section-title">
+                <i class="fas fa-tachometer-alt"></i>
+                关键性能指标
+            </h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon blue">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3>收益分析</h3>
+                        <p>策略表现与基准对比</p>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon green">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3>风险评估</h3>
+                        <p>压力测试与极端事件</p>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon purple">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3>持仓分析</h3>
+                        <p>多空头寸详细分解</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 收益分析部分 -->
+        <section class="analysis-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-area"></i>
+                    收益表现分析
+                </h2>
+                <div class="section-actions">
+                    <button class="btn-icon" onclick="toggleSection('returns-content')">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="returns-content" class="section-content">
+                <div class="analysis-row">
+                    <div class="table-panel">
+                        <h3 class="panel-title">性能统计</h3>
+                        <div class="table-wrapper">
+                            
+                                <table border="1" class="dataframe data">
+  <thead>
+    <tr style="text-align: right;">
+      <th>performance analysis</th>
+      <th>In-sample</th>
+      <th>Out-of-sample</th>
+      <th>All</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Annual return</td>
+      <td>14.5%</td>
+      <td>32.8%</td>
+      <td>19.7%</td>
+    </tr>
+    <tr>
+      <td>Cumulative returns</td>
+      <td>125.3%</td>
+      <td>109.4%</td>
+      <td>371.7%</td>
+    </tr>
+    <tr>
+      <td>Annual volatility</td>
+      <td>12.1%</td>
+      <td>11.9%</td>
+      <td>12.0%</td>
+    </tr>
+    <tr>
+      <td>Sharpe ratio</td>
+      <td>1.177243</td>
+      <td>2.446648</td>
+      <td>1.555593</td>
+    </tr>
+    <tr>
+      <td>Calmar ratio</td>
+      <td>1.079673</td>
+      <td>5.389994</td>
+      <td>1.473072</td>
+    </tr>
+    <tr>
+      <td>Stability</td>
+      <td>0.956281</td>
+      <td>0.989377</td>
+      <td>0.967075</td>
+    </tr>
+    <tr>
+      <td>Max drawdown</td>
+      <td>-13.4%</td>
+      <td>-6.1%</td>
+      <td>-13.4%</td>
+    </tr>
+    <tr>
+      <td>Omega ratio</td>
+      <td>1.414976</td>
+      <td>1.954344</td>
+      <td>1.564826</td>
+    </tr>
+    <tr>
+      <td>Sortino ratio</td>
+      <td>1.73162</td>
+      <td>4.404958</td>
+      <td>2.410434</td>
+    </tr>
+    <tr>
+      <td>Skew</td>
+      <td>-1.086068</td>
+      <td>1.412214</td>
+      <td>-0.358709</td>
+    </tr>
+    <tr>
+      <td>Kurtosis</td>
+      <td>25.754651</td>
+      <td>17.177968</td>
+      <td>23.392094</td>
+    </tr>
+    <tr>
+      <td>Tail ratio</td>
+      <td>1.641023</td>
+      <td>1.716636</td>
+      <td>1.597652</td>
+    </tr>
+    <tr>
+      <td>Daily value at risk</td>
+      <td>-1.5%</td>
+      <td>-1.4%</td>
+      <td>-1.4%</td>
+    </tr>
+    <tr>
+      <td>Gross leverage</td>
+      <td>0.352323</td>
+      <td>0.386828</td>
+      <td>0.362739</td>
+    </tr>
+    <tr>
+      <td>Alpha</td>
+      <td>0.141727</td>
+      <td>0.317675</td>
+      <td>0.19232</td>
+    </tr>
+    <tr>
+      <td>Beta</td>
+      <td>0.045277</td>
+      <td>0.047305</td>
+      <td>0.045815</td>
+    </tr>
+  </tbody>
+</table>
+                            
+                        </div>
+                    </div>
+                    <div class="chart-panel">
+                        <h3 class="panel-title">收益走势图</h3>
+                        <div class="chart-wrapper">
+                            <img src="/static/image/returns_tear_sheet.png" alt="Returns Analysis" class="chart-image">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 压力测试部分 -->
+        <section class="analysis-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    压力测试与极端事件
+                </h2>
+                <div class="section-actions">
+                    <button class="btn-icon" onclick="toggleSection('stress-content')">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="stress-content" class="section-content">
+                <div class="analysis-row">
+                    <div class="table-panel">
+                        <h3 class="panel-title">极端事件表现</h3>
+                        <div class="table-wrapper">
+                            
+                                <table border="1" class="dataframe data">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Stress Events</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Apr14</td>
+      <td>0.063258</td>
+      <td>-0.048156</td>
+      <td>1.396299</td>
+    </tr>
+    <tr>
+      <td>Oct14</td>
+      <td>0.198627</td>
+      <td>-0.573306</td>
+      <td>1.968026</td>
+    </tr>
+    <tr>
+      <td>Fall2015</td>
+      <td>0.137593</td>
+      <td>-2.250820</td>
+      <td>3.647507</td>
+    </tr>
+    <tr>
+      <td>Recovery</td>
+      <td>0.222193</td>
+      <td>-1.076031</td>
+      <td>3.465246</td>
+    </tr>
+    <tr>
+      <td>New Normal</td>
+      <td>0.070267</td>
+      <td>-9.652991</td>
+      <td>7.228968</td>
+    </tr>
+  </tbody>
+</table>
+                            
+                        </div>
+                    </div>
+                    <div class="chart-panel">
+                        <h3 class="panel-title">特殊时期分析</h3>
+                        <div class="chart-wrapper">
+                            <img src="/static/image/interesting_times_tear_sheet.png" alt="Stress Events Analysis" class="chart-image">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 持仓分析部分 -->
+        <section class="analysis-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-coins"></i>
+                    持仓分析
+                </h2>
+                <div class="section-actions">
+                    <button class="btn-icon" onclick="toggleSection('position-content')">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="position-content" class="section-content">
+                <div class="analysis-row">
+                    <div class="table-panel">
+                        <div class="position-tables">
+                            <div class="position-table-group">
+                                <h3 class="panel-title">
+                                    <i class="fas fa-arrow-up text-success"></i>
+                                    多头持仓 TOP 10
+                                </h3>
+                                <div class="table-wrapper">
+                                    
+                                        <table border="1" class="dataframe data">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Top 10 long positions of all time</th>
+      <th>max</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Data0</td>
+      <td>99.994008</td>
+    </tr>
+  </tbody>
+</table>
+                                    
+                                </div>
+                            </div>
+                            <div class="position-table-group">
+                                <h3 class="panel-title">
+                                    <i class="fas fa-arrow-down text-danger"></i>
+                                    空头持仓 TOP 10
+                                </h3>
+                                <div class="table-wrapper">
+                                    
+                                        <table border="1" class="dataframe data">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Top 10 short positions of all time</th>
+      <th>max</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-panel">
+                        <h3 class="panel-title">持仓分布图</h3>
+                        <div class="chart-wrapper">
+                            <img src="/static/image/position_tear_sheet.png" alt="Position Analysis" class="chart-image">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 其他统计部分 -->
+        <section class="analysis-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-database"></i>
+                    其他统计数据
+                </h2>
+                <div class="section-actions">
+                    <button class="btn-icon" onclick="toggleSection('other-content')">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="other-content" class="section-content">
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <h3 class="panel-title">
+                            <i class="fas fa-chart-bar"></i>
+                            最大回撤期
+                        </h3>
+                        <div class="table-wrapper">
+                            
+                                <table border="1" class="dataframe data">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Worst drawdown periods</th>
+      <th>Net drawdown in %</th>
+      <th>Peak date</th>
+      <th>Valley date</th>
+      <th>Recovery date</th>
+      <th>Duration</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>13.386068</td>
+      <td>2015-07-23</td>
+      <td>2015-07-28</td>
+      <td>2015-10-12</td>
+      <td>58</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>10.328004</td>
+      <td>2013-03-22</td>
+      <td>2014-03-28</td>
+      <td>2014-08-19</td>
+      <td>368</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>9.738382</td>
+      <td>2015-10-12</td>
+      <td>2015-12-08</td>
+      <td>2016-02-17</td>
+      <td>93</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>6.691605</td>
+      <td>2015-07-13</td>
+      <td>2015-07-15</td>
+      <td>2015-07-23</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>6.091674</td>
+      <td>2020-07-13</td>
+      <td>2020-09-17</td>
+      <td>2020-11-09</td>
+      <td>86</td>
+    </tr>
+  </tbody>
+</table>
+                            
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <h3 class="panel-title">
+                            <i class="fas fa-list-ol"></i>
+                            历史持仓 TOP 10
+                        </h3>
+                        <div class="table-wrapper">
+                            
+                                <table border="1" class="dataframe data">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Top 10 positions of all time</th>
+      <th>max</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Data0</td>
+      <td>99.994008</td>
+    </tr>
+  </tbody>
+</table>
+                            
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <h3 class="panel-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            月度统计
+                        </h3>
+                        <div class="table-wrapper">
+                            
+                                <table border="1" class="dataframe data">
+  <thead>
+    <tr style="text-align: right;">
+      <th>total months</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 PyFolio Analytics. Powered by CloudQuant Technology.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 显示当前时间
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('zh-CN', { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit', 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit' 
+            });
+            document.getElementById('current-time').textContent = timeString;
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // 切换部分显示/隐藏
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const button = section.previousElementSibling.querySelector('.btn-icon i');
+            
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+                button.className = 'fas fa-chevron-down';
+            } else {
+                section.style.display = 'none';
+                button.className = 'fas fa-chevron-right';
+            }
+        }
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
