@@ -99,6 +99,13 @@ jobs:
       run: |
         pip install git+https://github.com/cloudQuant/empyrical.git || pip install git+https://gitee.com/yunjinqi/empyrical.git
         
+    - name: Verify dependencies installed
+      run: |
+        echo "=== Verifying critical dependencies ==="
+        pip show ipython || (echo "IPython not installed!" && exit 1)
+        pip show parameterized || (echo "parameterized not installed!" && exit 1)
+        pip show empyrical || (echo "empyrical not installed!" && exit 1)
+        
     - name: Install pyfolio
       run: |
         pip install -e . --no-deps
@@ -107,9 +114,12 @@ jobs:
 
     - name: Run tests with pytest
       run: |
+        # First verify imports work
+        python -c "import pyfolio; print(f'PyFolio {pyfolio.__version__} OK')"
+        python -c "import IPython; print(f'IPython {IPython.__version__} OK')"
+        python -c "import parameterized; print('parameterized OK')"
+        # Run tests
         pytest tests/ -v --cov=pyfolio --cov-report=xml --cov-report=term -n auto --tb=short
-      continue-on-error: true
-      id: pytest
     
     - name: Upload test results
       if: always()
@@ -119,10 +129,6 @@ jobs:
         path: |
           coverage.xml
           .coverage
-          
-    - name: Check test results
-      if: steps.pytest.outcome == 'failure'
-      run: exit 1
 
     - name: Upload coverage to Codecov
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
