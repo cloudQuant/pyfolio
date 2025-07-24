@@ -21,7 +21,16 @@ from itertools import cycle
 from matplotlib.pyplot import cm
 import numpy as np
 import pandas as pd
-from IPython.display import display, HTML
+try:
+    from IPython.display import display, HTML
+    HAS_IPYTHON = True
+except ImportError:
+    HAS_IPYTHON = False
+    # Define dummy functions for non-IPython environments
+    def display(obj):
+        print(obj)
+    def HTML(string):
+        return string
 from pathlib import Path
 import os
 import pyfolio as pf

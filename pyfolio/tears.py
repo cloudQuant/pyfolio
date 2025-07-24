@@ -20,7 +20,16 @@ import os
 import shutil
 import pyfolio as pf
 import empyrical as ep
-from IPython.display import display, Markdown
+try:
+    from IPython.display import display, Markdown
+    HAS_IPYTHON = True
+except ImportError:
+    HAS_IPYTHON = False
+    # Define dummy functions for non-IPython environments
+    def display(obj):
+        print(obj)
+    def Markdown(string):
+        return string
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np

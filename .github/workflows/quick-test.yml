@@ -27,7 +27,7 @@ jobs:
         python-version: '3.11'
 
     - name: Cache pip packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
@@ -38,6 +38,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pytest pytest-cov pytest-xdist
+        pip install ipython>=7.0.0
         # Install empyrical
         pip install git+https://github.com/cloudQuant/empyrical.git || pip install git+https://gitee.com/yunjinqi/empyrical.git
         pip install -e .
@@ -74,6 +75,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pytest pytest-cov pytest-xdist
+        pip install ipython>=7.0.0
         pip install git+https://github.com/cloudQuant/empyrical.git || pip install git+https://gitee.com/yunjinqi/empyrical.git
         pip install -e .
 

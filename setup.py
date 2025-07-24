@@ -16,6 +16,7 @@ setuptools.setup(
     },
     install_requires=[
         'flask>=2.0.0',
+        'ipython>=7.0.0',
         'matplotlib>=3.0.0',
         'numpy>=1.20.0',
         'pandas>=1.3.0',
