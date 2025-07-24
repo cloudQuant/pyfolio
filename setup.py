@@ -51,4 +51,21 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Mathematics",
     ],
     python_requires='>=3.8',
+    extras_require={
+        'test': [
+            'pytest>=6.0.0',
+            'pytest-cov>=2.10.0',
+            'pytest-xdist>=2.0.0',
+            'parameterized>=0.7.0',
+        ],
+        'dev': [
+            'pytest>=6.0.0',
+            'pytest-cov>=2.10.0',
+            'pytest-xdist>=2.0.0',
+            'parameterized>=0.7.0',
+            'flake8>=3.8.0',
+            'black>=21.0',
+            'isort>=5.0.0',
+        ],
+    },
 )

@@ -64,10 +64,16 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools wheel
 
-    - name: Install dependencies
+    - name: Install test dependencies
       run: |
-        pip install pytest pytest-cov pytest-xdist pytest-timeout
+        pip install pytest pytest-cov pytest-xdist pytest-timeout parameterized
+        
+    - name: Install package dependencies
+      run: |
+        # Install all requirements first
         pip install ipython>=7.0.0
+        pip install matplotlib>=3.0.0 numpy>=1.20.0 pandas>=1.3.0
+        pip install flask>=2.0.0 pytz>=2019.3 scikit-learn>=0.22.0 scipy>=1.5.0 seaborn>=0.10.0
         
     - name: Install empyrical (Unix)
       if: runner.os != 'Windows'
@@ -95,7 +101,9 @@ jobs:
         
     - name: Install pyfolio
       run: |
-        pip install -e .
+        pip install -e . --no-deps
+        # Verify installation
+        python -c "import pyfolio; print(f'PyFolio {pyfolio.__version__} installed successfully')"
 
     - name: Run tests with pytest
       run: |
