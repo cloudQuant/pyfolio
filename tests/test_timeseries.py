@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 from pyfolio import timeseries
-from pyfolio.utils import to_utc, to_series
+from pyfolio.utils import to_utc, to_series, get_month_end_freq
 import gzip
 
 DECIMAL_PLACES = 8
@@ -247,7 +247,7 @@ class TestStats(TestCase):
         pd.date_range(
             '2000-1-31',
             periods=500,
-            freq='ME'))
+            freq=get_month_end_freq()))
 
     simple_benchmark = pd.Series(
         [0.03] * 4 + [0] * 496,

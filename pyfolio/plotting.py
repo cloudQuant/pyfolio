@@ -38,7 +38,7 @@ from . import timeseries
 from . import txn
 from . import utils
 from .utils import (APPROX_BDAYS_PER_MONTH,
-                    MM_DISPLAY_UNIT)
+                    MM_DISPLAY_UNIT, get_month_end_freq, make_timezone_aware)
 
 
 def customize(func):
@@ -317,7 +317,7 @@ def plot_holdings(returns, positions, legend_loc='best', ax=None, **kwargs):
     positions = positions.copy().drop('cash', axis='columns')
     df_holdings = positions.replace(0, np.nan).count(axis=1)
     # df_holdings_by_month = df_holdings.resample('1M').mean()
-    df_holdings_by_month = df_holdings.resample('ME').mean()
+    df_holdings_by_month = df_holdings.resample(get_month_end_freq()).mean()
     df_holdings.plot(color='steelblue', alpha=0.6, lw=0.5, ax=ax, **kwargs)
     df_holdings_by_month.plot(
         color='orangered',
@@ -601,16 +601,14 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
         date_rows['End date'] = returns.index[-1].strftime('%Y-%m-%d')
 
     if live_start_date is not None:
+        # Convert string to datetime once
         if isinstance(live_start_date, str):
             live_start_date = pd.to_datetime(live_start_date)
-        if live_start_date.tz is None:
-            # 如果 live_start_date 没有时区，先设置时区
-            live_start_date = live_start_date.tz_localize(returns.index[0].tz)
-        else:
-            # 如果 live_start_date 已经有其他时区，转换时区
-            live_start_date = live_start_date.tz_convert(returns.index[0].tz)
-        returns_is = returns[returns.index < live_start_date]
-        returns_oos = returns[returns.index >= live_start_date]
+        
+        # Handle timezone for returns comparison
+        live_start_date_for_returns = make_timezone_aware(live_start_date, returns.index[0].tz)
+        returns_is = returns[returns.index < live_start_date_for_returns]
+        returns_oos = returns[returns.index >= live_start_date_for_returns]
 
         positions_is = None
         positions_oos = None
@@ -618,24 +616,18 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
         transactions_oos = None
 
         if positions is not None:
-            if isinstance(live_start_date, str):
-                live_start_date = pd.to_datetime(live_start_date, utc=True)
-            target_date = positions.index[0]
-            if live_start_date.tz is None:
-                # 如果 live_start_date 没有时区，先设置时区
-                live_start_date = live_start_date.tz_localize(target_date.tz)
-            else:
-                # 如果 live_start_date 已经有其他时区，转换时区
-                live_start_date = live_start_date.tz_convert(target_date.tz)
-
-            # 打印具体的时间值
-            positions_is = positions[positions.index < live_start_date]
-            positions_oos = positions[positions.index >= live_start_date]
+            # Handle timezone for positions comparison
+            live_start_date_for_positions = make_timezone_aware(live_start_date, positions.index[0].tz)
+            positions_is = positions[positions.index < live_start_date_for_positions]
+            positions_oos = positions[positions.index >= live_start_date_for_positions]
+            
             if transactions is not None:
+                # Handle timezone for transactions comparison
+                live_start_date_for_txns = make_timezone_aware(live_start_date, transactions.index[0].tz)
                 transactions_is = transactions[(transactions.index <
-                                                live_start_date)]
+                                                live_start_date_for_txns)]
                 transactions_oos = transactions[(transactions.index >
-                                                 live_start_date)]
+                                                 live_start_date_for_txns)]
 
         perf_stats_is = perf_func(
             returns_is,
@@ -722,14 +714,8 @@ def plot_returns(returns,
 
     if live_start_date is not None:
         if isinstance(live_start_date, str):
-            live_start_date = pd.to_datetime(live_start_date, utc=True)
-        target_date = returns.index[0]
-        if live_start_date.tz is None:
-            # 如果 live_start_date 没有时区，先设置时区
-            live_start_date = live_start_date.tz_localize(target_date.tz)
-        else:
-            # 如果 live_start_date 已经有其他时区，转换时区
-            live_start_date = live_start_date.tz_convert(target_date.tz)
+            live_start_date = pd.to_datetime(live_start_date)
+        live_start_date = make_timezone_aware(live_start_date, returns.index[0].tz)
         is_returns = returns.loc[returns.index < live_start_date]
         oos_returns = returns.loc[returns.index >= live_start_date]
         is_returns.plot(ax=ax, color='g')
@@ -830,14 +816,8 @@ def plot_rolling_returns(returns,
 
     if live_start_date is not None:
         if isinstance(live_start_date, str):
-            live_start_date = pd.to_datetime(live_start_date, utc=True)
-        target_date = cum_rets.index[0]
-        if live_start_date.tz is None:
-            # 如果 live_start_date 没有时区，先设置时区
-            live_start_date = live_start_date.tz_localize(target_date.tz)
-        else:
-            # 如果 live_start_date 已经有其他时区，转换时区
-            live_start_date = live_start_date.tz_convert(target_date.tz)
+            live_start_date = pd.to_datetime(live_start_date)
+        live_start_date = make_timezone_aware(live_start_date, cum_rets.index[0].tz)
         is_cum_returns = cum_rets.loc[cum_rets.index < live_start_date]
         oos_cum_returns = cum_rets.loc[cum_rets.index >= live_start_date]
     else:
@@ -1344,13 +1324,9 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, **kwargs):
     if live_start_date is None:
         is_returns = returns
     else:
-        target_date = returns.index[0]
-        if live_start_date.tz is None:
-            # 如果 live_start_date 没有时区，先设置时区
-            live_start_date = live_start_date.tz_localize(target_date.tz)
-        else:
-            # 如果 live_start_date 已经有其他时区，转换时区
-            live_start_date = live_start_date.tz_convert(target_date.tz)
+        if isinstance(live_start_date, str):
+            live_start_date = pd.to_datetime(live_start_date)
+        live_start_date = make_timezone_aware(live_start_date, returns.index[0].tz)
         is_returns = returns.loc[returns.index < live_start_date]
     is_weekly = ep.aggregate_returns(is_returns, 'weekly')
     is_monthly = ep.aggregate_returns(is_returns, 'monthly')
@@ -1429,7 +1405,7 @@ def plot_turnover(returns, transactions, positions,
     ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
 
     df_turnover = txn.get_turnover(positions, transactions)
-    df_turnover_by_month = df_turnover.resample("ME").mean()
+    df_turnover_by_month = df_turnover.resample(get_month_end_freq()).mean()
     df_turnover.plot(color='steelblue', alpha=1.0, lw=0.5, ax=ax, **kwargs)
     df_turnover_by_month.plot(
         color='orangered',

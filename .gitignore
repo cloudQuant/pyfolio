@@ -7,6 +7,7 @@ __pycache__/
 pyfolio/static/image/*
 pyfolio/static/strategy_performance*
 examples/.ipynb_checkpoints/*
+test_results/*
 
 # C extensions
 *.so
@@ -30,6 +31,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+pyfolio.egg-info/*
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

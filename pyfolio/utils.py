@@ -27,6 +27,7 @@ import os
 import pyfolio as pf
 import empyrical.utils
 from pandas.testing import assert_frame_equal, assert_series_equal
+from packaging import version
 
 from . import pos
 from . import txn
@@ -598,6 +599,48 @@ def to_series(df):
     """
 
     return df[df.columns[0]]
+
+
+def get_month_end_freq():
+    """
+    Get the appropriate month-end frequency string based on pandas version.
+    
+    Returns
+    -------
+    str
+        'M' for pandas < 2.2.0, 'ME' for pandas >= 2.2.0
+    """
+    if version.parse(pd.__version__) < version.parse("2.2.0"):
+        return 'M'
+    else:
+        return 'ME'
+
+
+def make_timezone_aware(timestamp, target_tz):
+    """
+    Ensure a timestamp has the same timezone as target_tz.
+    
+    Parameters
+    ----------
+    timestamp : pd.Timestamp
+        The timestamp to adjust
+    target_tz : timezone or None
+        The target timezone
+        
+    Returns
+    -------
+    pd.Timestamp
+        Timestamp with matching timezone
+    """
+    if target_tz is not None:
+        if timestamp.tz is None:
+            return timestamp.tz_localize(target_tz)
+        else:
+            return timestamp.tz_convert(target_tz)
+    elif timestamp.tz is not None:
+        # Target is tz-naive but timestamp is tz-aware, remove tz
+        return timestamp.tz_localize(None)
+    return timestamp
 
 
 # These functions are simply a passthrough to empyrical, but is

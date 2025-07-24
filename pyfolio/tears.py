@@ -37,6 +37,7 @@ from . import round_trips
 from . import timeseries
 from . import txn
 from . import utils
+from .utils import make_timezone_aware
 
 try:
     from . import bayesian
@@ -1325,6 +1326,8 @@ def create_bayesian_tear_sheet(returns, benchmark_rets=None,
         )
 
     live_start_date = ep.utils.get_utc_timestamp(live_start_date)
+    # Ensure timezone compatibility
+    live_start_date = make_timezone_aware(live_start_date, returns.index[0].tz)
     df_train = returns.loc[returns.index < live_start_date]
     df_test = returns.loc[returns.index >= live_start_date]
 
