@@ -1,0 +1,82 @@
+name: Quick Test
+
+# Trigger on any push to any branch
+on:
+  push:
+    # Run on all branches
+    branches: '**'
+    # Skip if only documentation files are changed
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
+      - '.github/workflows/manual-test.yml'
+
+jobs:
+  quick-test:
+    name: Quick Test - Python 3.11 on Ubuntu
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Cache pip packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov pytest-xdist
+        # Install empyrical
+        pip install git+https://github.com/cloudQuant/empyrical.git || pip install git+https://gitee.com/yunjinqi/empyrical.git
+        pip install -e .
+
+    - name: Run tests
+      run: |
+        pytest tests/ -v -x --tb=short -n auto
+
+    - name: Test import
+      run: |
+        python -c "import pyfolio; print(f'Successfully imported pyfolio {pyfolio.__version__}')"
+
+  # Run full matrix test only on main branches
+  full-test:
+    name: Full Test - ${{ matrix.python-version }} on ${{ matrix.os }}
+    needs: quick-test
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov pytest-xdist
+        pip install git+https://github.com/cloudQuant/empyrical.git || pip install git+https://gitee.com/yunjinqi/empyrical.git
+        pip install -e .
+
+    - name: Run tests
+      run: |
+        pytest tests/ -v --cov=pyfolio --cov-report=term
