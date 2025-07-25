@@ -2,9 +2,10 @@
 
 <div align="center">
 
+[![CI Tests](https://github.com/cloudQuant/pyfolio/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/cloudQuant/pyfolio/actions/workflows/ci.yml)
+[![Quick Tests](https://github.com/cloudQuant/pyfolio/actions/workflows/quick-test.yml/badge.svg?branch=master)](https://github.com/cloudQuant/pyfolio/actions/workflows/quick-test.yml)
 ![Python](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
-![Tests](https://github.com/cloudQuant/pyfolio/workflows/CI/badge.svg)
 
 **A comprehensive Python library for portfolio performance and risk analysis**
 

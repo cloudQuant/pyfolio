@@ -1,0 +1,48 @@
+name: Refresh Badges
+
+on:
+  # Run after CI completes
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  refresh-badges:
+    name: Refresh README badges
+    runs-on: ubuntu-latest
+    if: github.repository == 'cloudQuant/pyfolio'
+    
+    steps:
+    - name: Refresh CI Badge Cache
+      run: |
+        # Force refresh GitHub's badge cache by making requests with cache-busting
+        echo "Refreshing CI badge cache..."
+        
+        # Wait a moment for GitHub's systems to update
+        sleep 30
+        
+        # Make requests to refresh badge cache
+        curl -I "https://github.com/cloudQuant/pyfolio/actions/workflows/ci.yml/badge.svg?branch=master&$(date +%s)" || true
+        curl -I "https://github.com/cloudQuant/pyfolio/actions/workflows/quick-test.yml/badge.svg?branch=master&$(date +%s)" || true
+        
+        echo "Badge cache refresh completed"
+        
+    - name: Purge Badge CDN Cache
+      run: |
+        # Use different methods to force badge refresh
+        echo "Purging CDN caches..."
+        
+        # Make requests with different user agents and cache busting
+        for i in {1..3}; do
+          curl -H "Cache-Control: no-cache" \
+               -H "Pragma: no-cache" \
+               -H "User-Agent: BadgeRefresh-$i" \
+               "https://img.shields.io/github/actions/workflow/status/cloudQuant/pyfolio/ci.yml?branch=master&$(date +%s)" || true
+          sleep 5
+        done
+        
+        echo "CDN cache purge completed"
