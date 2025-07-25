@@ -208,10 +208,19 @@ jobs:
     name: Test installation
     needs: build
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ['3.8', '3.11']
+        exclude:
+          # Python 3.8 has issues on macOS ARM64 runners
+          - os: macos-latest
+            python-version: '3.8'
+        include:
+          # Use Python 3.9 for macOS instead
+          - os: macos-latest
+            python-version: '3.9'
 
     steps:
     - name: Set up Python ${{ matrix.python-version }}
@@ -226,18 +235,35 @@ jobs:
         path: dist/
 
     - name: Install from wheel
+      shell: bash
       run: |
-        # Install dependencies first
-        pip install ipython>=7.0.0
-        # Install empyrical
-        pip install git+https://github.com/cloudQuant/empyrical.git || pip install git+https://gitee.com/yunjinqi/empyrical.git
-        # Install pyfolio wheel
+        # Upgrade pip for better performance
+        python -m pip install --upgrade pip wheel setuptools
+        
+        # Install dependencies first with timeout
+        pip install --timeout=120 ipython>=7.0.0
+        
+        # Install empyrical with increased timeout
+        echo "Installing empyrical..."
+        pip install --timeout=300 git+https://github.com/cloudQuant/empyrical.git || pip install --timeout=300 git+https://gitee.com/yunjinqi/empyrical.git
+        
+        # Install pyfolio wheel - use bash to ensure wildcard expansion works
         pip install dist/*.whl
         python -c "import pyfolio; print(f'Successfully imported pyfolio {pyfolio.__version__}')"
 
+    - name: Build matplotlib font cache
+      if: runner.os == 'macOS'
+      run: |
+        # Pre-build matplotlib font cache to avoid timeout during tests
+        python -c "import matplotlib; matplotlib.font_manager._rebuild()"
+        
     - name: Test basic functionality
+      timeout-minutes: 5
       run: |
         python -c "
+        import os
+        # Disable matplotlib GUI backend to avoid issues
+        os.environ['MPLBACKEND'] = 'Agg'
         import pyfolio
         import pandas as pd
         import numpy as np
