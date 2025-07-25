@@ -101,11 +101,41 @@ If CI continues to fail:
    - Expand each step
    - Look for "ERROR:" prefixed messages
 
+## CI Status Analysis
+
+Use our specialized tool to analyze CI failures:
+
+```bash
+# Analyze latest workflow run
+python scripts/analyze_ci_failure.py
+
+# Analyze specific run
+python scripts/analyze_ci_failure.py [RUN_ID]
+```
+
+This tool will:
+- Distinguish between core jobs (test, lint, build) and optional jobs
+- Explain why CI shows as failed even when tests pass
+- Provide specific remediation steps
+
+## Core vs Optional Jobs
+
+**Core Jobs** (determine CI status):
+- `test`: Main test suite across all Python versions and OS
+- `lint`: Code quality checks  
+- `build`: Package building
+
+**Optional Jobs** (don't affect CI status):
+- `test-install`: Installation testing (marked as `continue-on-error`)
+
+The CI badge will show "passing" if all core jobs pass, even if optional jobs fail.
+
 ## Reporting Issues
 
 When reporting CI/CD issues:
 
-1. Include the exact error message
-2. Specify OS and Python version
-3. Link to the failed workflow run
-4. Note any recent changes to dependencies
+1. Run `python scripts/analyze_ci_failure.py` first
+2. Include the exact error message
+3. Specify OS and Python version
+4. Link to the failed workflow run
+5. Note any recent changes to dependencies
