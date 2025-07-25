@@ -1,0 +1,33 @@
+name: Status Check
+
+# This is a simple workflow that always passes
+# Use this to verify workflow execution basics
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths:
+      - '.github/workflows/status-check.yml'
+
+jobs:
+  status-check:
+    name: Simple Status Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Check repository status
+      run: |
+        echo "✅ Repository checked out successfully"
+        echo "✅ Simple status check passed"
+        echo "Current commit: $(git rev-parse HEAD)"
+        echo "Current branch: $(git branch --show-current)"
+        
+    - name: Verify Python
+      run: |
+        python --version
+        echo "✅ Python verification passed"

@@ -327,16 +327,16 @@ jobs:
         # Pre-build matplotlib font cache to avoid timeout during tests
         echo "=== Building matplotlib font cache ==="
         python -c "
-import os
-os.environ['MPLBACKEND'] = 'Agg'
-try:
-    import matplotlib.font_manager
-    matplotlib.font_manager._rebuild()
-    print('Font cache built successfully')
-except Exception as e:
-    print(f'Warning: Failed to build font cache: {e}')
-    print('This is not critical, continuing...')
-"
+        import os
+        os.environ['MPLBACKEND'] = 'Agg'
+        try:
+            import matplotlib.font_manager
+            matplotlib.font_manager._rebuild()
+            print('Font cache built successfully')
+        except Exception as e:
+            print(f'Warning: Failed to build font cache: {e}')
+            print('This is not critical, continuing...')
+        "
         
     - name: Test basic functionality
       timeout-minutes: 5
@@ -358,25 +358,3 @@ except Exception as e:
         print('Basic functionality test passed!')
         "
 
-  # Summary job to determine overall workflow status
-  ci-success:
-    name: CI Status
-    runs-on: ubuntu-latest
-    needs: [test, lint, build]  # Only depend on core jobs
-    if: always()
-    
-    steps:
-    - name: Check core jobs status
-      run: |
-        echo "=== Core Jobs Status ==="
-        echo "Test job: ${{ needs.test.result }}"
-        echo "Lint job: ${{ needs.lint.result }}"
-        echo "Build job: ${{ needs.build.result }}"
-        
-        # Fail if any core job failed
-        if [[ "${{ needs.test.result }}" == "failure" || "${{ needs.lint.result }}" == "failure" || "${{ needs.build.result }}" == "failure" ]]; then
-          echo "❌ One or more core jobs failed"
-          exit 1
-        else
-          echo "✅ All core jobs passed"
-        fi
