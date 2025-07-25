@@ -208,7 +208,7 @@ jobs:
     name: Test installation
     needs: build
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+    timeout-minutes: 30
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -247,15 +247,23 @@ jobs:
         echo "Installing empyrical..."
         pip install --timeout=300 git+https://github.com/cloudQuant/empyrical.git || pip install --timeout=300 git+https://gitee.com/yunjinqi/empyrical.git
         
+        # List files to ensure wheel exists
+        echo "Listing dist directory contents:"
+        ls -la dist/
+        
         # Install pyfolio wheel - use bash to ensure wildcard expansion works
-        pip install dist/*.whl
+        echo "Installing pyfolio wheel..."
+        pip install --timeout=120 dist/*.whl
+        
+        # Verify installation
+        echo "Verifying pyfolio installation..."
         python -c "import pyfolio; print(f'Successfully imported pyfolio {pyfolio.__version__}')"
 
     - name: Build matplotlib font cache
       if: runner.os == 'macOS'
       run: |
         # Pre-build matplotlib font cache to avoid timeout during tests
-        python -c "import matplotlib; matplotlib.font_manager._rebuild()"
+        python -c "import matplotlib.font_manager; matplotlib.font_manager._rebuild()"
         
     - name: Test basic functionality
       timeout-minutes: 5
