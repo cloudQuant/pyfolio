@@ -237,33 +237,105 @@ jobs:
     - name: Install from wheel
       shell: bash
       run: |
+        set -e  # Exit on error
+        
+        # Show system info for debugging
+        echo "=== System Information ==="
+        echo "OS: ${{ runner.os }}"
+        echo "Python: ${{ matrix.python-version }}"
+        python --version
+        pip --version
+        echo "========================="
+        
         # Upgrade pip for better performance
+        echo "=== Upgrading pip/wheel/setuptools ==="
         python -m pip install --upgrade pip wheel setuptools
+        pip --version
         
         # Install dependencies first with timeout
-        pip install --timeout=120 ipython>=7.0.0
+        echo "=== Installing IPython ==="
+        pip install --timeout=120 ipython>=7.0.0 || {
+            echo "Failed to install IPython, retrying..."
+            sleep 5
+            pip install --timeout=120 ipython>=7.0.0
+        }
         
-        # Install empyrical with increased timeout
-        echo "Installing empyrical..."
-        pip install --timeout=300 git+https://github.com/cloudQuant/empyrical.git || pip install --timeout=300 git+https://gitee.com/yunjinqi/empyrical.git
+        # Install empyrical with increased timeout and retry
+        echo "=== Installing empyrical ==="
+        for i in 1 2 3; do
+            echo "Attempt $i to install empyrical..."
+            if pip install --timeout=300 git+https://github.com/cloudQuant/empyrical.git; then
+                echo "Successfully installed empyrical from GitHub"
+                break
+            elif [ $i -eq 3 ]; then
+                echo "GitHub failed, trying Gitee..."
+                pip install --timeout=300 git+https://gitee.com/yunjinqi/empyrical.git || {
+                    echo "ERROR: Failed to install empyrical from both sources"
+                    pip list
+                    exit 1
+                }
+            else
+                echo "Attempt $i failed, waiting before retry..."
+                sleep 10
+            fi
+        done
+        
+        # Verify empyrical installation
+        echo "=== Verifying empyrical ==="
+        pip show empyrical || exit 1
         
         # List files to ensure wheel exists
-        echo "Listing dist directory contents:"
-        ls -la dist/
+        echo "=== Listing dist directory ==="
+        ls -la dist/ || {
+            echo "ERROR: dist directory not found"
+            pwd
+            ls -la
+            exit 1
+        }
         
-        # Install pyfolio wheel - use bash to ensure wildcard expansion works
-        echo "Installing pyfolio wheel..."
-        pip install --timeout=120 dist/*.whl
+        # Install pyfolio wheel
+        echo "=== Installing pyfolio wheel ==="
+        wheel_file=$(ls dist/*.whl | head -n 1)
+        if [ -z "$wheel_file" ]; then
+            echo "ERROR: No wheel file found in dist/"
+            exit 1
+        fi
+        echo "Installing wheel: $wheel_file"
+        pip install --timeout=120 "$wheel_file" || {
+            echo "ERROR: Failed to install pyfolio wheel"
+            pip list
+            exit 1
+        }
+        
+        # Show installed packages
+        echo "=== Installed packages ==="
+        pip list | grep -E "(pyfolio|empyrical|ipython|matplotlib|pandas|numpy)"
         
         # Verify installation
-        echo "Verifying pyfolio installation..."
-        python -c "import pyfolio; print(f'Successfully imported pyfolio {pyfolio.__version__}')"
+        echo "=== Verifying pyfolio installation ==="
+        python -c "import pyfolio; print(f'Successfully imported pyfolio {pyfolio.__version__}')" || {
+            echo "ERROR: Failed to import pyfolio"
+            python -c "import sys; print('Python path:', sys.path)"
+            exit 1
+        }
 
     - name: Build matplotlib font cache
       if: runner.os == 'macOS'
+      continue-on-error: true
       run: |
         # Pre-build matplotlib font cache to avoid timeout during tests
-        python -c "import matplotlib.font_manager; matplotlib.font_manager._rebuild()"
+        echo "=== Building matplotlib font cache ==="
+        python -c "
+import os
+os.environ['MPLBACKEND'] = 'Agg'
+try:
+    import matplotlib.font_manager
+    matplotlib.font_manager._rebuild()
+    print('Font cache built successfully')
+except Exception as e:
+    print(f'Warning: Failed to build font cache: {e}')
+    print('This is not critical, continuing...')
+"
         
     - name: Test basic functionality
       timeout-minutes: 5

@@ -1,0 +1,130 @@
+name: Debug CI Issues
+
+on:
+  workflow_dispatch:
+    inputs:
+      os:
+        description: 'Operating System'
+        required: true
+        default: 'ubuntu-latest'
+        type: choice
+        options:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+      python-version:
+        description: 'Python Version'
+        required: true
+        default: '3.11'
+        type: string
+
+jobs:
+  debug:
+    name: Debug on ${{ inputs.os }} - Python ${{ inputs.python-version }}
+    runs-on: ${{ inputs.os }}
+    timeout-minutes: 45
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ inputs.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+    
+    - name: System Information
+      shell: bash
+      run: |
+        echo "=== System Information ==="
+        echo "OS: ${{ runner.os }}"
+        echo "Runner: ${{ runner.name }}"
+        echo "Architecture: $(uname -m)"
+        python --version
+        pip --version
+        echo "Python location: $(which python)"
+        echo "Pip location: $(which pip)"
+        
+    - name: Test Network Connectivity
+      shell: bash
+      run: |
+        echo "=== Testing Network Connectivity ==="
+        # Test GitHub
+        echo "Testing GitHub..."
+        curl -I https://github.com || echo "GitHub connection failed"
+        
+        # Test PyPI
+        echo "Testing PyPI..."
+        curl -I https://pypi.org || echo "PyPI connection failed"
+        
+        # Test Gitee
+        echo "Testing Gitee..."
+        curl -I https://gitee.com || echo "Gitee connection failed"
+        
+    - name: Install Dependencies with Verbose Output
+      shell: bash
+      run: |
+        echo "=== Installing Dependencies ==="
+        python -m pip install --upgrade pip wheel setuptools
+        
+        # Install with verbose output
+        echo "Installing IPython..."
+        pip install -v --timeout=300 ipython>=7.0.0
+        
+        echo "Installing empyrical..."
+        pip install -v --timeout=600 git+https://github.com/cloudQuant/empyrical.git || \
+        pip install -v --timeout=600 git+https://gitee.com/yunjinqi/empyrical.git
+        
+    - name: Build Package
+      run: |
+        echo "=== Building Package ==="
+        pip install build
+        python -m build
+        ls -la dist/
+        
+    - name: Install Package
+      shell: bash
+      run: |
+        echo "=== Installing Package ==="
+        wheel_file=$(ls dist/*.whl | head -n 1)
+        pip install -v "$wheel_file"
+        
+    - name: Test Import
+      run: |
+        echo "=== Testing Imports ==="
+        python -c "
+        import sys
+        print('Python paths:')
+        for p in sys.path:
+            print(f'  {p}')
+        
+        print('\nTrying to import pyfolio...')
+        try:
+            import pyfolio
+            print(f'Success! pyfolio version: {pyfolio.__version__}')
+        except Exception as e:
+            print(f'Failed: {e}')
+            import traceback
+            traceback.print_exc()
+        
+        print('\nInstalled packages:')
+        import subprocess
+        subprocess.run(['pip', 'list'])
+        "
+        
+    - name: Detailed Package Information
+      if: always()
+      run: |
+        echo "=== Package Information ==="
+        pip show pyfolio || echo "pyfolio not found"
+        pip show empyrical || echo "empyrical not found"
+        pip show ipython || echo "ipython not found"
+        
+    - name: Upload Debug Logs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug-logs-${{ inputs.os }}-${{ inputs.python-version }}
+        path: |
+          pip.log
+          build/
+          dist/
